@@ -1,0 +1,25 @@
+# Jev routing config. Edit thresholds / questions without touching code.
+# Jev request shape (per your example spec):
+#   POST {JEV_API_URL} { "state": "<prompt>", "questions": { ...below... } }
+# Jev response is expected to contain per-question answers; we support several
+# common shapes (see jev_client.py). If JEV_API_URL is unset -> mock heuristics.
+
+questions:
+  complexity:
+    type: score
+    instructions: "How complex is this task? Route simple tasks to cheap models."
+    criteria:
+      - "Simple; factual, single-step, or trivial code/text edit"
+      - "Standard; multi-step reasoning, moderate code, or nuanced writing"
+      - "Complex; deep reasoning, large code synthesis, or high-stakes decisions"
+
+# Map Jev answer -> tier. Jev 'score' questions return 0/1/2 (index into criteria).
+# We also accept string labels containing simple/standard/complex.
+tier_map:
+  simple: cheap
+  standard: balanced
+  complex: flagship
+
+# Low-confidence fallback: if Jev confidence < threshold, use flagship.
+fallback_tier: flagship
+confidence_threshold: 0.4
