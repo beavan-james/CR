@@ -1,39 +1,87 @@
-# Cheapshot — Jev Agent Harness
+# Cheapshot
 
-Classify the **initial prompt** with Jev, route to the cheapest suitable model (BYOK), show **cost optimization %**.
+A cost-aware LLM router. A self-hosted [Laya](https://huggingface.co/convaiinnovations/laya-typed-decisions) decision model reads each prompt and estimates which model tier it needs. Cheapshot then sends it to the cheapest tier that's likely good enough (BYOK) and benchmarks the savings against always using the flagship.
+
+| tier | model (Anthropic) | effort |
+|---|---|---|
+| cheap | `claude-haiku-5-5` | medium |
+| balanced | `claude-sonnet-5-5` | high |
+| flagship | `claude-opus-5-5` | medium |
 
 ## Quickstart
 
 ```bash
-pip install -e ".[dev]"
-cp .env.example .env   # fill in keys you use
+python3 -m venv .venv && .venv/bin/pip install -e ".[dev]"
+cp .env.example .env   # ANTHROPIC_API_KEY, LAYA_URL, LAYA_API_KEY
 
-# Choose family on startup (or pass --family); key via --api-key, env, or prompt
-cheapshot run "The export button crashes the settings page in Safari..." --family anthropic --dry-run
-cheapshot run "Write a debounce function in TS" --family openai
+cheapshot classify "What is the capital of France?"                 # Laya -> tier
+cheapshot classify "Write a debounce in TS" --classifier heuristic  # no Laya needed
+cheapshot run "Explain this Safari crash..." --family anthropic -e 0.1
 cheapshot models
-cheapshot classify "What is the capital of France?"
-
-# Benchmark (cost optimization % vs always-flagship)
-cheapshot benchmark --family mock --dataset evals/datasets/seed.jsonl --out report.md
-```
-(`jev` still works as an alias for the CLI.)
-
-## How it works
-
-```
-prompt -> POST {JEV_API_URL} {"state": prompt, "questions": {...router_config.yaml...}}
-       -> Jev label (simple|standard|complex) + confidence
-       -> router (tier_map + confidence fallback) -> model for chosen family
-       -> complete(model, prompt) with YOUR api key -> answer + tokens/$/latency
 ```
 
-- **Jev API shape** supported per your spec: flexible response parsing (`answers`/`results`/bare), score-int or label-string.
-- **No `JEV_API_URL`?** → deterministic mock heuristics so CLI/benchmarks work offline (flagged `(mock)`).
-- **BYOK:** keys never stored; resolution order `--api-key` > env (`ANTHROPIC_API_KEY`/`OPENAI_API_KEY`/`GEMINI_API_KEY`) > interactive prompt. Blank = mock mode, no charges.
-- **Benchmark:** routed cost vs always-flagship baseline on same tokens → `savings %`. Tier distribution + optional `ideal_tier` accuracy (see `evals/datasets/seed.jsonl`).
+## Using a Claude Pro/Max subscription instead of an API key
 
-## Config
+Use `--family claude-code`. Cheapshot then runs the official Claude Code CLI headless (`claude -p`) under your own login. It never reads or reuses the subscription's OAuth token itself.
 
-- `router_config.yaml` — Jev `questions`, `tier_map`, `confidence_threshold`, `fallback_tier`
-- `src/jev_harness/pricing.py` — `FAMILY_MODELS` + `PRICING` ($/1M). Edit as vendors change.
+```bash
+claude auth status                       # should show authMethod "claude.ai"
+cheapshot run "Explain this Safari crash..." --family claude-code
+cheapshot bench answers -r runs/v1-sub -d evals/datasets/v1.jsonl -f claude-code -w 2
+```
+
+- Tools, MCP servers and session saving are off, and Claude Code's coding-agent system prompt is replaced with a neutral one. Each call runs in an empty temp directory.
+- `ANTHROPIC_API_KEY` is stripped from the CLI's environment so it can't silently bill your API account.
+- No per-token bill: reported costs are **API-equivalent**, which serves as a proxy for how much of your usage limit each tier consumes. The report labels this.
+- A full benchmark (about 450 answers plus about 600 Opus judge calls) is heavy for a subscription and will likely span several usage-limit windows on Pro. Calls that fail at a limit are cached as missing; re-run the same command later to resume. Use fewer workers (`-w 2`).
+- Each call carries ~600 tokens of CLI overhead, so per-call numbers are higher than the API path. API and subscription answers are cached separately (the family is part of the cache key); separate run directories keep their reports apart.
+
+## How routing works
+
+```
+prompt -> Laya (laya-serve /v1/systemone, question from variants/*.yaml)
+       -> probability per tier {cheap, balanced, flagship}
+       -> risk dial: cheapest tier with P(needs a higher tier) <= epsilon
+       -> routed Claude model, with YOUR api key
+```
+
+- **Overflow:** Laya reads at most ~1024 tokens. If a prompt doesn't fit (laya-serve reports `usage.truncated`, or the prompt is over `LAYA_MAX_CHARS`), it goes straight to the flagship instead of being routed on a partial read.
+- **No silent fallback:** if Laya is unreachable the command fails. The keyword heuristic only runs with `--classifier heuristic`.
+- **Variants:** `variants/a_score.yaml` (complexity Score, the control) and `variants/c_tier_choice.yaml` (pick a tier directly).
+
+## Benchmark
+
+Every prompt is answered by all three tiers once. An Opus judge compares the cheap and balanced answers against the flagship's, in both orders. Everything is cached under `runs/<name>/`, so any routing policy (variant × ε × calibration) is scored offline without new Claude calls.
+
+```bash
+cheapshot bench answers  -r runs/v1 -d evals/datasets/v1.jsonl -f anthropic   # paid; asks first
+cheapshot bench classify -r runs/v1 -d evals/datasets/v1.jsonl                  # Laya, free
+cheapshot bench classify -r runs/v1 -d evals/datasets/v1.jsonl -b heuristic     # baseline
+cheapshot bench judge    -r runs/v1 -d evals/datasets/v1.jsonl -f anthropic    # paid; asks first
+cheapshot bench report   -r runs/v1 -d evals/datasets/v1.jsonl -f anthropic --floor 0.95
+```
+
+Re-running any step resumes where it stopped. Use `-f mock` (the default) to run the whole pipeline offline.
+
+Dataset rows: `{"id", "prompt", "category", "source", "split": "tune"|"test"}`. Epsilon and calibration are chosen on `tune`; headline numbers come from `test`.
+
+## Running Laya on a server
+
+`laya-serve` (from the `laya` package) already serves the `/v1/systemone` protocol. On the server (e.g. an Oracle Ampere A1):
+
+```bash
+python3 -m venv ~/laya && ~/laya/bin/pip install "laya[serve]"
+LAYA_HOST=127.0.0.1 LAYA_PORT=8000 LAYA_MODELS=typed-decisions LAYA_API_KEY=<secret> \
+  LAYA_THREADS=4 USE_TF=0 ~/laya/bin/laya-serve
+```
+
+- Keep `LAYA_HOST=127.0.0.1`. The default is `0.0.0.0` (all interfaces).
+- Reach it from your machine with an SSH tunnel, then set `LAYA_URL=http://localhost:8000`:
+
+```bash
+ssh -N -L 8000:127.0.0.1:8000 <user>@<server>
+```
+
+- Don't set `LAYA_JEV_STRICT`; it strips the `usage.truncated` field that overflow detection reads.
+
+See `PLAN.md` for the v1 plan.
