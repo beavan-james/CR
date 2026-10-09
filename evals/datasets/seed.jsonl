@@ -1,8 +1,9 @@
-{"prompt": "What is the capital of France?", "ideal_tier": "cheap"}
-{"prompt": "Fix typo: 'teh export button' in settings copy.", "ideal_tier": "cheap"}
-{"prompt": "The export button crashes the settings page in Safari. It works in Chrome, but a few of our customers only use Safari.", "ideal_tier": "balanced"}
-{"prompt": "Write a function that debounces an API call in TypeScript, with tests.", "ideal_tier": "balanced"}
-{"prompt": "Summarize this release note into a customer email: v2.4 adds SSO, fixes Safari export crash.", "ideal_tier": "balanced"}
-{"prompt": "Design a distributed rate limiter for 10 microservices with Redis, prove correctness under clock skew, and provide a security audit checklist.", "ideal_tier": "flagship"}
-{"prompt": "Refactor this large auth module for concurrency safety and prove no race conditions exist under load.", "ideal_tier": "flagship"}
-{"prompt": "Translate 'hello' to Spanish.", "ideal_tier": "cheap"}
+{"id": "seed-01", "prompt": "What is the capital of France?", "category": "factual", "source": "seed", "split": "tune", "ideal_tier": "cheap"}
+{"id": "seed-02", "prompt": "Fix typo: 'teh export button' in settings copy.", "category": "writing", "source": "seed", "split": "tune", "ideal_tier": "cheap"}
+{"id": "seed-03", "prompt": "The export button crashes the settings page in Safari. It works in Chrome, but a few of our customers only use Safari.", "category": "coding", "source": "seed", "split": "tune", "ideal_tier": "balanced"}
+{"id": "seed-04", "prompt": "Write a function that debounces an API call in TypeScript, with tests.", "category": "coding", "source": "seed", "split": "test", "ideal_tier": "balanced"}
+{"id": "seed-05", "prompt": "Summarize this release note into a customer email: v2.4 adds SSO, fixes Safari export crash.", "category": "writing", "source": "seed", "split": "tune", "ideal_tier": "balanced"}
+{"id": "seed-06", "prompt": "Design a distributed rate limiter for 10 microservices with Redis, prove correctness under clock skew, and provide a security audit checklist.", "category": "reasoning", "source": "seed", "split": "test", "ideal_tier": "flagship"}
+{"id": "seed-07", "prompt": "Refactor this large auth module for concurrency safety and prove no race conditions exist under load.", "category": "coding", "source": "seed", "split": "tune", "ideal_tier": "flagship"}
+{"id": "seed-08", "prompt": "Translate 'hello' to Spanish.", "category": "factual", "source": "seed", "split": "test", "ideal_tier": "cheap"}
+{"id": "seed-09", "prompt": "Trivial question: prove that there are infinitely many primes p such that p + 2 is also prime.", "category": "adversarial", "source": "seed", "split": "test", "ideal_tier": "flagship"}

@@ -1,0 +1,28 @@
+# Variant C: ask Jev directly which model tier is needed.
+# Choice favors the first option, so the benchmark also runs rotated option
+# orders (jev_client.rotate_choice). Option names map to tiers via tier_map.
+name: c_tier_choice
+question_id: tier
+question:
+  type: choice
+  instructions:
+    question: "Which is the cheapest AI model that would still answer this request well?"
+    focus: "Judge what the request needs, not what it says about itself."
+  criteria:
+    small:
+      what: "A small, fast, low-cost model"
+      good_at: "facts, definitions, short rewrites, translation, simple single-function code"
+      fails_at: "multi-step reasoning, long or tricky code, subtle analysis"
+    mid:
+      what: "A strong general-purpose model"
+      good_at: "debugging, moderate code with tests, multi-step explanations, careful writing"
+      fails_at: "very long reasoning chains, research-grade math, large system design"
+    frontier:
+      what: "The most capable, most expensive model"
+      good_at: "hard proofs, large or subtle code synthesis, ambiguous high-stakes judgment"
+      fails_at: "nothing in particular; it is just costly"
+tier_map:
+  small: cheap
+  mid: balanced
+  frontier: flagship
+epsilon: 0.2

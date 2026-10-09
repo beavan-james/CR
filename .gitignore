@@ -6,3 +6,6 @@ __pycache__/
 usage_log.jsonl
 report.md
 /tmp/
+.venv/
+runs/
+.DS_Store
