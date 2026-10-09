@@ -6,12 +6,12 @@ Laya server only need `bench classify`, never new Claude calls.
 """
 from __future__ import annotations
 
-from concurrent.futures import ThreadPoolExecutor, as_completed
 from typing import Callable
 
 from .. import classifier, providers
 from ..classifier import TIERS
 from ..pricing import FAMILY_MODELS, cost_usd
+from .pool import PoolResult, run_pool
 from .store import Store, make_key
 
 
@@ -30,8 +30,8 @@ def pending_answers(prompts: list[dict], family: str, store: Store) -> list[tupl
 
 
 def run_answers(prompts: list[dict], family: str, api_key: str, store: Store, workers: int = 4,
-                on_done: Callable[[dict | None, Exception | None], None] | None = None) -> int:
-    """Answer every (prompt, tier) not already in the store. Returns the number of failures."""
+                on_done: Callable[[dict | None, Exception | None], None] | None = None) -> PoolResult:
+    """Answer every (prompt, tier) not already in the store."""
     todo = pending_answers(prompts, family, store)
 
     def one(p: dict, tier: str) -> dict:
@@ -46,15 +46,7 @@ def run_answers(prompts: list[dict], family: str, api_key: str, store: Store, wo
         store.add(row)
         return row
 
-    failures = 0
-    with ThreadPoolExecutor(max_workers=max(1, workers)) as ex:
-        futs = [ex.submit(one, p, t) for p, t in todo]
-        for f in as_completed(futs):
-            err = f.exception()
-            failures += err is not None
-            if on_done:
-                on_done(None if err else f.result(), err)
-    return failures
+    return run_pool(todo, one, workers, on_done)
 
 
 def policy_variants(variants: list[dict], rotations: int) -> list[dict]:

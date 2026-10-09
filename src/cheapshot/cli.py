@@ -18,7 +18,9 @@ from . import classifier, providers, router, tracking
 from .bench import judge as bench_judge
 from .bench import matrix as bench_matrix
 from .bench import replay as bench_replay
+from .bench import export as bench_export
 from .bench import report as bench_report
+from .bench import teacher as bench_teacher
 from .bench.dataset import load_dataset
 from .bench.store import Store
 from .pricing import FAMILY_MODELS, PRICING, cost_usd
@@ -187,7 +189,18 @@ def _confirm(n_calls: int, what: str, family: str, yes: bool) -> None:
         raise typer.Exit(0)
 
 
-def _progress_run(total: int, label: str, fn) -> int:
+SPLIT_OPT = typer.Option("tune,test", "--split", help="Comma list of splits (train,tune,test) or 'all'")
+LIMIT_OPT = typer.Option(None, "--limit", help="Only the first N prompts after the split filter")
+
+
+def _select(dataset: Path, split: str, limit: int | None = None) -> list[dict]:
+    wanted = None if split == "all" else {s.strip() for s in split.split(",") if s.strip()}
+    rows = [p for p in load_dataset(dataset) if wanted is None or p["split"] in wanted]
+    return rows[:limit] if limit else rows
+
+
+def _progress_run(total: int, label: str, fn):
+    """Run fn(on_done) under a progress bar; fn returns a PoolResult."""
     errors: list[str] = []
     with Progress(console=console) as prog:
         task = prog.add_task(label, total=total)
@@ -197,10 +210,17 @@ def _progress_run(total: int, label: str, fn) -> int:
                 errors.append(str(err))
             prog.advance(task)
 
-        failures = fn(on_done)
-    for e in errors[:5]:
+        res = fn(on_done)
+    for e in errors[:3]:
         console.print(f"[red]error:[/red] {e[:300]}")
-    return failures
+    return res
+
+
+def _summary(what: str, res, path: Path, extra: str = "") -> None:
+    console.print(f"{what}: {res.done} new, {res.failures} failed, {res.not_run} not attempted{extra} -> {path}")
+    if res.stop_reason:
+        console.print(f"[yellow]Stopped early ({res.stop_reason}).[/yellow]\n"
+                      "[yellow]If that's a usage limit, re-run the same command after it resets; finished work is cached.[/yellow]")
 
 
 @bench.command("answers")
@@ -208,16 +228,17 @@ def bench_answers(
     dataset: Path = DATASET_OPT, run_dir: Path = RUN_OPT, family: str = BENCH_FAMILY_OPT,
     api_key: str | None = typer.Option(None, "--api-key"),
     workers: int = typer.Option(4, "--workers", "-w"),
+    split: str = SPLIT_OPT, limit: int | None = LIMIT_OPT,
     yes: bool = typer.Option(False, "--yes", "-y", help="Skip the cost confirmation"),
 ):
-    """Answer every prompt with every tier (cached; re-run to resume)."""
+    """Answer prompts with every tier (cached; re-run to resume). Default: tune+test splits."""
     key = _bench_key(family, api_key)
-    prompts = load_dataset(dataset)
+    prompts = _select(dataset, split, limit)
     store = Store(run_dir / "answers.jsonl")
     todo = bench_matrix.pending_answers(prompts, family, store)
-    _confirm(len(todo), "3 tiers per prompt", family, yes)
-    failures = _progress_run(len(todo), "answers", lambda cb: bench_matrix.run_answers(prompts, family, key, store, workers, cb))
-    console.print(f"answers: {len(todo) - failures} new, {failures} failed (re-run to retry) -> {store.path}")
+    _confirm(len(todo), f"3 tiers x {len(prompts)} prompts", family, yes)
+    res = _progress_run(len(todo), "answers", lambda cb: bench_matrix.run_answers(prompts, family, key, store, workers, cb))
+    _summary("answers", res, store.path)
 
 
 @bench.command("classify")
@@ -226,9 +247,10 @@ def bench_classify(
     backend: str = typer.Option("laya", "--backend", "-b", help="laya|heuristic"),
     variants: list[str] = typer.Option(["variants/a_score.yaml", "variants/c_tier_choice.yaml"], "--variant", "-v"),
     rotations: int = typer.Option(3, "--rotations", help="Option orders per choice variant"),
+    split: str = SPLIT_OPT, limit: int | None = LIMIT_OPT,
 ):
-    """Classify every prompt with the router (Laya is free, so this is cheap to redo)."""
-    prompts = load_dataset(dataset)
+    """Classify prompts with the router (Laya is free, so this is cheap to redo). Default: tune+test."""
+    prompts = _select(dataset, split, limit)
     store = Store(run_dir / "classifications.jsonl")
     vs = bench_matrix.policy_variants([classifier.load_variant(p) for p in variants], rotations)
     try:
@@ -244,11 +266,12 @@ def bench_judge_cmd(
     dataset: Path = DATASET_OPT, run_dir: Path = RUN_OPT, family: str = BENCH_FAMILY_OPT,
     api_key: str | None = typer.Option(None, "--api-key"),
     workers: int = typer.Option(4, "--workers", "-w"),
+    split: str = SPLIT_OPT, limit: int | None = LIMIT_OPT,
     yes: bool = typer.Option(False, "--yes", "-y"),
 ):
-    """Judge cheap/balanced answers against the flagship, in both orders."""
+    """Judge cheap/balanced answers against the flagship, in both orders. Default: tune+test."""
     key = _bench_key(family, api_key)
-    prompts = load_dataset(dataset)
+    prompts = _select(dataset, split, limit)
     answers, judgments = Store(run_dir / "answers.jsonl"), Store(run_dir / "judgments.jsonl")
     n = sum(1 for p in prompts for t in bench_judge.CANDIDATE_TIERS for o in bench_judge.ORDERS
             if (a := bench_matrix.answer_lookup(answers, family, p["id"], p["prompt"], t))
@@ -258,12 +281,50 @@ def bench_judge_cmd(
     result = {}
 
     def go(cb):
-        result["v"] = bench_judge.run_judge(prompts, answers, judgments, family, key, workers, on_done=cb)
-        return result["v"][0]
+        result["res"], result["skipped"] = bench_judge.run_judge(prompts, answers, judgments, family, key, workers, on_done=cb)
+        return result["res"]
 
-    failures = _progress_run(n, "judge", go)
-    skipped = result["v"][1]
-    console.print(f"judgments: {n - failures} new, {failures} failed, {skipped} skipped (missing answers) -> {judgments.path}")
+    res = _progress_run(n, "judge", go)
+    _summary("judgments", res, judgments.path, f", {result['skipped']} skipped (missing answers)")
+
+
+@bench.command("teacher")
+def bench_teacher_cmd(
+    dataset: Path = DATASET_OPT, run_dir: Path = RUN_OPT, family: str = BENCH_FAMILY_OPT,
+    api_key: str | None = typer.Option(None, "--api-key"),
+    workers: int = typer.Option(4, "--workers", "-w"),
+    split: str = typer.Option("train", "--split", help="Comma list of splits or 'all'"),
+    limit: int | None = LIMIT_OPT,
+    yes: bool = typer.Option(False, "--yes", "-y"),
+):
+    """Opus teacher labels (probability per tier) for fine-tuning data. One call per prompt. Default: train."""
+    key = _bench_key(family, api_key)
+    prompts = _select(dataset, split, limit)
+    store = Store(run_dir / "teacher.jsonl")
+    n = sum(not store.has(bench_teacher.teacher_key(p["id"], p["prompt"], bench_teacher.TEACHER_MODEL)) for p in prompts)
+    _confirm(n, f"teacher = {bench_teacher.TEACHER_MODEL}", family, yes)
+    res = _progress_run(n, "teacher", lambda cb: bench_teacher.run_teacher(prompts, store, family, key, workers, on_done=cb))
+    _summary("teacher labels", res, store.path)
+
+
+@bench.command("export-train")
+def bench_export_cmd(
+    dataset: Path = DATASET_OPT, run_dir: Path = RUN_OPT, family: str = BENCH_FAMILY_OPT,
+    variant: str = VARIANT_OPT,
+    out: Path = typer.Option(None, "--out", "-o", help="Default: <run>/laya_train.jsonl"),
+):
+    """Write laya-train JSONL from train-split prompts (judge labels first, teacher labels otherwise)."""
+    v = classifier.load_variant(variant)
+    rows, counts = bench_export.build_training_rows(
+        load_dataset(dataset), v, Store(run_dir / "answers.jsonl"), Store(run_dir / "judgments.jsonl"),
+        Store(run_dir / "teacher.jsonl"), family, bench_judge.JUDGE_MODEL, bench_teacher.TEACHER_MODEL)
+    out = out or run_dir / "laya_train.jsonl"
+    out.parent.mkdir(parents=True, exist_ok=True)
+    out.write_text("".join(json.dumps(r) + "\n" for r in rows))
+    console.print(f"{len(rows)} training rows -> {out}  {counts}")
+    if len(rows) < 1000:
+        console.print("[yellow]Under ~1,000 rows: the Laya docs report small fine-tunes collapsing. "
+                      "Add more train prompts or more epochs, and repeat runs across seeds.[/yellow]")
 
 
 @bench.command("report")

@@ -57,6 +57,8 @@ def build_matrix(prompts: list[dict], answers: Store, judgments: Store, classifi
     m = Matrix({}, {}, {})
     dropped, truncated, refused, disagree, judged = [], 0, 0, 0, 0
     for p in prompts:
+        if p["split"] == "train":  # fine-tuning data; never scored
+            continue
         ans = {t: answer_lookup(answers, family, p["id"], p["prompt"], t) for t in TIERS}
         if any(a is None for a in ans.values()):
             dropped.append(p["id"])

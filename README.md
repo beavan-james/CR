@@ -63,7 +63,18 @@ cheapshot bench report   -r runs/v1 -d evals/datasets/v1.jsonl -f anthropic --fl
 
 Re-running any step resumes where it stopped. Use `-f mock` (the default) to run the whole pipeline offline.
 
-Dataset rows: `{"id", "prompt", "category", "source", "split": "tune"|"test"}`. Epsilon and calibration are chosen on `tune`; headline numbers come from `test`.
+Dataset rows: `{"id", "prompt", "category", "source", "split": "train"|"tune"|"test"}`. `train` is fine-tuning data only and never scored; epsilon and calibration are chosen on `tune`; headline numbers come from `test`.
+
+## Fine-tuning data for Laya
+
+Zero-shot Laya barely separates easy from hard prompts (see `PLAN.md`), so it gets fine-tuned. Labels are hybrid: judge-based where the benchmark has run on a prompt, otherwise an Opus "teacher" probability over tiers (one call per prompt).
+
+```bash
+cheapshot bench teacher      -r runs/ft -d evals/datasets/v1.jsonl -f anthropic   # paid; train split only
+cheapshot bench export-train -r runs/ft -d evals/datasets/v1.jsonl -f anthropic   # -> runs/ft/laya_train.jsonl
+```
+
+Check the file with `laya-train --data laya_train.jsonl --base typed-decisions --dry-run` (works on the A1, no GPU needed). Train on a 16 GB GPU (Kaggle T4), then load the checkpoint on the server via `LAYA_EXTRA_MODELS`.
 
 ## Running Laya on a server
 

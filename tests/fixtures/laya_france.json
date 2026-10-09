@@ -1,0 +1,61 @@
+{
+  "prompt": "What is the capital of France?",
+  "variant": {
+    "name": "a_score",
+    "question_id": "complexity",
+    "question": {
+      "type": "score",
+      "instructions": "How hard is this request for an AI model to answer well?",
+      "criteria": [
+        "Simple: factual lookup, short rewrite, translation, or trivial code edit",
+        "Standard: multi-step reasoning, moderate code, debugging, or nuanced writing",
+        "Complex: deep or long reasoning, large code synthesis, proofs, or high-stakes decisions"
+      ]
+    },
+    "tier_map": {
+      "0": "cheap",
+      "1": "balanced",
+      "2": "flagship"
+    },
+    "epsilon": 0.2
+  },
+  "response": {
+    "model": "laya-rl-agent",
+    "answers": {
+      "complexity": {
+        "type": "score",
+        "score": 0.6953,
+        "legend": {
+          "0": "Simple: factual lookup, short rewrite, translation, or trivial code edit",
+          "1": "Standard: multi-step reasoning, moderate code, debugging, or nuanced writing",
+          "2": "Complex: deep or long reasoning, large code synthesis, proofs, or high-stakes decisions"
+        },
+        "probabilities": {
+          "0": 0.4638,
+          "1": 0.377,
+          "2": 0.1592
+        },
+        "confidence": 0.0746,
+        "answer_confidence": 0.4638,
+        "action": {
+          "act_probability": 1.0
+        }
+      }
+    },
+    "usage": {
+      "input_tokens": 88,
+      "output_tokens": 0,
+      "state_tokens": 7,
+      "state_tokens_dropped": 0,
+      "truncated": false,
+      "truncated_questions": []
+    },
+    "routing": {
+      "model": "typed-decisions",
+      "repo": "convaiinnovations/laya/typed-decisions",
+      "reason": "explicit model='typed-decisions'",
+      "detection": null,
+      "workflow": null
+    }
+  }
+}

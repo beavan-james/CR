@@ -17,7 +17,7 @@ class Store:
         self._lock = threading.Lock()
         self._rows: dict[str, dict] = {}
         if self.path.exists():
-            for line in self.path.read_text().splitlines():
+            for line in self.path.read_text().split("\n"):  # not splitlines(): U+2028 inside text
                 if line.strip():
                     row = json.loads(line)
                     self._rows[row["key"]] = row  # last write wins

@@ -1,6 +1,7 @@
 """Benchmark dataset: JSONL rows {id, prompt, category, source, split[, ideal_tier]}.
 
-split is "tune" (choose epsilon / wording / calibration) or "test" (held out, reported).
+split is "train" (Laya fine-tuning data only), "tune" (choose epsilon / calibration) or
+"test" (held out, reported). The benchmark report ignores train; export ignores tune/test.
 ideal_tier is optional and only drives the mock judge.
 """
 from __future__ import annotations
@@ -8,12 +9,12 @@ from __future__ import annotations
 import json
 from pathlib import Path
 
-SPLITS = ("tune", "test")
+SPLITS = ("train", "tune", "test")
 
 
 def load_dataset(path: Path) -> list[dict]:
     rows, seen = [], set()
-    for n, line in enumerate(Path(path).read_text().splitlines(), 1):
+    for n, line in enumerate(Path(path).read_text().split("\n"), 1):  # not splitlines(): U+2028 inside prompts
         if not line.strip():
             continue
         r = json.loads(line)

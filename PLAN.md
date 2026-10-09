@@ -41,13 +41,18 @@ Headline result shape:
 
 ## Milestones
 
-### M0 — Laya client (code done; live check pending server setup)
+### M0 — Laya client (done 2026-10-09)
 - `classifier.py`: `LayaClient` (HTTP to laya-serve via `LAYA_URL`, Bearer `LAYA_API_KEY`, model `typed-decisions`), overflow detection, keyword heuristic as explicit baseline. Jev/TypeSafe removed.
 - `router.py`: risk dial + overflow → flagship.
 - **Remaining (user):** install `laya[serve]` on the A1, run it on 127.0.0.1, open an SSH tunnel. See README "Running Laya on a server".
 - **Done when:** `cheapshot classify` hits Laya for 10 prompts; raw responses saved as fixtures (`--save-fixture`); per-call latency recorded.
 
-### M1 — Dataset
+### M1 — Dataset (done 2026-10-09)
+- `evals/build_v1.py` → `evals/datasets/v1.jsonl` (seed 7, deterministic; file gitignored because it includes CC BY-SA Dolly text, so rebuild from `evals/raw/`):
+  - train 1,500 (oasst2 900, Dolly 360 stratified by category, Arena-Hard v2 English 240; ≤6,000 chars)
+  - tune 105 / test 105 (each: oasst2 50, Dolly 20, Arena-Hard 30, adversarial 5). Test grew from 50 to ~100 for tighter CIs.
+  - Optional `evals/datasets/own.jsonl` merges your own prompts into tune/test.
+- Original M1 notes:
 - `evals/datasets/v1.jsonl`: `{id, prompt, category, source, split}`.
 - Confirm public set license (MT-Bench / Arena-Hard-style candidates).
 - User supplies ~50 own prompts.
@@ -84,13 +89,37 @@ Headline result shape:
 - End-to-end mock pipeline: answers → classify → judge → replay → report.
 - Replay and calibration math on a small synthetic matrix.
 
+## M0 findings: zero-shot Laya (2026-10-09, 9 seed prompts, A1 with 2 cores)
+- Server: laya-serve on the A1 (127.0.0.1, systemd, Nice=10, MemoryMax=4G), reached over an SSH tunnel. Checkpoint confirmed `convaiinnovations/laya/typed-decisions`; `usage.truncated` present.
+- **Variant A (Score):** expected level orders all 8 non-adversarial prompts correctly (cheap 0.70–0.71, balanced 0.81–1.13, flagship 1.25–1.39), but probabilities are nearly flat. Even temperature-sharpened, P(needs more than cheap) stays ~0.5 for trivial prompts, so the risk dial never picks Haiku. Weak, correctly ordered signal.
+- **Variant C (Choice):** no signal (~0.35/0.42/0.23 regardless of prompt) and order-sensitive.
+- **Adversarial:** "Trivial question:" pulled a twin-primes proof toward cheap (0.40).
+- **Latency:** median 2.66 s, p90 3.08 s per call. Fine for benchmarks; adds noticeable delay in interactive `run`.
+- **Conclusion:** matches the Laya docs (base checkpoints near chance zero-shot; fine-tuning is where the value is). M6 moves ahead of M5. Fine-tune on A's Score question (ordinal, already ordered). C stays as a zero-shot baseline only.
+
+## Fine-tuning notes (from Laya docs)
+- `laya-train --data train.jsonl --base typed-decisions --out ./ckpt`: JSONL rows `{state, questions, expected}` (hard label; score levels may be fractional) or `gold` (probabilities per option). Fits calibration temperatures on a held-out slice (≥10 items) automatically.
+- Small datasets collapse: ~1,100 items gave too few optimizer updates in the docs' tests; repeat runs across seeds before judging a result. Target 1,000+ labeled prompts.
+- Hardware: full fine-tune needs a 16 GB GPU (Kaggle free T4). Not the M3/8 GB Mac (too little memory) and not the 2-core A1 (too slow). `--freeze-encoder` fits smaller devices but gains much less.
+- **Labels (decided: hybrid):** judge-based gold where a train prompt has answers + judgments (each judge order gives an oracle tier; gold averages them), else Opus teacher probability over tiers. Test split always judge-labeled.
+- Built: `bench teacher` (Opus, 1 call/prompt, train split by default), `bench export-train` (laya-train JSONL with `gold` on variant A's Score levels). New `train` split; the benchmark report never scores it.
+- Candidate prompt sources (licenses checked 2026-10-09): OpenAssistant oasst2 initial prompts (Apache-2.0, 15.6 MB), Dolly-15k (CC BY-SA 3.0, 13.1 MB), Arena-Hard v2.0 questions (repo Apache-2.0, 0.96 MB, 500 hard + 250 creative). WildChat-1M (ODC-BY) is an optional later addition; it is large and needs toxicity filtering.
+
 ## Subscription mode (added 2026-10-08)
 - `--family claude-code` uses a Claude Pro/Max subscription via the official `claude -p` CLI (tools off, neutral system prompt, empty cwd, API keys stripped from its env). Works for `run` and every `bench` step, including the judge.
 - Savings are reported on an API-equivalent cost basis (usage-limit proxy), labeled in the report.
 - Expect the full matrix + judge to span several usage-limit windows on Pro; the cache makes resuming free.
 
+## Next runs (rough estimates on the API, not quotes)
+1. `bench teacher` on 1,500 train prompts: ~1,500 Opus calls, roughly $10–30.
+2. `bench answers` + `bench judge` on tune+test (210 prompts): ~630 answers + ~840 Opus judge calls, roughly $20–50.
+3. Optional judge labels for a few hundred train prompts (hybrid): roughly $0.10–0.20 per prompt.
+4. `bench classify` with zero-shot Laya on tune+test (free, ~30–40 min on the A1), then `bench report` = zero-shot baseline.
+5. `bench export-train` → `laya-train --dry-run` on the A1 → fine-tune on Kaggle T4 → serve the checkpoint via `LAYA_EXTRA_MODELS` → re-run `bench classify` + `bench report`.
+On a Pro/Max subscription (`-f claude-code`) these are ~3,000 calls with no per-token bill, spread over several usage-limit windows.
+
 ## Status (2026-10-08)
-- 35 tests passing. Whole pipeline runs offline with `-f mock`.
+- 41 tests passing. Whole pipeline runs offline with `-f mock`.
 - Blocked on: Laya server (M0 live check), ANTHROPIC_API_KEY (first paid run), M1 dataset.
 
 ## Open items

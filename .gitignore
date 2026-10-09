@@ -9,3 +9,5 @@ report.md
 .venv/
 runs/
 .DS_Store
+evals/raw/
+evals/datasets/v1.jsonl

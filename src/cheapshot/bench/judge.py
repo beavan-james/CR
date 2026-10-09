@@ -7,12 +7,12 @@ two orders disagree the result is a tie. Non-inferior = win or tie.
 from __future__ import annotations
 
 import re
-from concurrent.futures import ThreadPoolExecutor, as_completed
 
 from .. import providers
 from ..classifier import TIERS
 from ..pricing import cost_usd
 from .matrix import answer_lookup
+from .pool import PoolResult, run_pool
 from .store import Store, make_key
 
 JUDGE_MODEL = "claude-opus-5-5"
@@ -74,9 +74,9 @@ def mock_verdict(prompt_row: dict, tier: str, order: str) -> str:
 
 
 def run_judge(prompts: list[dict], answers: Store, judgments: Store, family: str, api_key: str,
-              workers: int = 4, judge_model: str = JUDGE_MODEL, on_done=None) -> tuple[int, int]:
+              workers: int = 4, judge_model: str = JUDGE_MODEL, on_done=None) -> tuple[PoolResult, int]:
     """Judge every candidate answer that has both itself and the flagship answer cached.
-    Returns (failures, skipped_missing_answers)."""
+    Returns (pool result, prompt-tiers skipped for missing answers)."""
     jobs, skipped = [], 0
     for p in prompts:
         flag = answer_lookup(answers, family, p["id"], p["prompt"], "flagship")
@@ -106,12 +106,4 @@ def run_judge(prompts: list[dict], answers: Store, judgments: Store, family: str
         judgments.add(row)
         return row
 
-    failures = 0
-    with ThreadPoolExecutor(max_workers=max(1, workers)) as ex:
-        futs = [ex.submit(one, *j) for j in jobs]
-        for f in as_completed(futs):
-            err = f.exception()
-            failures += err is not None
-            if on_done:
-                on_done(None if err else f.result(), err)
-    return failures, skipped
+    return run_pool(jobs, one, workers, on_done), skipped
