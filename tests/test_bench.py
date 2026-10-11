@@ -236,3 +236,17 @@ def test_pool_success_resets_streak():
 
     res = run_pool([(i,) for i in range(10)], fn, workers=1, max_consecutive_failures=2)
     assert res.done == 5 and res.failures == 5 and res.stop_reason is None
+
+
+def test_teacher_map_corrects_optimism():
+    cheap = {"cheap": 1.0, "balanced": 0.0, "flagship": 0.0}
+    flag = {"cheap": 0.0, "balanced": 0.0, "flagship": 1.0}
+    # teacher says cheap-ish everywhere, but judge says flagship whenever teacher level > 0.5
+    pairs = [({"cheap": 0.9, "balanced": 0.1, "flagship": 0.0}, cheap)] * 20 + \
+            [({"cheap": 0.4, "balanced": 0.6, "flagship": 0.0}, flag)] * 20
+    m = export.fit_teacher_map(pairs, bins=2, prior_weight=0.0)
+    lo = export.apply_teacher_map({"cheap": 0.95, "balanced": 0.05, "flagship": 0.0}, m)
+    hi = export.apply_teacher_map({"cheap": 0.3, "balanced": 0.7, "flagship": 0.0}, m)
+    assert lo["cheap"] == pytest.approx(1.0) and hi["flagship"] == pytest.approx(1.0)
+    mid = export.apply_teacher_map({"cheap": 0.65, "balanced": 0.35, "flagship": 0.0}, m)
+    assert 0 < mid["cheap"] < 1 and sum(mid.values()) == pytest.approx(1.0)

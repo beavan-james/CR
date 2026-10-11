@@ -1,0 +1,46 @@
+== answers Fri Oct  9 13:54:29 EDT 2026
+== answers Fri Oct  9 14:42:11 EDT 2026
+answers ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 100% 0:00:00
+answers: 340 new, 0 failed, 0 not attempted -> runs/v1-sub/answers.jsonl
+== judge Fri Oct  9 15:14:04 EDT 2026
+judge ━                                          3% 0:40:27
+error: claude -p failed (success): You've hit your session limit · resets 6:20pm
+(America/New_York)
+error: claude -p failed (success): You've hit your session limit · resets 6:20pm
+(America/New_York)
+error: claude -p failed (success): You've hit your session limit · resets 6:20pm
+(America/New_York)
+judgments: 14 new, 9 failed, 817 not attempted, 0 skipped (missing answers) -> 
+runs/v1-sub/judgments.jsonl
+Stopped early (5 failures in a row; last: claude -p failed (success): You've hit
+your session limit · resets 6:20pm (America/New_York)).
+If that's a usage limit, re-run the same command after it resets; finished work 
+is cached.
+== teacher Fri Oct  9 15:15:16 EDT 2026
+teacher                                            1% 0:06:30
+error: claude -p failed (success): You've hit your session limit · resets 6:20pm
+(America/New_York)
+error: claude -p failed (success): You've hit your session limit · resets 6:20pm
+(America/New_York)
+error: claude -p failed (success): You've hit your session limit · resets 6:20pm
+(America/New_York)
+teacher labels: 0 new, 8 failed, 1492 not attempted -> runs/v1-sub/teacher.jsonl
+Stopped early (5 failures in a row; last: claude -p failed (success): You've hit
+your session limit · resets 6:20pm (America/New_York)).
+If that's a usage limit, re-run the same command after it resets; finished work 
+is cached.
+== done Fri Oct  9 15:15:21 EDT 2026
+== judge Fri Oct  9 20:29:01 EDT 2026
+== judge Sat Oct 10 01:23:51 EDT 2026
+judge ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 100% 0:00:00
+judgments: 104 new, 0 failed, 0 not attempted, 0 skipped (missing answers) -> 
+runs/v1-sub/judgments.jsonl
+== teacher Sat Oct 10 01:29:22 EDT 2026
+teacher ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 100% 0:00:00
+error: claude -p failed (success): API Error: Opus 5.5's safeguards flagged this
+message (https://www.anthropic.com/legal/aup). This sometimes happens with safe,
+normal conversations. Claude Code can't respond to this message with Opus 5.5.
+
+Try rephrasing the request in a new session or change your model.
+teacher labels: 1499 new, 1 failed, 0 not attempted -> runs/v1-sub/teacher.jsonl
+== done Sat Oct 10 01:58:07 EDT 2026

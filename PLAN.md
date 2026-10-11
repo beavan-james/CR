@@ -126,3 +126,11 @@ On a Pro/Max subscription (`-f claude-code`) these are ~3,000 calls with no per-
 - Optional cost lever: Message Batches API (50% off) for `bench answers` / `bench judge`; results arrive async.
 - Which public prompt set (pending license check).
 - A1 access method: SSH tunnel or Tailscale.
+
+## Status (2026-10-10)
+- **Benchmark v1 on subscription (`runs/v1-sub`, local only):** 630/630 answers, 840/840 judgments, Laya classifications for A, C×3 and heuristic.
+- **First report (test split, 105 prompts):** Haiku non-inferior to Opus on 34%, Sonnet 62%; oracle savings ceiling 27%. Zero-shot Laya A: 11% savings at 93% quality, no better than random routing at the same mix (10%/92%). C: almost everything to Opus. Heuristic: 51% savings at 48% quality.
+- **Teacher labels:** 1,499/1,500 train (1 refused by Opus safeguards) + 105 tune. Teacher is optimistic vs judge (mean level 0.45 vs 1.19, corr 0.49).
+- **Recalibration:** `export-train` maps teacher level → judge tier mix (fit on tune, 5 quantile bins, shrunk toward overall). Train labels now average 29% cheap / 28% balanced / 42% flagship.
+- **laya-train dry run on A1:** 1,499 valid items, none skipped; 1,350 train after calibration slice. Default 4 epochs = 88 updates (too few) → use `--epochs 16` (~350).
+- **Next:** fine-tune on Kaggle T4, two seeds; copy checkpoints to A1 via `LAYA_EXTRA_MODELS`; re-run `bench classify` + `bench report` vs zero-shot baseline.

@@ -312,12 +312,27 @@ def bench_export_cmd(
     dataset: Path = DATASET_OPT, run_dir: Path = RUN_OPT, family: str = BENCH_FAMILY_OPT,
     variant: str = VARIANT_OPT,
     out: Path = typer.Option(None, "--out", "-o", help="Default: <run>/laya_train.jsonl"),
+    calibrate_teacher: bool = typer.Option(True, "--calibrate-teacher/--no-calibrate-teacher",
+                                           help="Map teacher labels onto judge outcomes (fit on tune split)"),
 ):
     """Write laya-train JSONL from train-split prompts (judge labels first, teacher labels otherwise)."""
     v = classifier.load_variant(variant)
-    rows, counts = bench_export.build_training_rows(
-        load_dataset(dataset), v, Store(run_dir / "answers.jsonl"), Store(run_dir / "judgments.jsonl"),
-        Store(run_dir / "teacher.jsonl"), family, bench_judge.JUDGE_MODEL, bench_teacher.TEACHER_MODEL)
+    prompts = load_dataset(dataset)
+    stores = (Store(run_dir / "answers.jsonl"), Store(run_dir / "judgments.jsonl"), Store(run_dir / "teacher.jsonl"))
+    tmap = None
+    if calibrate_teacher:
+        pairs = bench_export.teacher_calibration_pairs(prompts, *stores, family, bench_judge.JUDGE_MODEL,
+                                                       bench_teacher.TEACHER_MODEL)
+        if len(pairs) < 30:
+            console.print(f"[red]Only {len(pairs)} tune prompts have both teacher and judge labels; need 30+ to "
+                          "recalibrate. Run `bench teacher --split tune`, or pass --no-calibrate-teacher.[/red]")
+            raise typer.Exit(1)
+        tmap = bench_export.fit_teacher_map(pairs)
+        console.print(f"teacher recalibrated on {len(pairs)} tune prompts:")
+        for lvl, mix in tmap:
+            console.print(f"  teacher level {lvl:.2f} -> " + " ".join(f"{t}={mix[t]:.2f}" for t in mix))
+    rows, counts = bench_export.build_training_rows(prompts, v, *stores, family, bench_judge.JUDGE_MODEL,
+                                                    bench_teacher.TEACHER_MODEL, tmap)
     out = out or run_dir / "laya_train.jsonl"
     out.parent.mkdir(parents=True, exist_ok=True)
     out.write_text("".join(json.dumps(r) + "\n" for r in rows))

@@ -1,0 +1,1275 @@
+{
+  "meta": {
+    "n_prompts": 210,
+    "n_tune": 105,
+    "n_test": 105,
+    "held_out": true,
+    "floor": 0.95,
+    "dropped": [],
+    "truncated_answers": 0,
+    "refused_answers": 0,
+    "judge_order_disagreement": 0.221,
+    "incomplete_policies": [],
+    "cost_basis": "api-equivalent (subscription usage proxy)"
+  },
+  "headline": "a_score",
+  "baselines": {
+    "always-cheap": {
+      "n": 105,
+      "quality": 0.34285714285714286,
+      "cost": 0.114114,
+      "baseline": 5.607832,
+      "savings": 0.9796509595865212,
+      "mix": {
+        "cheap": 1.0,
+        "balanced": 0.0,
+        "flagship": 0.0
+      },
+      "overflow_share": 0.0
+    },
+    "always-balanced": {
+      "n": 105,
+      "quality": 0.6190476190476191,
+      "cost": 2.7127980000000003,
+      "baseline": 5.607832,
+      "savings": 0.516248346954759,
+      "mix": {
+        "cheap": 0.0,
+        "balanced": 1.0,
+        "flagship": 0.0
+      },
+      "overflow_share": 0.0
+    },
+    "always-flagship": {
+      "n": 105,
+      "quality": 1.0,
+      "cost": 5.607832,
+      "baseline": 5.607832,
+      "savings": 0.0,
+      "mix": {
+        "cheap": 0.0,
+        "balanced": 0.0,
+        "flagship": 1.0
+      },
+      "overflow_share": 0.0
+    },
+    "oracle": {
+      "n": 105,
+      "quality": 1.0,
+      "cost": 4.1086826,
+      "baseline": 5.607832,
+      "savings": 0.2673313679867728,
+      "mix": {
+        "cheap": 0.34285714285714286,
+        "balanced": 0.2761904761904762,
+        "flagship": 0.38095238095238093
+      },
+      "overflow_share": 0.0
+    },
+    "heuristic": {
+      "n": 105,
+      "quality": 0.47619047619047616,
+      "cost": 2.7370253,
+      "baseline": 5.607832,
+      "savings": 0.5119280855774566,
+      "mix": {
+        "cheap": 0.5619047619047619,
+        "balanced": 0.3142857142857143,
+        "flagship": 0.12380952380952381
+      },
+      "overflow_share": 0.0
+    }
+  },
+  "policies": [
+    {
+      "name": "a_score",
+      "policy": "a_score",
+      "calibrated": false,
+      "T": 1.0,
+      "eps": 0.2,
+      "floor_met_on_tune": true,
+      "tune": {
+        "n": 105,
+        "quality": 0.9714285714285714,
+        "cost": 4.906014,
+        "baseline": 5.094008,
+        "savings": 0.0369049283000733,
+        "mix": {
+          "cheap": 0.0,
+          "balanced": 0.18095238095238095,
+          "flagship": 0.819047619047619
+        },
+        "overflow_share": 0.01904761904761905
+      },
+      "test": {
+        "n": 105,
+        "quality": 0.9333333333333333,
+        "cost": 5.010042,
+        "baseline": 5.607832,
+        "savings": 0.10659912779127478,
+        "mix": {
+          "cheap": 0.0,
+          "balanced": 0.2,
+          "flagship": 0.8
+        },
+        "overflow_share": 0.02857142857142857
+      },
+      "ci": {
+        "savings": [
+          0.022995805652773815,
+          0.20374239225033308
+        ],
+        "quality": [
+          0.8857142857142857,
+          0.9809523809523809
+        ]
+      },
+      "random_at_mix": {
+        "n": 105,
+        "quality": 0.9238095238095239,
+        "cost": 5.0288252,
+        "baseline": 5.607832,
+        "savings": 0.10324966939095181,
+        "mix": {
+          "cheap": 0.0,
+          "balanced": 0.2,
+          "flagship": 0.8
+        },
+        "overflow_share": 0.0
+      },
+      "curve": [
+        {
+          "eps": 0.0,
+          "quality": 1.0,
+          "savings": 0.0
+        },
+        {
+          "eps": 0.02,
+          "quality": 1.0,
+          "savings": 0.0
+        },
+        {
+          "eps": 0.05,
+          "quality": 1.0,
+          "savings": 0.0
+        },
+        {
+          "eps": 0.1,
+          "quality": 1.0,
+          "savings": 0.002318543066197498
+        },
+        {
+          "eps": 0.15,
+          "quality": 0.9714285714285714,
+          "savings": 0.010446461306258925
+        },
+        {
+          "eps": 0.2,
+          "quality": 0.9333333333333333,
+          "savings": 0.10659912779127478
+        },
+        {
+          "eps": 0.25,
+          "quality": 0.8952380952380953,
+          "savings": 0.1385858206879237
+        },
+        {
+          "eps": 0.3,
+          "quality": 0.819047619047619,
+          "savings": 0.18300120260378705
+        },
+        {
+          "eps": 0.4,
+          "quality": 0.6952380952380952,
+          "savings": 0.38398751959759136
+        },
+        {
+          "eps": 0.5,
+          "quality": 0.6190476190476191,
+          "savings": 0.6233573152690737
+        },
+        {
+          "eps": 0.6,
+          "quality": 0.5904761904761905,
+          "savings": 0.6563863361099262
+        },
+        {
+          "eps": 0.8,
+          "quality": 0.47619047619047616,
+          "savings": 0.7300198722072986
+        },
+        {
+          "eps": 1.0,
+          "quality": 0.3619047619047619,
+          "savings": 0.9230110495464201
+        }
+      ]
+    },
+    {
+      "name": "a_score (calibrated)",
+      "policy": "a_score",
+      "calibrated": true,
+      "T": 3.3174,
+      "eps": 0.25,
+      "floor_met_on_tune": true,
+      "tune": {
+        "n": 105,
+        "quality": 0.9904761904761905,
+        "cost": 5.05465,
+        "baseline": 5.094008,
+        "savings": 0.0077263325852648945,
+        "mix": {
+          "cheap": 0.0,
+          "balanced": 0.047619047619047616,
+          "flagship": 0.9523809523809523
+        },
+        "overflow_share": 0.01904761904761905
+      },
+      "test": {
+        "n": 105,
+        "quality": 0.9904761904761905,
+        "cost": 5.583948,
+        "baseline": 5.607832,
+        "savings": 0.004259043423554765,
+        "mix": {
+          "cheap": 0.0,
+          "balanced": 0.01904761904761905,
+          "flagship": 0.9809523809523809
+        },
+        "overflow_share": 0.02857142857142857
+      },
+      "ci": {
+        "savings": [
+          0.0,
+          0.013104100973268862
+        ],
+        "quality": [
+          0.9714285714285714,
+          1.0
+        ]
+      },
+      "random_at_mix": {
+        "n": 105,
+        "quality": 0.9927437641723355,
+        "cost": 5.552688495238095,
+        "baseline": 5.607832,
+        "savings": 0.009833301846757458,
+        "mix": {
+          "cheap": 0.0,
+          "balanced": 0.01904761904761905,
+          "flagship": 0.9809523809523809
+        },
+        "overflow_share": 0.0
+      },
+      "curve": [
+        {
+          "eps": 0.0,
+          "quality": 1.0,
+          "savings": 0.0
+        },
+        {
+          "eps": 0.02,
+          "quality": 1.0,
+          "savings": 0.0
+        },
+        {
+          "eps": 0.05,
+          "quality": 1.0,
+          "savings": 0.0
+        },
+        {
+          "eps": 0.1,
+          "quality": 1.0,
+          "savings": 0.0
+        },
+        {
+          "eps": 0.15,
+          "quality": 1.0,
+          "savings": 0.0
+        },
+        {
+          "eps": 0.2,
+          "quality": 1.0,
+          "savings": 0.0
+        },
+        {
+          "eps": 0.25,
+          "quality": 0.9904761904761905,
+          "savings": 0.004259043423554765
+        },
+        {
+          "eps": 0.3,
+          "quality": 0.9047619047619048,
+          "savings": 0.11843650095081304
+        },
+        {
+          "eps": 0.4,
+          "quality": 0.6476190476190476,
+          "savings": 0.47859707637461324
+        },
+        {
+          "eps": 0.5,
+          "quality": 0.638095238095238,
+          "savings": 0.49253187328008396
+        },
+        {
+          "eps": 0.6,
+          "quality": 0.6285714285714286,
+          "savings": 0.500357125534431
+        },
+        {
+          "eps": 0.8,
+          "quality": 0.37142857142857144,
+          "savings": 0.9165966812129893
+        },
+        {
+          "eps": 1.0,
+          "quality": 0.3619047619047619,
+          "savings": 0.9230110495464201
+        }
+      ]
+    },
+    {
+      "name": "c_tier_choice@r0",
+      "policy": "c_tier_choice@r0",
+      "calibrated": false,
+      "T": 1.0,
+      "eps": 0.0,
+      "floor_met_on_tune": true,
+      "tune": {
+        "n": 105,
+        "quality": 1.0,
+        "cost": 5.094008,
+        "baseline": 5.094008,
+        "savings": 0.0,
+        "mix": {
+          "cheap": 0.0,
+          "balanced": 0.0,
+          "flagship": 1.0
+        },
+        "overflow_share": 0.01904761904761905
+      },
+      "test": {
+        "n": 105,
+        "quality": 1.0,
+        "cost": 5.607832,
+        "baseline": 5.607832,
+        "savings": 0.0,
+        "mix": {
+          "cheap": 0.0,
+          "balanced": 0.0,
+          "flagship": 1.0
+        },
+        "overflow_share": 0.0380952380952381
+      },
+      "ci": {
+        "savings": [
+          0.0,
+          0.0
+        ],
+        "quality": [
+          1.0,
+          1.0
+        ]
+      },
+      "random_at_mix": {
+        "n": 105,
+        "quality": 1.0,
+        "cost": 5.607832,
+        "baseline": 5.607832,
+        "savings": 0.0,
+        "mix": {
+          "cheap": 0.0,
+          "balanced": 0.0,
+          "flagship": 1.0
+        },
+        "overflow_share": 0.0
+      },
+      "curve": [
+        {
+          "eps": 0.0,
+          "quality": 1.0,
+          "savings": 0.0
+        },
+        {
+          "eps": 0.02,
+          "quality": 1.0,
+          "savings": 0.0
+        },
+        {
+          "eps": 0.05,
+          "quality": 1.0,
+          "savings": 0.0
+        },
+        {
+          "eps": 0.1,
+          "quality": 1.0,
+          "savings": 0.0
+        },
+        {
+          "eps": 0.15,
+          "quality": 1.0,
+          "savings": 0.0
+        },
+        {
+          "eps": 0.2,
+          "quality": 1.0,
+          "savings": 0.0
+        },
+        {
+          "eps": 0.25,
+          "quality": 0.8952380952380953,
+          "savings": 0.19681153073059243
+        },
+        {
+          "eps": 0.3,
+          "quality": 0.6952380952380952,
+          "savings": 0.3282209595437239
+        },
+        {
+          "eps": 0.4,
+          "quality": 0.638095238095238,
+          "savings": 0.4899408541482697
+        },
+        {
+          "eps": 0.5,
+          "quality": 0.638095238095238,
+          "savings": 0.4899408541482697
+        },
+        {
+          "eps": 0.6,
+          "quality": 0.6285714285714286,
+          "savings": 0.6198497030581516
+        },
+        {
+          "eps": 0.8,
+          "quality": 0.37142857142857144,
+          "savings": 0.9153341255586829
+        },
+        {
+          "eps": 1.0,
+          "quality": 0.37142857142857144,
+          "savings": 0.917727100241234
+        }
+      ]
+    },
+    {
+      "name": "c_tier_choice@r0 (calibrated)",
+      "policy": "c_tier_choice@r0",
+      "calibrated": true,
+      "T": 2.009,
+      "eps": 0.0,
+      "floor_met_on_tune": true,
+      "tune": {
+        "n": 105,
+        "quality": 1.0,
+        "cost": 5.094008,
+        "baseline": 5.094008,
+        "savings": 0.0,
+        "mix": {
+          "cheap": 0.0,
+          "balanced": 0.0,
+          "flagship": 1.0
+        },
+        "overflow_share": 0.01904761904761905
+      },
+      "test": {
+        "n": 105,
+        "quality": 1.0,
+        "cost": 5.607832,
+        "baseline": 5.607832,
+        "savings": 0.0,
+        "mix": {
+          "cheap": 0.0,
+          "balanced": 0.0,
+          "flagship": 1.0
+        },
+        "overflow_share": 0.0380952380952381
+      },
+      "ci": {
+        "savings": [
+          0.0,
+          0.0
+        ],
+        "quality": [
+          1.0,
+          1.0
+        ]
+      },
+      "random_at_mix": {
+        "n": 105,
+        "quality": 1.0,
+        "cost": 5.607832,
+        "baseline": 5.607832,
+        "savings": 0.0,
+        "mix": {
+          "cheap": 0.0,
+          "balanced": 0.0,
+          "flagship": 1.0
+        },
+        "overflow_share": 0.0
+      },
+      "curve": [
+        {
+          "eps": 0.0,
+          "quality": 1.0,
+          "savings": 0.0
+        },
+        {
+          "eps": 0.02,
+          "quality": 1.0,
+          "savings": 0.0
+        },
+        {
+          "eps": 0.05,
+          "quality": 1.0,
+          "savings": 0.0
+        },
+        {
+          "eps": 0.1,
+          "quality": 1.0,
+          "savings": 0.0
+        },
+        {
+          "eps": 0.15,
+          "quality": 1.0,
+          "savings": 0.0
+        },
+        {
+          "eps": 0.2,
+          "quality": 1.0,
+          "savings": 0.0
+        },
+        {
+          "eps": 0.25,
+          "quality": 1.0,
+          "savings": 0.0
+        },
+        {
+          "eps": 0.3,
+          "quality": 0.8095238095238095,
+          "savings": 0.254724107284241
+        },
+        {
+          "eps": 0.4,
+          "quality": 0.638095238095238,
+          "savings": 0.4899408541482697
+        },
+        {
+          "eps": 0.5,
+          "quality": 0.638095238095238,
+          "savings": 0.4899408541482697
+        },
+        {
+          "eps": 0.6,
+          "quality": 0.638095238095238,
+          "savings": 0.4899408541482697
+        },
+        {
+          "eps": 0.8,
+          "quality": 0.37142857142857144,
+          "savings": 0.917727100241234
+        },
+        {
+          "eps": 1.0,
+          "quality": 0.37142857142857144,
+          "savings": 0.917727100241234
+        }
+      ]
+    },
+    {
+      "name": "c_tier_choice@r1",
+      "policy": "c_tier_choice@r1",
+      "calibrated": false,
+      "T": 1.0,
+      "eps": 0.2,
+      "floor_met_on_tune": true,
+      "tune": {
+        "n": 105,
+        "quality": 0.9904761904761905,
+        "cost": 5.064416,
+        "baseline": 5.094008,
+        "savings": 0.005809178155982475,
+        "mix": {
+          "cheap": 0.0,
+          "balanced": 0.009523809523809525,
+          "flagship": 0.9904761904761905
+        },
+        "overflow_share": 0.01904761904761905
+      },
+      "test": {
+        "n": 105,
+        "quality": 0.9904761904761905,
+        "cost": 5.1663120000000005,
+        "baseline": 5.607832,
+        "savings": 0.07873274377691764,
+        "mix": {
+          "cheap": 0.0,
+          "balanced": 0.0380952380952381,
+          "flagship": 0.9619047619047619
+        },
+        "overflow_share": 0.0380952380952381
+      },
+      "ci": {
+        "savings": [
+          0.000813155835821644,
+          0.18131992361575
+        ],
+        "quality": [
+          0.9714285714285714,
+          1.0
+        ]
+      },
+      "random_at_mix": {
+        "n": 105,
+        "quality": 0.9854875283446712,
+        "cost": 5.49754499047619,
+        "baseline": 5.607832,
+        "savings": 0.019666603693514695,
+        "mix": {
+          "cheap": 0.0,
+          "balanced": 0.0380952380952381,
+          "flagship": 0.9619047619047619
+        },
+        "overflow_share": 0.0
+      },
+      "curve": [
+        {
+          "eps": 0.0,
+          "quality": 1.0,
+          "savings": 0.0
+        },
+        {
+          "eps": 0.02,
+          "quality": 1.0,
+          "savings": 0.0
+        },
+        {
+          "eps": 0.05,
+          "quality": 1.0,
+          "savings": 0.0
+        },
+        {
+          "eps": 0.1,
+          "quality": 1.0,
+          "savings": 0.0
+        },
+        {
+          "eps": 0.15,
+          "quality": 1.0,
+          "savings": 0.0
+        },
+        {
+          "eps": 0.2,
+          "quality": 0.9904761904761905,
+          "savings": 0.07873274377691764
+        },
+        {
+          "eps": 0.25,
+          "quality": 0.8666666666666667,
+          "savings": 0.16874970576864645
+        },
+        {
+          "eps": 0.3,
+          "quality": 0.7142857142857143,
+          "savings": 0.316960993125329
+        },
+        {
+          "eps": 0.4,
+          "quality": 0.6476190476190476,
+          "savings": 0.4405845253566797
+        },
+        {
+          "eps": 0.5,
+          "quality": 0.638095238095238,
+          "savings": 0.4899408541482697
+        },
+        {
+          "eps": 0.6,
+          "quality": 0.6190476190476191,
+          "savings": 0.6553863418162313
+        },
+        {
+          "eps": 0.8,
+          "quality": 0.38095238095238093,
+          "savings": 0.9057301288626336
+        },
+        {
+          "eps": 1.0,
+          "quality": 0.37142857142857144,
+          "savings": 0.917727100241234
+        }
+      ]
+    },
+    {
+      "name": "c_tier_choice@r1 (calibrated)",
+      "policy": "c_tier_choice@r1",
+      "calibrated": true,
+      "T": 2.7144,
+      "eps": 0.0,
+      "floor_met_on_tune": true,
+      "tune": {
+        "n": 105,
+        "quality": 1.0,
+        "cost": 5.094008,
+        "baseline": 5.094008,
+        "savings": 0.0,
+        "mix": {
+          "cheap": 0.0,
+          "balanced": 0.0,
+          "flagship": 1.0
+        },
+        "overflow_share": 0.01904761904761905
+      },
+      "test": {
+        "n": 105,
+        "quality": 1.0,
+        "cost": 5.607832,
+        "baseline": 5.607832,
+        "savings": 0.0,
+        "mix": {
+          "cheap": 0.0,
+          "balanced": 0.0,
+          "flagship": 1.0
+        },
+        "overflow_share": 0.0380952380952381
+      },
+      "ci": {
+        "savings": [
+          0.0,
+          0.0
+        ],
+        "quality": [
+          1.0,
+          1.0
+        ]
+      },
+      "random_at_mix": {
+        "n": 105,
+        "quality": 1.0,
+        "cost": 5.607832,
+        "baseline": 5.607832,
+        "savings": 0.0,
+        "mix": {
+          "cheap": 0.0,
+          "balanced": 0.0,
+          "flagship": 1.0
+        },
+        "overflow_share": 0.0
+      },
+      "curve": [
+        {
+          "eps": 0.0,
+          "quality": 1.0,
+          "savings": 0.0
+        },
+        {
+          "eps": 0.02,
+          "quality": 1.0,
+          "savings": 0.0
+        },
+        {
+          "eps": 0.05,
+          "quality": 1.0,
+          "savings": 0.0
+        },
+        {
+          "eps": 0.1,
+          "quality": 1.0,
+          "savings": 0.0
+        },
+        {
+          "eps": 0.15,
+          "quality": 1.0,
+          "savings": 0.0
+        },
+        {
+          "eps": 0.2,
+          "quality": 1.0,
+          "savings": 0.0
+        },
+        {
+          "eps": 0.25,
+          "quality": 1.0,
+          "savings": 0.0
+        },
+        {
+          "eps": 0.3,
+          "quality": 0.8666666666666667,
+          "savings": 0.1668042123943798
+        },
+        {
+          "eps": 0.4,
+          "quality": 0.638095238095238,
+          "savings": 0.4899408541482697
+        },
+        {
+          "eps": 0.5,
+          "quality": 0.638095238095238,
+          "savings": 0.4899408541482697
+        },
+        {
+          "eps": 0.6,
+          "quality": 0.638095238095238,
+          "savings": 0.4899408541482697
+        },
+        {
+          "eps": 0.8,
+          "quality": 0.37142857142857144,
+          "savings": 0.917727100241234
+        },
+        {
+          "eps": 1.0,
+          "quality": 0.37142857142857144,
+          "savings": 0.917727100241234
+        }
+      ]
+    },
+    {
+      "name": "c_tier_choice@r2",
+      "policy": "c_tier_choice@r2",
+      "calibrated": false,
+      "T": 1.0,
+      "eps": 0.25,
+      "floor_met_on_tune": true,
+      "tune": {
+        "n": 105,
+        "quality": 0.9904761904761905,
+        "cost": 5.052306,
+        "baseline": 5.094008,
+        "savings": 0.008186481057744666,
+        "mix": {
+          "cheap": 0.0,
+          "balanced": 0.06666666666666667,
+          "flagship": 0.9333333333333333
+        },
+        "overflow_share": 0.01904761904761905
+      },
+      "test": {
+        "n": 105,
+        "quality": 0.9904761904761905,
+        "cost": 5.152626,
+        "baseline": 5.607832,
+        "savings": 0.08117325911332585,
+        "mix": {
+          "cheap": 0.0,
+          "balanced": 0.047619047619047616,
+          "flagship": 0.9523809523809523
+        },
+        "overflow_share": 0.0380952380952381
+      },
+      "ci": {
+        "savings": [
+          0.0026627430587082834,
+          0.18260533686165104
+        ],
+        "quality": [
+          0.9714285714285714,
+          1.0
+        ]
+      },
+      "random_at_mix": {
+        "n": 105,
+        "quality": 0.9818594104308389,
+        "cost": 5.469973238095238,
+        "baseline": 5.607832,
+        "savings": 0.024583254616893258,
+        "mix": {
+          "cheap": 0.0,
+          "balanced": 0.047619047619047616,
+          "flagship": 0.9523809523809523
+        },
+        "overflow_share": 0.0
+      },
+      "curve": [
+        {
+          "eps": 0.0,
+          "quality": 1.0,
+          "savings": 0.0
+        },
+        {
+          "eps": 0.02,
+          "quality": 1.0,
+          "savings": 0.0
+        },
+        {
+          "eps": 0.05,
+          "quality": 1.0,
+          "savings": 0.0
+        },
+        {
+          "eps": 0.1,
+          "quality": 1.0,
+          "savings": 0.0
+        },
+        {
+          "eps": 0.15,
+          "quality": 1.0,
+          "savings": 0.0
+        },
+        {
+          "eps": 0.2,
+          "quality": 1.0,
+          "savings": 0.0
+        },
+        {
+          "eps": 0.25,
+          "quality": 0.9904761904761905,
+          "savings": 0.08117325911332585
+        },
+        {
+          "eps": 0.3,
+          "quality": 0.7904761904761904,
+          "savings": 0.18669674840473105
+        },
+        {
+          "eps": 0.4,
+          "quality": 0.638095238095238,
+          "savings": 0.4859763987223583
+        },
+        {
+          "eps": 0.5,
+          "quality": 0.638095238095238,
+          "savings": 0.4899408541482697
+        },
+        {
+          "eps": 0.6,
+          "quality": 0.638095238095238,
+          "savings": 0.49678107332744637
+        },
+        {
+          "eps": 0.8,
+          "quality": 0.37142857142857144,
+          "savings": 0.8874178113752338
+        },
+        {
+          "eps": 1.0,
+          "quality": 0.37142857142857144,
+          "savings": 0.917727100241234
+        }
+      ]
+    },
+    {
+      "name": "c_tier_choice@r2 (calibrated)",
+      "policy": "c_tier_choice@r2",
+      "calibrated": true,
+      "T": 0.9005,
+      "eps": 0.25,
+      "floor_met_on_tune": true,
+      "tune": {
+        "n": 105,
+        "quality": 0.9619047619047619,
+        "cost": 5.005604,
+        "baseline": 5.094008,
+        "savings": 0.017354507491939453,
+        "mix": {
+          "cheap": 0.0,
+          "balanced": 0.10476190476190476,
+          "flagship": 0.8952380952380953
+        },
+        "overflow_share": 0.01904761904761905
+      },
+      "test": {
+        "n": 105,
+        "quality": 0.9714285714285714,
+        "cost": 5.105042,
+        "baseline": 5.607832,
+        "savings": 0.08965853470646057,
+        "mix": {
+          "cheap": 0.0,
+          "balanced": 0.10476190476190476,
+          "flagship": 0.8952380952380953
+        },
+        "overflow_share": 0.0380952380952381
+      },
+      "ci": {
+        "savings": [
+          0.009455895129080405,
+          0.18909852837448604
+        ],
+        "quality": [
+          0.9333333333333333,
+          1.0
+        ]
+      },
+      "random_at_mix": {
+        "n": 105,
+        "quality": 0.9600907029478458,
+        "cost": 5.304542723809524,
+        "baseline": 5.607832,
+        "savings": 0.05408316015716519,
+        "mix": {
+          "cheap": 0.0,
+          "balanced": 0.10476190476190476,
+          "flagship": 0.8952380952380953
+        },
+        "overflow_share": 0.0
+      },
+      "curve": [
+        {
+          "eps": 0.0,
+          "quality": 1.0,
+          "savings": 0.0
+        },
+        {
+          "eps": 0.02,
+          "quality": 1.0,
+          "savings": 0.0
+        },
+        {
+          "eps": 0.05,
+          "quality": 1.0,
+          "savings": 0.0
+        },
+        {
+          "eps": 0.1,
+          "quality": 1.0,
+          "savings": 0.0
+        },
+        {
+          "eps": 0.15,
+          "quality": 1.0,
+          "savings": 0.0
+        },
+        {
+          "eps": 0.2,
+          "quality": 1.0,
+          "savings": 0.0
+        },
+        {
+          "eps": 0.25,
+          "quality": 0.9714285714285714,
+          "savings": 0.08965853470646057
+        },
+        {
+          "eps": 0.3,
+          "quality": 0.780952380952381,
+          "savings": 0.19192907348151655
+        },
+        {
+          "eps": 0.4,
+          "quality": 0.638095238095238,
+          "savings": 0.4859763987223583
+        },
+        {
+          "eps": 0.5,
+          "quality": 0.638095238095238,
+          "savings": 0.4899408541482697
+        },
+        {
+          "eps": 0.6,
+          "quality": 0.6190476190476191,
+          "savings": 0.6277742093557724
+        },
+        {
+          "eps": 0.8,
+          "quality": 0.37142857142857144,
+          "savings": 0.8874178113752338
+        },
+        {
+          "eps": 1.0,
+          "quality": 0.37142857142857144,
+          "savings": 0.917727100241234
+        }
+      ]
+    }
+  ],
+  "calibration": {
+    "a_score": {
+      "T": 3.3174,
+      "nll_before": 1.1378504346234795,
+      "nll_after": 1.0873497797452483,
+      "brier_before": 0.6884151108191501,
+      "brier_after": 0.6597499785278104
+    },
+    "c_tier_choice@r0": {
+      "T": 2.009,
+      "nll_before": 1.0980777549709668,
+      "nll_after": 1.0920178680690593,
+      "brier_before": 0.6682645174302113,
+      "brier_after": 0.662776331244738
+    },
+    "c_tier_choice@r1": {
+      "T": 2.7144,
+      "nll_before": 1.104181950693492,
+      "nll_after": 1.0960411532636154,
+      "brier_before": 0.6708162201495979,
+      "brier_after": 0.6651116014152497
+    },
+    "c_tier_choice@r2": {
+      "T": 0.9005,
+      "nll_before": 1.0833739223325192,
+      "nll_after": 1.083346377503127,
+      "brier_before": 0.6570918432063287,
+      "brier_after": 0.6571258350132333
+    }
+  },
+  "by_category": {
+    "adversarial": {
+      "n": 10,
+      "quality": 1.0,
+      "cost": 1.025278,
+      "baseline": 1.44394,
+      "savings": 0.28994418050611526,
+      "mix": {
+        "cheap": 0.0,
+        "balanced": 0.2,
+        "flagship": 0.8
+      },
+      "overflow_share": 0.0
+    },
+    "brainstorming": {
+      "n": 1,
+      "quality": 0.0,
+      "cost": 0.009616,
+      "baseline": 0.015512,
+      "savings": 0.3800928313563693,
+      "mix": {
+        "cheap": 0.0,
+        "balanced": 1.0,
+        "flagship": 0.0
+      },
+      "overflow_share": 0.0
+    },
+    "classification": {
+      "n": 7,
+      "quality": 1.0,
+      "cost": 0.044792,
+      "baseline": 0.05802,
+      "savings": 0.22799034815580843,
+      "mix": {
+        "cheap": 0.0,
+        "balanced": 0.5714285714285714,
+        "flagship": 0.42857142857142855
+      },
+      "overflow_share": 0.0
+    },
+    "closed_qa": {
+      "n": 4,
+      "quality": 1.0,
+      "cost": 0.069184,
+      "baseline": 0.069184,
+      "savings": 0.0,
+      "mix": {
+        "cheap": 0.0,
+        "balanced": 0.0,
+        "flagship": 1.0
+      },
+      "overflow_share": 0.0
+    },
+    "coding": {
+      "n": 26,
+      "quality": 0.9230769230769231,
+      "cost": 3.393754,
+      "baseline": 3.417468,
+      "savings": 0.006939055464454946,
+      "mix": {
+        "cheap": 0.0,
+        "balanced": 0.07692307692307693,
+        "flagship": 0.9230769230769231
+      },
+      "overflow_share": 0.0
+    },
+    "creative_writing": {
+      "n": 16,
+      "quality": 0.875,
+      "cost": 1.18639,
+      "baseline": 1.26716,
+      "savings": 0.06374096404558227,
+      "mix": {
+        "cheap": 0.0,
+        "balanced": 0.25,
+        "flagship": 0.75
+      },
+      "overflow_share": 0.0
+    },
+    "general": {
+      "n": 100,
+      "quality": 0.95,
+      "cost": 3.135484,
+      "baseline": 3.352996,
+      "savings": 0.06487093930323806,
+      "mix": {
+        "cheap": 0.0,
+        "balanced": 0.21,
+        "flagship": 0.79
+      },
+      "overflow_share": 0.0
+    },
+    "general_qa": {
+      "n": 4,
+      "quality": 1.0,
+      "cost": 0.052492000000000004,
+      "baseline": 0.057488,
+      "savings": 0.08690509323684936,
+      "mix": {
+        "cheap": 0.0,
+        "balanced": 0.25,
+        "flagship": 0.75
+      },
+      "overflow_share": 0.0
+    },
+    "information_extraction": {
+      "n": 9,
+      "quality": 1.0,
+      "cost": 0.13261599999999998,
+      "baseline": 0.13261599999999998,
+      "savings": 0.0,
+      "mix": {
+        "cheap": 0.0,
+        "balanced": 0.0,
+        "flagship": 1.0
+      },
+      "overflow_share": 0.0
+    },
+    "math": {
+      "n": 20,
+      "quality": 1.0,
+      "cost": 0.706496,
+      "baseline": 0.706496,
+      "savings": 0.0,
+      "mix": {
+        "cheap": 0.0,
+        "balanced": 0.0,
+        "flagship": 1.0
+      },
+      "overflow_share": 0.0
+    },
+    "open_qa": {
+      "n": 7,
+      "quality": 1.0,
+      "cost": 0.093056,
+      "baseline": 0.111784,
+      "savings": 0.16753739354469332,
+      "mix": {
+        "cheap": 0.0,
+        "balanced": 0.5714285714285714,
+        "flagship": 0.42857142857142855
+      },
+      "overflow_share": 0.0
+    },
+    "summarization": {
+      "n": 6,
+      "quality": 1.0,
+      "cost": 0.066898,
+      "baseline": 0.069176,
+      "savings": 0.032930496125823994,
+      "mix": {
+        "cheap": 0.0,
+        "balanced": 0.16666666666666666,
+        "flagship": 0.8333333333333334
+      },
+      "overflow_share": 0.0
+    }
+  },
+  "rotations": {
+    "c_tier_choice": {
+      "tier_agreement": 0.9285714285714286,
+      "rotations": [
+        "c_tier_choice@r0",
+        "c_tier_choice@r1",
+        "c_tier_choice@r2"
+      ]
+    }
+  }
+}
