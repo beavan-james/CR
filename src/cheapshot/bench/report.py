@@ -16,7 +16,7 @@ def _pct(x: float) -> str:
     return f"{100 * x:.1f}%"
 
 
-def build_report(m: Matrix, floor: float, B: int = 2000) -> dict:
+def build_report(m: Matrix, floor: float, B: int = 2000, objective: str = "per-prompt") -> dict:
     tune, test = m.ids("tune"), m.ids("test")
     held_out = bool(tune and test)
     if not held_out:
@@ -36,7 +36,7 @@ def build_report(m: Matrix, floor: float, B: int = 2000) -> dict:
         na, ba = replay.nll_brier(m, name, tune, T)
         calibration[name] = {"T": T, "nll_before": nb, "nll_after": na, "brier_before": bb, "brier_after": ba}
         for calibrated, temp in ((False, 1.0), (True, T)):
-            eps, met = replay.choose_eps(m, name, temp, tune, floor)
+            eps, met = replay.choose_eps(m, name, temp, tune, floor, objective)
             a = replay.assign(m, name, eps, temp)
             tm = replay.evaluate(m, a, test, name)
             entries.append({
@@ -46,11 +46,12 @@ def build_report(m: Matrix, floor: float, B: int = 2000) -> dict:
                 "ci": replay.bootstrap(m, a, test, B),
                 "random_at_mix": replay.random_at_mix(m, tm.mix, test).to_dict(),
                 "curve": [{"eps": e, **{k: v for k, v in replay.evaluate(m, replay.assign(m, name, e, temp), test).to_dict().items()
-                                         if k in ("savings", "quality")}} for e in replay.EPS_GRID],
+                                         if k in ("savings", "savings_per_prompt", "quality")}} for e in replay.EPS_GRID],
             })
 
     passing = [e for e in entries if e["floor_met_on_tune"]]
-    headline = max(passing, key=lambda e: (e["tune"]["savings"], e["tune"]["quality"])) if passing else None
+    obj_key = "savings_per_prompt" if objective == "per-prompt" else "savings"
+    headline = max(passing, key=lambda e: (e["tune"][obj_key], e["tune"]["quality"])) if passing else None
 
     by_category = {}
     if headline:
@@ -75,7 +76,7 @@ def build_report(m: Matrix, floor: float, B: int = 2000) -> dict:
 
     return {
         "meta": {"n_prompts": len(m.prompts), "n_tune": len(m.ids("tune")), "n_test": len(m.ids("test")),
-                 "held_out": held_out, "floor": floor, **m.stats},
+                 "held_out": held_out, "floor": floor, "objective": objective, **m.stats},
         "headline": headline["name"] if headline else None,
         "baselines": baselines, "policies": entries, "calibration": calibration,
         "by_category": by_category, "rotations": rotations,
@@ -89,27 +90,33 @@ def render_markdown(r: dict) -> str:
     head = next((e for e in r["policies"] if e["name"] == r["headline"]), None)
     if head:
         t, ci, rnd = head["test"], head["ci"], head["random_at_mix"]
+        sp = ci.get("savings_per_prompt", [0.0, 0.0])
         out += [f"**At ≥{_pct(meta['floor'])} non-inferior to the flagship, `{head['name']}` saves "
-                f"{_pct(t['savings'])}** (95% CI {_pct(ci['savings'][0])}–{_pct(ci['savings'][1])}) on the {split}; "
+                f"{_pct(t['savings_per_prompt'])} per prompt** (95% CI {_pct(sp[0])}–{_pct(sp[1])}) and "
+                f"{_pct(t['savings'])} of total cost (CI {_pct(ci['savings'][0])}–{_pct(ci['savings'][1])}) on the {split}; "
                 f"quality {_pct(t['quality'])} (CI {_pct(ci['quality'][0])}–{_pct(ci['quality'][1])}), ε={head['eps']}.",
                 "",
-                f"Random routing with the same tier mix: savings {_pct(rnd['savings'])}, quality {_pct(rnd['quality'])}.",
+                f"Random routing with the same tier mix: per-prompt savings {_pct(rnd['savings_per_prompt'])}, "
+                f"total {_pct(rnd['savings'])}, quality {_pct(rnd['quality'])}.",
+                "",
+                f"ε chosen on the tune split to maximize {meta.get('objective', 'per-prompt')} savings. Per-prompt savings "
+                "counts each prompt equally; total savings is what the bill sees but is dominated by a few long answers.",
                 ""]
     elif not r["policies"]:
         out += ["**No router classifications yet.** Run `cheapshot bench classify --backend laya` once Laya is up.", ""]
     else:
         out += [f"**No policy met the {_pct(meta['floor'])} quality floor on the tune split.**", ""]
 
-    out += ["## Policies", "", "| policy | ε | T | test savings | test quality | mix c/b/f | overflow | tune floor met |",
-            "|---|---|---|---|---|---|---|---|"]
+    out += ["## Policies", "", "| policy | ε | T | savings/prompt | total savings | quality | mix c/b/f | overflow | tune floor met |",
+            "|---|---|---|---|---|---|---|---|---|"]
     for e in r["policies"]:
         t = e["test"]
         mix = "/".join(_pct(t["mix"].get(k, 0)) for k in TIERS)
-        out.append(f"| {e['name']} | {e['eps']} | {e['T']:.2f} | {_pct(t['savings'])} | {_pct(t['quality'])} | "
-                   f"{mix} | {_pct(t['overflow_share'])} | {'yes' if e['floor_met_on_tune'] else 'no'} |")
-    out += ["", "## Baselines", "", "| baseline | savings | quality |", "|---|---|---|"]
+        out.append(f"| {e['name']} | {e['eps']} | {e['T']:.2f} | {_pct(t.get('savings_per_prompt', 0))} | {_pct(t['savings'])} | "
+                   f"{_pct(t['quality'])} | {mix} | {_pct(t['overflow_share'])} | {'yes' if e['floor_met_on_tune'] else 'no'} |")
+    out += ["", "## Baselines", "", "| baseline | savings/prompt | total savings | quality |", "|---|---|---|---|"]
     for name, b in r["baselines"].items():
-        out.append(f"| {name} | {_pct(b['savings'])} | {_pct(b['quality'])} |")
+        out.append(f"| {name} | {_pct(b.get('savings_per_prompt', 0))} | {_pct(b['savings'])} | {_pct(b['quality'])} |")
 
     if r["calibration"]:
         out += ["", "## Calibration (tune split, label = oracle tier)", "",
@@ -118,10 +125,10 @@ def render_markdown(r: dict) -> str:
             out.append(f"| {name} | {c['T']:.2f} | {c['nll_before']:.3f} → {c['nll_after']:.3f} | "
                        f"{c['brier_before']:.3f} → {c['brier_after']:.3f} |")
     if r["by_category"]:
-        out += ["", f"## By category (`{r['headline']}`, all prompts)", "", "| category | n | savings | quality |",
-                "|---|---|---|---|"]
+        out += ["", f"## By category (`{r['headline']}`, all prompts)", "",
+                "| category | n | savings/prompt | total savings | quality |", "|---|---|---|---|---|"]
         for c, x in r["by_category"].items():
-            out.append(f"| {c} | {x['n']} | {_pct(x['savings'])} | {_pct(x['quality'])} |")
+            out.append(f"| {c} | {x['n']} | {_pct(x.get('savings_per_prompt', 0))} | {_pct(x['savings'])} | {_pct(x['quality'])} |")
     if r["rotations"]:
         out += ["", "## Option-order sensitivity", ""]
         for base, x in r["rotations"].items():

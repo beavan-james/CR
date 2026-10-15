@@ -2,6 +2,11 @@
 
 quality(policy) = share of prompts whose routed answer is non-inferior to the flagship's
 savings(policy) = 1 - routed answer cost / always-flagship cost   (Laya router cost is $0)
+savings_per_prompt = mean over prompts of (1 - routed cost / flagship cost for that prompt)
+
+Total savings is what the bill sees, but a few long answers dominate it (on v1 test the top
+5 prompts are 44% of flagship cost), so it swings with a handful of routing decisions.
+Per-prompt savings counts each prompt equally and is the steadier comparison.
 """
 from __future__ import annotations
 
@@ -16,6 +21,7 @@ from .matrix import answer_lookup
 from .store import Store
 
 EPS_GRID = (0.0, 0.02, 0.05, 0.1, 0.15, 0.2, 0.25, 0.3, 0.4, 0.5, 0.6, 0.8, 1.0)
+OBJECTIVES = ("per-prompt", "total")
 TEMP_GRID = tuple(round(0.2 * (50 ** (k / 39)), 4) for k in range(40))  # 0.2 .. 10, geometric
 
 
@@ -47,6 +53,10 @@ class Metrics:
     savings: float
     mix: dict[str, float]
     overflow_share: float = 0.0
+    savings_per_prompt: float = 0.0
+
+    def objective(self, name: str) -> float:
+        return self.savings_per_prompt if name == "per-prompt" else self.savings
 
     def to_dict(self) -> dict:
         return asdict(self)
@@ -138,7 +148,8 @@ def evaluate(m: Matrix, assignment: dict[str, str], ids: list[str], policy: str 
     quality = sum(m.ok[(pid, assignment[pid])] for pid in ids) / n
     mix = {t: sum(assignment[pid] == t for pid in ids) / n for t in TIERS}
     over = sum(m.policies[policy][pid].overflow for pid in ids) / n if policy in m.policies else 0.0
-    return Metrics(n, quality, cost, base, 1 - cost / base if base else 0.0, mix, over)
+    per = sum(1 - m.cost[(pid, assignment[pid])] / m.cost[(pid, "flagship")] for pid in ids) / n
+    return Metrics(n, quality, cost, base, 1 - cost / base if base else 0.0, mix, over, per)
 
 
 def random_at_mix(m: Matrix, mix: dict[str, float], ids: list[str]) -> Metrics:
@@ -149,16 +160,18 @@ def random_at_mix(m: Matrix, mix: dict[str, float], ids: list[str]) -> Metrics:
     base = sum(m.cost[(pid, "flagship")] for pid in ids)
     cost = sum(mix[t] * m.cost[(pid, t)] for pid in ids for t in TIERS)
     quality = sum(mix[t] * m.ok[(pid, t)] for pid in ids for t in TIERS) / n
-    return Metrics(n, quality, cost, base, 1 - cost / base if base else 0.0, dict(mix))
+    per = sum(mix[t] * (1 - m.cost[(pid, t)] / m.cost[(pid, "flagship")]) for pid in ids for t in TIERS) / n
+    return Metrics(n, quality, cost, base, 1 - cost / base if base else 0.0, dict(mix), 0.0, per)
 
 
-def choose_eps(m: Matrix, policy: str, T: float, ids: list[str], floor: float) -> tuple[float, bool]:
+def choose_eps(m: Matrix, policy: str, T: float, ids: list[str], floor: float,
+               objective: str = "per-prompt") -> tuple[float, bool]:
     """Highest-savings epsilon whose quality clears the floor; else the highest-quality epsilon."""
     scored = [(eps, evaluate(m, assign(m, policy, eps, T), ids)) for eps in EPS_GRID]
     passing = [(e, x) for e, x in scored if x.quality >= floor]
     if passing:
-        return max(passing, key=lambda ex: (ex[1].savings, ex[1].quality))[0], True
-    return max(scored, key=lambda ex: (ex[1].quality, ex[1].savings))[0], False
+        return max(passing, key=lambda ex: (ex[1].objective(objective), ex[1].quality))[0], True
+    return max(scored, key=lambda ex: (ex[1].quality, ex[1].objective(objective)))[0], False
 
 
 def _calib_rows(m: Matrix, policy: str, ids: list[str]):
@@ -188,17 +201,15 @@ def fit_temperature(m: Matrix, policy: str, ids: list[str]) -> float:
 
 
 def bootstrap(m: Matrix, assignment: dict[str, str], ids: list[str], B: int = 2000, seed: int = 0) -> dict:
-    """95% percentile intervals for savings and quality, resampling prompts."""
+    """95% percentile intervals for savings (total and per-prompt) and quality, resampling prompts."""
+    fields = ("savings", "savings_per_prompt", "quality")
     if not ids:
-        return {"savings": [0.0, 0.0], "quality": [0.0, 0.0]}
+        return {f: [0.0, 0.0] for f in fields}
     rng = random.Random(seed)
-    sav, qual = [], []
+    draws = {f: [] for f in fields}
     for _ in range(B):
-        sample = [rng.choice(ids) for _ in ids]
-        x = evaluate(m, assignment, sample)
-        sav.append(x.savings)
-        qual.append(x.quality)
-    sav.sort()
-    qual.sort()
+        x = evaluate(m, assignment, [rng.choice(ids) for _ in ids])
+        for f in fields:
+            draws[f].append(getattr(x, f))
     lo, hi = int(0.025 * B), int(0.975 * B) - 1
-    return {"savings": [sav[lo], sav[hi]], "quality": [qual[lo], qual[hi]]}
+    return {f: [sorted(v)[lo], sorted(v)[hi]] for f, v in draws.items()}

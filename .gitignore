@@ -11,3 +11,6 @@ runs/
 .DS_Store
 evals/raw/
 evals/datasets/v1.jsonl
+evals/datasets/v2.jsonl
+ckpt-*
+*.zip

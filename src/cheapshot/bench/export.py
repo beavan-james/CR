@@ -24,13 +24,15 @@ def judge_gold(answers: Store, judgments: Store, family: str, judge_model: str, 
         return None
     gold = {t: 0.0 for t in TIERS}
     for order in ORDERS:
-        ok = {"flagship": True}
-        for tier in CANDIDATE_TIERS:
+        label = "flagship"
+        for tier in CANDIDATE_TIERS:  # cheapest first; stop at the first accepted tier (lazy judging skips the rest)
             j = judgments.get(judgment_key(p["id"], tier, order, ans[tier]["key"], ans["flagship"]["key"], judge_model))
             if not j or j["outcome"] is None:
                 return None
-            ok[tier] = j["outcome"] in ("win", "tie")
-        gold[next(t for t in TIERS if ok[t])] += 1 / len(ORDERS)
+            if j["outcome"] in ("win", "tie"):
+                label = tier
+                break
+        gold[label] += 1 / len(ORDERS)
     return gold
 
 
@@ -48,7 +50,10 @@ def tier_gold_to_levels(gold: dict[str, float], tier_map: dict) -> dict[str, flo
 
 def build_training_rows(prompts: list[dict], variant: dict, answers: Store, judgments: Store, teacher: Store,
                         family: str, judge_model: str, teacher_model: str,
-                        teacher_map: list[tuple[float, dict]] | None = None) -> tuple[list[dict], dict]:
+                        teacher_map: list[tuple[float, dict]] | None = None,
+                        judge_weight: int = 1) -> tuple[list[dict], dict]:
+    """judge_weight > 1 repeats judge-labeled rows (ids suffixed #2, #3, ...) so the more
+    accurate labels count more against the teacher-labeled majority."""
     rows, counts = [], {"judge": 0, "teacher": 0, "unlabeled": 0, "not_train_split": 0}
     qid = variant["question_id"]
     for p in prompts:
@@ -66,9 +71,12 @@ def build_training_rows(prompts: list[dict], variant: dict, answers: Store, judg
             counts["unlabeled"] += 1
             continue
         counts[source] += 1
-        rows.append({"id": p["id"], "label_source": source, "state": p["prompt"],
-                     "questions": {qid: variant["question"]},
-                     "gold": {qid: {"probabilities": tier_gold_to_levels(gold, variant["tier_map"])}}})
+        row = {"id": p["id"], "label_source": source, "state": p["prompt"],
+               "questions": {qid: variant["question"]},
+               "gold": {qid: {"probabilities": tier_gold_to_levels(gold, variant["tier_map"])}}}
+        rows.append(row)
+        if source == "judge":
+            rows += [{**row, "id": f"{p['id']}#{k}"} for k in range(2, judge_weight + 1)]
     return rows, counts
 
 
@@ -115,9 +123,10 @@ def apply_teacher_map(dist: dict[str, float], mapping: list[tuple[float, dict]])
 
 
 def teacher_calibration_pairs(prompts, answers, judgments, teacher, family, judge_model, teacher_model):
+    """(teacher, judge) pairs from tune prompts and judge-labeled train prompts; never test."""
     pairs = []
     for p in prompts:
-        if p["split"] != "tune":
+        if p["split"] not in ("tune", "train"):
             continue
         t = teacher.get(teacher_key(p["id"], p["prompt"], teacher_model))
         g = judge_gold(answers, judgments, family, judge_model, p)

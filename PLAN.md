@@ -134,3 +134,11 @@ On a Pro/Max subscription (`-f claude-code`) these are ~3,000 calls with no per-
 - **Recalibration:** `export-train` maps teacher level → judge tier mix (fit on tune, 5 quantile bins, shrunk toward overall). Train labels now average 29% cheap / 28% balanced / 42% flagship.
 - **laya-train dry run on A1:** 1,499 valid items, none skipped; 1,350 train after calibration slice. Default 4 epochs = 88 updates (too few) → use `--epochs 16` (~350).
 - **Next:** fine-tune on Kaggle T4, two seeds; copy checkpoints to A1 via `LAYA_EXTRA_MODELS`; re-run `bench classify` + `bench report` vs zero-shot baseline.
+
+## Status (2026-10-15)
+- **Fine-tune 1 (teacher labels, `cheapshot-s0`, Kaggle T4, 16 epochs):** served on the A1 via `LAYA_EXTRA_MODELS`. Seeds 0 and 1 gave near-identical calibration-slice numbers (accuracy 0.18 → 0.86).
+- **Held-out ranking improved, savings didn't:** test AUC for "Haiku fails" 0.47 → 0.70, "Sonnet fails" 0.53 → 0.69. Total savings at the 95% floor 1.7% (zero-shot 10.7%). Per-prompt savings 8.0% at 98.1% quality vs zero-shot 9.3% at 93.3%; vs random at the same mix the fine-tune keeps ~5 more quality points.
+- **Why savings is noisy:** flagship cost is concentrated; on v1 test the top 5 prompts are 44% of cost and one prompt is 21%. Cost-aware routing with a prompt-only cost estimate (corr 0.35 with true cost) didn't help; with true costs the ceiling is ~45% savings at 93% quality. Not merged.
+- **Changes:** per-prompt savings in the report (default ε objective); lazy judging for train prompts; `--subset`; `export-train --judge-weight` (default 2); teacher recalibration also fits on judged train prompts.
+- **v2 dataset (`evals/build_v2.py`):** v1 unchanged + 150 long-answer eval prompts (90 Arena-Hard, 60 oasst2; 50 tune / 100 test) + 300 train prompts tagged for judge labels. Running on subscription in `runs/v2-sub` (`run.sh`); fine-tuned classifications in `runs/v2-sub-ft` (shares the answer/judge cache).
+- **Next:** judge labels → export → fine-tune 2 → compare zero-shot / teacher-trained / judge-trained on the 255-prompt test split. Use real answer lengths from judged prompts to fit a cost estimator.

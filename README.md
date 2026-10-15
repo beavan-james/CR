@@ -76,6 +76,18 @@ cheapshot bench export-train -r runs/ft -d evals/datasets/v1.jsonl -f anthropic 
 
 Check the file with `laya-train --data laya_train.jsonl --base typed-decisions --dry-run` (works on the A1, no GPU needed). Train on a 16 GB GPU (Kaggle T4), then load the checkpoint on the server via `LAYA_EXTRA_MODELS`.
 
+Judge labels for part of the train split (`evals/build_v2.py` tags 300 prompts `"subset": "judge"`):
+
+```bash
+cheapshot bench answers -r runs/v2 -d evals/datasets/v2.jsonl -f claude-code --split train --subset judge
+cheapshot bench judge   -r runs/v2 -d evals/datasets/v2.jsonl -f claude-code --split train --subset judge
+cheapshot bench export-train -r runs/v2 -d evals/datasets/v2.jsonl -f claude-code --judge-weight 2
+```
+
+Train prompts are judged lazily: in each judge order, Sonnet is judged only if Haiku lost, since a Haiku pass already fixes the label. `--judge-weight` writes each judge-labeled row that many times. Judge-labeled train prompts also join the tune split in fitting the teacher recalibration.
+
+The report shows **savings per prompt** (each prompt weighted equally) next to total savings, and picks ε by per-prompt savings by default (`--objective total` to switch). A few long answers dominate total cost, so total savings swings with a handful of routing decisions.
+
 ## Running Laya on a server
 
 `laya-serve` (from the `laya` package) already serves the `/v1/systemone` protocol. On the server (e.g. an Oracle Ampere A1):

@@ -73,13 +73,19 @@ def mock_verdict(prompt_row: dict, tier: str, order: str) -> str:
     return "B" if order == "candidate_first" else "A"
 
 
-def run_judge(prompts: list[dict], answers: Store, judgments: Store, family: str, api_key: str,
-              workers: int = 4, judge_model: str = JUDGE_MODEL, on_done=None) -> tuple[PoolResult, int]:
-    """Judge every candidate answer that has both itself and the flagship answer cached.
-    Returns (pool result, prompt-tiers skipped for missing answers)."""
-    jobs, skipped = [], 0
+def is_lazy(p: dict) -> bool:
+    """Train prompts only need a label (cheapest accepted tier per order), so balanced is judged
+    in an order only after cheap lost there. Scored splits are judged fully: replay needs both."""
+    return p["split"] == "train"
+
+
+def pending_judgments(prompts: list[dict], answers: Store, judgments: Store, family: str,
+                      judge_model: str = JUDGE_MODEL) -> tuple[list[tuple], int, int]:
+    """(jobs runnable now, lazy jobs waiting on a cheap verdict, prompt-tiers missing answers)."""
+    jobs, waiting, skipped = [], 0, 0
     for p in prompts:
         flag = answer_lookup(answers, family, p["id"], p["prompt"], "flagship")
+        cheap_outcome = {}
         for tier in CANDIDATE_TIERS:
             cand = answer_lookup(answers, family, p["id"], p["prompt"], tier)
             if not flag or not cand:
@@ -87,8 +93,26 @@ def run_judge(prompts: list[dict], answers: Store, judgments: Store, family: str
                 continue
             for order in ORDERS:
                 key = judgment_key(p["id"], tier, order, cand["key"], flag["key"], judge_model)
-                if not judgments.has(key):
-                    jobs.append((p, tier, order, cand, flag, key))
+                done = judgments.get(key)
+                if tier == "cheap":
+                    cheap_outcome[order] = done["outcome"] if done else None
+                if done:
+                    continue
+                if tier != "cheap" and is_lazy(p):
+                    prev = cheap_outcome.get(order)
+                    if prev is None:
+                        waiting += 1
+                        continue
+                    if prev != "loss":  # cheap accepted in this order: balanced can't change the label
+                        continue
+                jobs.append((p, tier, order, cand, flag, key))
+    return jobs, waiting, skipped
+
+
+def run_judge(prompts: list[dict], answers: Store, judgments: Store, family: str, api_key: str,
+              workers: int = 4, judge_model: str = JUDGE_MODEL, on_done=None) -> tuple[PoolResult, int]:
+    """Judge every candidate answer that has both itself and the flagship answer cached
+    (lazily for train prompts, see is_lazy). Returns (pool result, prompt-tiers skipped for missing answers)."""
 
     def one(p, tier, order, cand, flag, key) -> dict:
         a, b = (cand["text"], flag["text"]) if order == "candidate_first" else (flag["text"], cand["text"])
@@ -106,4 +130,16 @@ def run_judge(prompts: list[dict], answers: Store, judgments: Store, family: str
         judgments.add(row)
         return row
 
-    return run_pool(jobs, one, workers, on_done), skipped
+    total = PoolResult()
+    while True:  # a second pass picks up lazy balanced jobs unlocked by fresh cheap verdicts
+        jobs, waiting, skipped = pending_judgments(prompts, answers, judgments, family, judge_model)
+        if not jobs:
+            total.not_run += waiting
+            return total, skipped
+        res = run_pool(jobs, one, workers, on_done)
+        total.done += res.done
+        total.failures += res.failures
+        if res.stop_reason or res.done == 0:
+            total.stop_reason = res.stop_reason
+            total.not_run += res.not_run + waiting
+            return total, skipped

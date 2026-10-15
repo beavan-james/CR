@@ -250,3 +250,43 @@ def test_teacher_map_corrects_optimism():
     assert lo["cheap"] == pytest.approx(1.0) and hi["flagship"] == pytest.approx(1.0)
     mid = export.apply_teacher_map({"cheap": 0.65, "balanced": 0.35, "flagship": 0.0}, m)
     assert 0 < mid["cheap"] < 1 and sum(mid.values()) == pytest.approx(1.0)
+
+
+# ---------------------------------------------------------------- lazy judging, judge weight, per-prompt savings
+
+def test_lazy_judging_skips_balanced_when_cheap_accepted(tmp_path):
+    prompts = [{"id": "easy", "prompt": "What is 2+2?", "split": "train", "ideal_tier": "cheap"},
+               {"id": "mid", "prompt": "Debug this", "split": "train", "ideal_tier": "balanced"},
+               {"id": "ev", "prompt": "Held out", "split": "test", "ideal_tier": "cheap"}]
+    answers, judgments = Store(tmp_path / "a.jsonl"), Store(tmp_path / "j.jsonl")
+    matrix.run_answers(prompts, "mock", "", answers)
+    jobs, waiting, _ = judge.pending_judgments(prompts, answers, judgments, "mock")
+    assert len(jobs) == 2 + 2 + 4 and waiting == 4  # train: cheap only for now; test: all four
+    res, _ = judge.run_judge(prompts, answers, judgments, "mock", "")
+    tiers = lambda pid: sorted(r["tier"] for r in judgments.rows() if r["id"] == pid)
+    assert tiers("easy") == ["cheap", "cheap"]                      # balanced never judged
+    assert tiers("mid") == ["balanced", "balanced", "cheap", "cheap"]  # second pass after cheap lost
+    assert tiers("ev") == ["balanced", "balanced", "cheap", "cheap"]
+    assert res.done == 10 and res.not_run == 0
+    gold = {p["id"]: export.judge_gold(answers, judgments, "mock", judge.JUDGE_MODEL, p) for p in prompts[:2]}
+    assert gold["easy"]["cheap"] == 1.0 and gold["mid"]["balanced"] == 1.0
+
+
+def test_judge_weight_repeats_judge_rows(tmp_path):
+    p = {"id": "j", "prompt": "What is 2+2?", "split": "train", "ideal_tier": "cheap"}
+    answers, judgments, tstore = (Store(tmp_path / f) for f in ("a.jsonl", "j.jsonl", "t.jsonl"))
+    matrix.run_answers([p], "mock", "", answers)
+    judge.run_judge([p], answers, judgments, "mock", "")
+    rows, counts = export.build_training_rows([p], A, answers, judgments, tstore, "mock",
+                                              judge.JUDGE_MODEL, teacher.TEACHER_MODEL, judge_weight=3)
+    assert [r["id"] for r in rows] == ["j", "j#2", "j#3"] and counts["judge"] == 1
+
+
+def test_per_prompt_savings_counts_prompts_equally():
+    m = synthetic()
+    m.cost[("p1", "flagship")] = 1000.0  # one huge prompt dominates total savings
+    a = {"p1": "flagship", "p2": "cheap", "p3": "cheap", "p4": "cheap"}
+    x = replay.evaluate(m, a, m.ids())
+    assert x.savings < 0.03 and x.savings_per_prompt == pytest.approx(0.75 * 0.9)
+    r = replay.random_at_mix(m, {"cheap": 1.0, "balanced": 0.0, "flagship": 0.0}, m.ids())
+    assert r.savings_per_prompt == pytest.approx(replay.evaluate(m, replay.constant(m, "cheap"), m.ids()).savings_per_prompt)

@@ -191,11 +191,13 @@ def _confirm(n_calls: int, what: str, family: str, yes: bool) -> None:
 
 SPLIT_OPT = typer.Option("tune,test", "--split", help="Comma list of splits (train,tune,test) or 'all'")
 LIMIT_OPT = typer.Option(None, "--limit", help="Only the first N prompts after the split filter")
+SUBSET_OPT = typer.Option(None, "--subset", help="Only rows tagged with this dataset subset (e.g. judge)")
 
 
-def _select(dataset: Path, split: str, limit: int | None = None) -> list[dict]:
+def _select(dataset: Path, split: str, limit: int | None = None, subset: str | None = None) -> list[dict]:
     wanted = None if split == "all" else {s.strip() for s in split.split(",") if s.strip()}
-    rows = [p for p in load_dataset(dataset) if wanted is None or p["split"] in wanted]
+    rows = [p for p in load_dataset(dataset) if (wanted is None or p["split"] in wanted)
+            and (subset is None or p.get("subset") == subset)]
     return rows[:limit] if limit else rows
 
 
@@ -228,12 +230,12 @@ def bench_answers(
     dataset: Path = DATASET_OPT, run_dir: Path = RUN_OPT, family: str = BENCH_FAMILY_OPT,
     api_key: str | None = typer.Option(None, "--api-key"),
     workers: int = typer.Option(4, "--workers", "-w"),
-    split: str = SPLIT_OPT, limit: int | None = LIMIT_OPT,
+    split: str = SPLIT_OPT, limit: int | None = LIMIT_OPT, subset: str | None = SUBSET_OPT,
     yes: bool = typer.Option(False, "--yes", "-y", help="Skip the cost confirmation"),
 ):
     """Answer prompts with every tier (cached; re-run to resume). Default: tune+test splits."""
     key = _bench_key(family, api_key)
-    prompts = _select(dataset, split, limit)
+    prompts = _select(dataset, split, limit, subset)
     store = Store(run_dir / "answers.jsonl")
     todo = bench_matrix.pending_answers(prompts, family, store)
     _confirm(len(todo), f"3 tiers x {len(prompts)} prompts", family, yes)
@@ -266,18 +268,18 @@ def bench_judge_cmd(
     dataset: Path = DATASET_OPT, run_dir: Path = RUN_OPT, family: str = BENCH_FAMILY_OPT,
     api_key: str | None = typer.Option(None, "--api-key"),
     workers: int = typer.Option(4, "--workers", "-w"),
-    split: str = SPLIT_OPT, limit: int | None = LIMIT_OPT,
+    split: str = SPLIT_OPT, limit: int | None = LIMIT_OPT, subset: str | None = SUBSET_OPT,
     yes: bool = typer.Option(False, "--yes", "-y"),
 ):
-    """Judge cheap/balanced answers against the flagship, in both orders. Default: tune+test."""
+    """Judge cheap/balanced answers against the flagship, in both orders. Default: tune+test.
+    Train prompts are judged lazily: balanced only in an order where cheap lost."""
     key = _bench_key(family, api_key)
-    prompts = _select(dataset, split, limit)
+    prompts = _select(dataset, split, limit, subset)
     answers, judgments = Store(run_dir / "answers.jsonl"), Store(run_dir / "judgments.jsonl")
-    n = sum(1 for p in prompts for t in bench_judge.CANDIDATE_TIERS for o in bench_judge.ORDERS
-            if (a := bench_matrix.answer_lookup(answers, family, p["id"], p["prompt"], t))
-            and (f := bench_matrix.answer_lookup(answers, family, p["id"], p["prompt"], "flagship"))
-            and not judgments.has(bench_judge.judgment_key(p["id"], t, o, a["key"], f["key"], bench_judge.JUDGE_MODEL)))
-    _confirm(n, f"judge = {bench_judge.JUDGE_MODEL}", family, yes)
+    jobs, waiting, _ = bench_judge.pending_judgments(prompts, answers, judgments, family)
+    n = len(jobs) + waiting
+    _confirm(n, f"judge = {bench_judge.JUDGE_MODEL}" + (f"; at most, {waiting} only if cheap loses" if waiting else ""),
+             family, yes)
     result = {}
 
     def go(cb):
@@ -313,7 +315,8 @@ def bench_export_cmd(
     variant: str = VARIANT_OPT,
     out: Path = typer.Option(None, "--out", "-o", help="Default: <run>/laya_train.jsonl"),
     calibrate_teacher: bool = typer.Option(True, "--calibrate-teacher/--no-calibrate-teacher",
-                                           help="Map teacher labels onto judge outcomes (fit on tune split)"),
+                                           help="Map teacher labels onto judge outcomes (fit on tune + judged train)"),
+    judge_weight: int = typer.Option(2, "--judge-weight", min=1, help="Times each judge-labeled row is written"),
 ):
     """Write laya-train JSONL from train-split prompts (judge labels first, teacher labels otherwise)."""
     v = classifier.load_variant(variant)
@@ -324,15 +327,15 @@ def bench_export_cmd(
         pairs = bench_export.teacher_calibration_pairs(prompts, *stores, family, bench_judge.JUDGE_MODEL,
                                                        bench_teacher.TEACHER_MODEL)
         if len(pairs) < 30:
-            console.print(f"[red]Only {len(pairs)} tune prompts have both teacher and judge labels; need 30+ to "
+            console.print(f"[red]Only {len(pairs)} tune/train prompts have both teacher and judge labels; need 30+ to "
                           "recalibrate. Run `bench teacher --split tune`, or pass --no-calibrate-teacher.[/red]")
             raise typer.Exit(1)
         tmap = bench_export.fit_teacher_map(pairs)
-        console.print(f"teacher recalibrated on {len(pairs)} tune prompts:")
+        console.print(f"teacher recalibrated on {len(pairs)} tune/train prompts:")
         for lvl, mix in tmap:
             console.print(f"  teacher level {lvl:.2f} -> " + " ".join(f"{t}={mix[t]:.2f}" for t in mix))
     rows, counts = bench_export.build_training_rows(prompts, v, *stores, family, bench_judge.JUDGE_MODEL,
-                                                    bench_teacher.TEACHER_MODEL, tmap)
+                                                    bench_teacher.TEACHER_MODEL, tmap, judge_weight)
     out = out or run_dir / "laya_train.jsonl"
     out.parent.mkdir(parents=True, exist_ok=True)
     out.write_text("".join(json.dumps(r) + "\n" for r in rows))
@@ -346,6 +349,8 @@ def bench_export_cmd(
 def bench_report_cmd(
     dataset: Path = DATASET_OPT, run_dir: Path = RUN_OPT, family: str = BENCH_FAMILY_OPT,
     floor: float = typer.Option(0.95, "--floor", help="Quality floor (share non-inferior)"),
+    objective: str = typer.Option("per-prompt", "--objective",
+                                  help="Savings that epsilon maximizes: per-prompt (each prompt counts equally) | total"),
 ):
     """Replay every policy and baseline from the cache; write report.md + report.json."""
     prompts = load_dataset(dataset)
@@ -354,7 +359,9 @@ def bench_report_cmd(
     if not m.prompts:
         console.print("[red]No prompt has all answers and judgments yet. Run `bench answers` and `bench judge`.[/red]")
         raise typer.Exit(1)
-    r = bench_report.build_report(m, floor)
+    if objective not in bench_replay.OBJECTIVES:
+        raise typer.BadParameter(f"--objective must be one of {', '.join(bench_replay.OBJECTIVES)}")
+    r = bench_report.build_report(m, floor, objective=objective)
     r["meta"]["cost_basis"] = "api-equivalent (subscription usage proxy)" if family == "claude-code" else "api"
     md = bench_report.render_markdown(r)
     (run_dir / "report.json").write_text(json.dumps(r, indent=2))
