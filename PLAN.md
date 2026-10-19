@@ -161,3 +161,5 @@ On a Pro/Max subscription (`-f claude-code`) these are ~3,000 calls with no per-
 - Short follow-ups (<160 chars) are routed with the previous request; Laya outage → flagship with a visible note.
 - Permissions: `-p` mode can't prompt, so `acceptEdits` blocks Bash; denials are surfaced with a pointer to `permissions.allow`.
 - **Next:** live routed REPL test with Laya up; then decide on the Haiku length labels + two-question fine-tune.
+- **Haiku length labels (2026-10-19):** 1,498 of 1,500 train prompts answered by Haiku (2 failed). `runs/v2-sub/laya_train_len.jsonl`: 1,797 rows (judge ×2 + teacher) with both `complexity` and `answer_length` gold; length mass 39% short / 37% medium / 24% long. Next: Kaggle fine-tune on it, classify tune/test with both questions, then compare cost-aware routing vs the ε rule.
+- **Not doing (for now):** Opus judge labels for the other 1,200 train prompts (~6,000 mostly-Opus calls; ft2 showed 300 judged prompts didn't move routing). If revisited, first test Sonnet-as-judge agreement on the 360 already-judged eval prompts.
