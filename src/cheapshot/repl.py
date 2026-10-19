@@ -157,8 +157,8 @@ class Repl:
         d = self.routing.decide(prompt, self.previous)
         self.last = d
         model = d.route.model
-        why = "pinned" if self.routing.forced_tier else (
-            "overflow/unavailable" if d.classification.overflow else f"P(needs more)={d.route.p_exceed:.2f} ≤ ε {d.route.epsilon:.2f}")
+        why = d.rule or ("overflow/unavailable" if d.classification.overflow
+                         else f"P(needs more)={d.route.p_exceed:.2f} ≤ ε {d.route.epsilon:.2f}")
         self.c.print(f"[dim]→ {pretty(model)} · {why}[/dim]" + (f" [yellow]{d.note}[/yellow]" if d.note else ""))
 
         out = sys.stdout
@@ -194,7 +194,7 @@ class Repl:
         tracking.log({"mode": "repl", "session": self.session.session_id, "cwd": self.session.cwd,
                       "router": self.routing.router_model, "quality_target": self.routing.quality,
                       "epsilon": d.route.epsilon, "dist": d.classification.dist, "overflow": d.classification.overflow,
-                      "pinned": bool(self.routing.forced_tier), "tier": d.route.tier, "model": model,
+                      "pinned": bool(self.routing.forced_tier), "rule": d.rule or None, "tier": d.route.tier, "model": model,
                       "cost": res.cost_usd, "opus_est": est, "input_tokens": res.input_tokens,
                       "output_tokens": res.output_tokens, "tools": len(res.tools), "error": res.error or None})
 

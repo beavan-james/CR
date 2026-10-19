@@ -73,3 +73,20 @@ def test_handle_event_relative_paths_and_denials():
                   "permission_denials": [{"tool_name": "Bash"}, {"tool_name": "Bash"}]},
                  res, lambda s: None, lambda s: None)
     assert res.denied == ["Bash", "Bash"] and not res.is_error
+
+
+def test_trivial_turns():
+    for s in ("ok thanks", "Thanks!", "great, thank you so much", "perfect, thanks for the help", "bye", "ty"):
+        assert routing.is_trivial(s), s
+    for s in ("ok", "yes", "go ahead", "yes do it", "thanks, now fix the tests", "thanks?", "lgtm",
+              "thank you " * 10):
+        assert not routing.is_trivial(s), s
+
+
+def test_length_gold():
+    from cheapshot.bench.export import length_gold
+    for n, top in ((50, "0"), (1100, "1"), (8000, "2")):
+        g = length_gold(n)
+        assert abs(sum(g.values()) - 1) < 1e-9 and max(g, key=g.get) == top
+    near = length_gold(700)
+    assert 0.4 < near["0"] < 0.6

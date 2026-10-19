@@ -8,8 +8,14 @@ Label per prompt, best source first:
             (cheapest tier the judge accepted); gold is the average of the two, so a
             disagreement between orders becomes a split label instead of a coin flip.
   teacher - Opus's probability over tiers from the prompt alone.
+
+Optionally a second question (variants/length_score.yaml) is labeled from the Haiku
+answer's output tokens: Haiku and Opus answer lengths correlate ~0.90 (log tokens), so a
+cheap Haiku answer tells us how long, and therefore how costly, the flagship answer runs.
 """
 from __future__ import annotations
+
+import math
 
 from ..classifier import TIERS
 from .judge import CANDIDATE_TIERS, ORDERS, judgment_key
@@ -36,6 +42,24 @@ def judge_gold(answers: Store, judgments: Store, family: str, judge_model: str, 
     return gold
 
 
+LENGTH_CUTS = (700, 1800)  # Haiku output tokens: short | medium | long (about tertiles on v2)
+LENGTH_SIGMA = 0.35  # log-token noise; spreads labels near a cut over both buckets
+
+
+def length_gold(output_tokens: int, cuts=LENGTH_CUTS, sigma: float = LENGTH_SIGMA) -> dict[str, float]:
+    """Soft short/medium/long label ("0"/"1"/"2") from an answer's output tokens."""
+    z = math.log(max(output_tokens, 1))
+    cdf = [0.5 * (1 + math.erf((math.log(c) - z) / (sigma * math.sqrt(2)))) for c in cuts]
+    return {"0": cdf[0], "1": cdf[1] - cdf[0], "2": 1 - cdf[1]}
+
+
+def length_label(answers: Store, family: str, p: dict) -> dict[str, float] | None:
+    a = answer_lookup(answers, family, p["id"], p["prompt"], "cheap")
+    if not a or not a.get("text") or not a.get("output_tokens"):
+        return None
+    return length_gold(int(a["output_tokens"]))
+
+
 def tier_gold_to_levels(gold: dict[str, float], tier_map: dict) -> dict[str, float]:
     """Map tier probabilities onto the variant's answer keys (score levels or choice options)."""
     by_tier = {}
@@ -51,10 +75,11 @@ def tier_gold_to_levels(gold: dict[str, float], tier_map: dict) -> dict[str, flo
 def build_training_rows(prompts: list[dict], variant: dict, answers: Store, judgments: Store, teacher: Store,
                         family: str, judge_model: str, teacher_model: str,
                         teacher_map: list[tuple[float, dict]] | None = None,
-                        judge_weight: int = 1) -> tuple[list[dict], dict]:
+                        judge_weight: int = 1, length_variant: dict | None = None) -> tuple[list[dict], dict]:
     """judge_weight > 1 repeats judge-labeled rows (ids suffixed #2, #3, ...) so the more
-    accurate labels count more against the teacher-labeled majority."""
-    rows, counts = [], {"judge": 0, "teacher": 0, "unlabeled": 0, "not_train_split": 0}
+    accurate labels count more against the teacher-labeled majority. With length_variant,
+    rows also carry the answer-length question when a Haiku answer exists."""
+    rows, counts = [], {"judge": 0, "teacher": 0, "unlabeled": 0, "not_train_split": 0, "length": 0}
     qid = variant["question_id"]
     for p in prompts:
         if p["split"] != "train":
@@ -74,6 +99,13 @@ def build_training_rows(prompts: list[dict], variant: dict, answers: Store, judg
         row = {"id": p["id"], "label_source": source, "state": p["prompt"],
                "questions": {qid: variant["question"]},
                "gold": {qid: {"probabilities": tier_gold_to_levels(gold, variant["tier_map"])}}}
+        if length_variant:
+            lg = length_label(answers, family, p)
+            if lg is not None:
+                lq = length_variant["question_id"]
+                row["questions"][lq] = length_variant["question"]
+                row["gold"][lq] = {"probabilities": lg}
+                counts["length"] += 1
         rows.append(row)
         if source == "judge":
             rows += [{**row, "id": f"{p['id']}#{k}"} for k in range(2, judge_weight + 1)]

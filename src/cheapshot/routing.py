@@ -7,6 +7,7 @@ If Laya can't be reached the turn goes to the flagship, so an outage costs money
 from __future__ import annotations
 
 import os
+import re
 from dataclasses import dataclass
 from pathlib import Path
 
@@ -15,6 +16,22 @@ from . import classifier, curves, router
 REPO_ROOT = Path(__file__).resolve().parents[2]
 DEFAULT_VARIANT = "variants/a_score.yaml"
 FOLLOW_UP_CHARS = 160  # shorter turns ("yes, do it") are routed with the previous request for context
+
+# Pure thanks / sign-offs go straight to the cheapest tier: they ask for no work.
+# "ok", "yes", "go ahead" are NOT trivial: after a plan they mean "do the hard thing".
+_ACK_WORDS = {"ok", "okay", "great", "perfect", "nice", "cool", "awesome", "excellent", "thanks", "thank", "you",
+              "thx", "ty", "cheers", "bye", "goodbye", "much", "so", "very", "a", "lot", "many", "appreciated",
+              "appreciate", "it", "that", "all", "good", "for", "now", "help", "the"}
+_CLOSERS = {"thanks", "thank", "thx", "ty", "cheers", "bye", "goodbye", "appreciated", "appreciate"}
+TRIVIAL_MAX_CHARS = 60
+
+
+def is_trivial(prompt: str) -> bool:
+    """Thanks/sign-off with nothing else in it, e.g. "ok thanks!", "great, thank you so much"."""
+    if len(prompt) > TRIVIAL_MAX_CHARS:
+        return False
+    words = re.findall(r"[a-z']+", prompt.lower())
+    return bool(words) and set(words) <= _ACK_WORDS and bool(set(words) & _CLOSERS) and not re.search(r"[?/`]", prompt)
 
 
 def resolve_path(path: str) -> str:
@@ -34,6 +51,7 @@ class Decision:
     route: router.Route
     classification: classifier.Classification
     note: str = ""
+    rule: str = ""  # set when a rule, not the router, chose the tier
 
 
 class Routing:
@@ -45,6 +63,7 @@ class Routing:
         self.router_model = self.client.model if self.client else "heuristic"
         self.curve = curves.load_curve(self.variant["name"], self.router_model) if self.client else None
         self.forced_tier: str | None = None
+        self.trivial_rule = os.getenv("CHEAPSHOT_TRIVIAL", "1") != "0"
         self.set_quality(quality if quality is not None else float(os.getenv("CHEAPSHOT_QUALITY", curves.DEFAULT_QUALITY)))
 
     def set_quality(self, quality: float) -> None:
@@ -61,7 +80,11 @@ class Routing:
         if self.forced_tier:
             c = classifier.Classification({}, 1.0, router_model="manual")
             return Decision(router.Route(self.forced_tier, models[self.forced_tier], 0.0, self.epsilon,
-                                         f"pinned with /model {self.forced_tier}"), c)
+                                         f"pinned with /model {self.forced_tier}"), c, rule="pinned")
+        if self.trivial_rule and is_trivial(prompt):
+            c = classifier.Classification({}, 1.0, router_model="rule")
+            return Decision(router.Route("cheap", models["cheap"], 0.0, self.epsilon,
+                                         "thanks/sign-off: no work requested -> cheapest tier"), c, rule="trivial turn")
         text = routing_text(prompt, previous)
         if self.client is None:
             c = classifier.heuristic_classify(text)

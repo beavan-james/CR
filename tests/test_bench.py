@@ -174,7 +174,7 @@ def test_export_prefers_judge_and_skips_non_train(tmp_path):
     teacher.run_teacher(prompts[:2], tstore, "mock", "")
     rows, counts = export.build_training_rows(prompts, A, answers, judgments, tstore, "mock",
                                               judge.JUDGE_MODEL, teacher.TEACHER_MODEL)
-    assert counts == {"judge": 1, "teacher": 1, "unlabeled": 1, "not_train_split": 1}
+    assert counts == {"judge": 1, "teacher": 1, "unlabeled": 1, "not_train_split": 1, "length": 0}
     by_id = {r["id"]: r for r in rows}
     assert by_id["j"]["label_source"] == "judge"
     assert by_id["j"]["gold"]["complexity"]["probabilities"] == {"0": 1.0, "1": 0.0, "2": 0.0}

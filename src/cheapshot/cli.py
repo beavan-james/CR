@@ -15,6 +15,7 @@ from rich.prompt import Prompt
 from rich.table import Table
 
 from . import classifier, curves, providers, router, tracking
+from .classifier import TIERS
 from .routing import resolve_path
 from .bench import judge as bench_judge
 from .bench import matrix as bench_matrix
@@ -286,15 +287,21 @@ def bench_answers(
     api_key: str | None = typer.Option(None, "--api-key"),
     workers: int = typer.Option(4, "--workers", "-w"),
     split: str = SPLIT_OPT, limit: int | None = LIMIT_OPT, subset: str | None = SUBSET_OPT,
+    tiers: str = typer.Option("cheap,balanced,flagship", "--tiers", help="Comma list of tiers to answer with"),
     yes: bool = typer.Option(False, "--yes", "-y", help="Skip the cost confirmation"),
 ):
     """Answer prompts with every tier (cached; re-run to resume). Default: tune+test splits."""
     key = _bench_key(family, api_key)
     prompts = _select(dataset, split, limit, subset)
+    tier_list = tuple(t.strip() for t in tiers.split(",") if t.strip())
+    bad = [t for t in tier_list if t not in TIERS]
+    if bad:
+        raise typer.BadParameter(f"unknown tiers {bad}; use {', '.join(TIERS)}")
     store = Store(run_dir / "answers.jsonl")
-    todo = bench_matrix.pending_answers(prompts, family, store)
-    _confirm(len(todo), f"3 tiers x {len(prompts)} prompts", family, yes)
-    res = _progress_run(len(todo), "answers", lambda cb: bench_matrix.run_answers(prompts, family, key, store, workers, cb))
+    todo = bench_matrix.pending_answers(prompts, family, store, tier_list)
+    _confirm(len(todo), f"{len(tier_list)} tier(s) x {len(prompts)} prompts", family, yes)
+    res = _progress_run(len(todo), "answers",
+                        lambda cb: bench_matrix.run_answers(prompts, family, key, store, workers, cb, tier_list))
     _summary("answers", res, store.path)
 
 
@@ -372,6 +379,9 @@ def bench_export_cmd(
     calibrate_teacher: bool = typer.Option(True, "--calibrate-teacher/--no-calibrate-teacher",
                                            help="Map teacher labels onto judge outcomes (fit on tune + judged train)"),
     judge_weight: int = typer.Option(2, "--judge-weight", min=1, help="Times each judge-labeled row is written"),
+    length_variant: str = typer.Option(None, "--length-variant",
+                                       help="Also label this answer-length question from Haiku answers "
+                                            "(e.g. variants/length_score.yaml)"),
 ):
     """Write laya-train JSONL from train-split prompts (judge labels first, teacher labels otherwise)."""
     v = classifier.load_variant(variant)
@@ -390,7 +400,8 @@ def bench_export_cmd(
         for lvl, mix in tmap:
             console.print(f"  teacher level {lvl:.2f} -> " + " ".join(f"{t}={mix[t]:.2f}" for t in mix))
     rows, counts = bench_export.build_training_rows(prompts, v, *stores, family, bench_judge.JUDGE_MODEL,
-                                                    bench_teacher.TEACHER_MODEL, tmap, judge_weight)
+                                                    bench_teacher.TEACHER_MODEL, tmap, judge_weight,
+                                                    classifier.load_variant(length_variant) if length_variant else None)
     out = out or run_dir / "laya_train.jsonl"
     out.parent.mkdir(parents=True, exist_ok=True)
     out.write_text("".join(json.dumps(r) + "\n" for r in rows))

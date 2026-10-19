@@ -25,14 +25,14 @@ def answer_lookup(store: Store, family: str, pid: str, prompt: str, tier: str) -
     return store.get(answer_key(pid, prompt, family, model, providers.MODEL_EFFORT.get(model), providers.DEFAULT_MAX_TOKENS))
 
 
-def pending_answers(prompts: list[dict], family: str, store: Store) -> list[tuple[dict, str]]:
-    return [(p, t) for p in prompts for t in TIERS if answer_lookup(store, family, p["id"], p["prompt"], t) is None]
+def pending_answers(prompts: list[dict], family: str, store: Store, tiers=TIERS) -> list[tuple[dict, str]]:
+    return [(p, t) for p in prompts for t in tiers if answer_lookup(store, family, p["id"], p["prompt"], t) is None]
 
 
 def run_answers(prompts: list[dict], family: str, api_key: str, store: Store, workers: int = 4,
-                on_done: Callable[[dict | None, Exception | None], None] | None = None) -> PoolResult:
+                on_done: Callable[[dict | None, Exception | None], None] | None = None, tiers=TIERS) -> PoolResult:
     """Answer every (prompt, tier) not already in the store."""
-    todo = pending_answers(prompts, family, store)
+    todo = pending_answers(prompts, family, store, tiers)
 
     def one(p: dict, tier: str) -> dict:
         model = FAMILY_MODELS[family][tier]
