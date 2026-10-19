@@ -1,0 +1,2736 @@
+{
+ "variant": "a_score",
+ "router_model": "cheapshot-s0",
+ "source": "v2.jsonl / v2-sub-ft",
+ "n_tune": 155,
+ "n_test": 205,
+ "points": [
+  {
+   "eps": 0.0,
+   "tune": {
+    "quality": 1.0,
+    "savings": 0.0,
+    "savings_per_prompt": 0.0,
+    "mix": {
+     "cheap": 0.0,
+     "balanced": 0.0,
+     "flagship": 1.0
+    }
+   },
+   "test": {
+    "quality": 1.0,
+    "savings": 0.0,
+    "savings_per_prompt": 0.0,
+    "mix": {
+     "cheap": 0.0,
+     "balanced": 0.0,
+     "flagship": 1.0
+    }
+   },
+   "random_test": {
+    "quality": 1.0,
+    "savings_per_prompt": 0.0
+   }
+  },
+  {
+   "eps": 0.01,
+   "tune": {
+    "quality": 1.0,
+    "savings": 0.0,
+    "savings_per_prompt": 0.0,
+    "mix": {
+     "cheap": 0.0,
+     "balanced": 0.0,
+     "flagship": 1.0
+    }
+   },
+   "test": {
+    "quality": 1.0,
+    "savings": 0.0,
+    "savings_per_prompt": 0.0,
+    "mix": {
+     "cheap": 0.0,
+     "balanced": 0.0,
+     "flagship": 1.0
+    }
+   },
+   "random_test": {
+    "quality": 1.0,
+    "savings_per_prompt": 0.0
+   }
+  },
+  {
+   "eps": 0.02,
+   "tune": {
+    "quality": 1.0,
+    "savings": 0.0,
+    "savings_per_prompt": 0.0,
+    "mix": {
+     "cheap": 0.0,
+     "balanced": 0.0,
+     "flagship": 1.0
+    }
+   },
+   "test": {
+    "quality": 1.0,
+    "savings": 0.0,
+    "savings_per_prompt": 0.0,
+    "mix": {
+     "cheap": 0.0,
+     "balanced": 0.0,
+     "flagship": 1.0
+    }
+   },
+   "random_test": {
+    "quality": 1.0,
+    "savings_per_prompt": 0.0
+   }
+  },
+  {
+   "eps": 0.03,
+   "tune": {
+    "quality": 1.0,
+    "savings": 0.0,
+    "savings_per_prompt": 0.0,
+    "mix": {
+     "cheap": 0.0,
+     "balanced": 0.0,
+     "flagship": 1.0
+    }
+   },
+   "test": {
+    "quality": 1.0,
+    "savings": 0.0,
+    "savings_per_prompt": 0.0,
+    "mix": {
+     "cheap": 0.0,
+     "balanced": 0.0,
+     "flagship": 1.0
+    }
+   },
+   "random_test": {
+    "quality": 1.0,
+    "savings_per_prompt": 0.0
+   }
+  },
+  {
+   "eps": 0.04,
+   "tune": {
+    "quality": 1.0,
+    "savings": 0.0,
+    "savings_per_prompt": 0.0,
+    "mix": {
+     "cheap": 0.0,
+     "balanced": 0.0,
+     "flagship": 1.0
+    }
+   },
+   "test": {
+    "quality": 1.0,
+    "savings": 0.0,
+    "savings_per_prompt": 0.0,
+    "mix": {
+     "cheap": 0.0,
+     "balanced": 0.0,
+     "flagship": 1.0
+    }
+   },
+   "random_test": {
+    "quality": 1.0,
+    "savings_per_prompt": 0.0
+   }
+  },
+  {
+   "eps": 0.05,
+   "tune": {
+    "quality": 1.0,
+    "savings": 0.0,
+    "savings_per_prompt": 0.0,
+    "mix": {
+     "cheap": 0.0,
+     "balanced": 0.0,
+     "flagship": 1.0
+    }
+   },
+   "test": {
+    "quality": 1.0,
+    "savings": 0.0,
+    "savings_per_prompt": 0.0,
+    "mix": {
+     "cheap": 0.0,
+     "balanced": 0.0,
+     "flagship": 1.0
+    }
+   },
+   "random_test": {
+    "quality": 1.0,
+    "savings_per_prompt": 0.0
+   }
+  },
+  {
+   "eps": 0.06,
+   "tune": {
+    "quality": 1.0,
+    "savings": 0.0,
+    "savings_per_prompt": 0.0,
+    "mix": {
+     "cheap": 0.0,
+     "balanced": 0.0,
+     "flagship": 1.0
+    }
+   },
+   "test": {
+    "quality": 1.0,
+    "savings": 0.0,
+    "savings_per_prompt": 0.0,
+    "mix": {
+     "cheap": 0.0,
+     "balanced": 0.0,
+     "flagship": 1.0
+    }
+   },
+   "random_test": {
+    "quality": 1.0,
+    "savings_per_prompt": 0.0
+   }
+  },
+  {
+   "eps": 0.07,
+   "tune": {
+    "quality": 1.0,
+    "savings": 0.0,
+    "savings_per_prompt": 0.0,
+    "mix": {
+     "cheap": 0.0,
+     "balanced": 0.0,
+     "flagship": 1.0
+    }
+   },
+   "test": {
+    "quality": 1.0,
+    "savings": 0.0,
+    "savings_per_prompt": 0.0,
+    "mix": {
+     "cheap": 0.0,
+     "balanced": 0.0,
+     "flagship": 1.0
+    }
+   },
+   "random_test": {
+    "quality": 1.0,
+    "savings_per_prompt": 0.0
+   }
+  },
+  {
+   "eps": 0.08,
+   "tune": {
+    "quality": 1.0,
+    "savings": 0.0,
+    "savings_per_prompt": 0.0,
+    "mix": {
+     "cheap": 0.0,
+     "balanced": 0.0,
+     "flagship": 1.0
+    }
+   },
+   "test": {
+    "quality": 1.0,
+    "savings": 0.0,
+    "savings_per_prompt": 0.0,
+    "mix": {
+     "cheap": 0.0,
+     "balanced": 0.0,
+     "flagship": 1.0
+    }
+   },
+   "random_test": {
+    "quality": 1.0,
+    "savings_per_prompt": 0.0
+   }
+  },
+  {
+   "eps": 0.09,
+   "tune": {
+    "quality": 1.0,
+    "savings": 0.0,
+    "savings_per_prompt": 0.0,
+    "mix": {
+     "cheap": 0.0,
+     "balanced": 0.0,
+     "flagship": 1.0
+    }
+   },
+   "test": {
+    "quality": 1.0,
+    "savings": 0.0,
+    "savings_per_prompt": 0.0,
+    "mix": {
+     "cheap": 0.0,
+     "balanced": 0.0,
+     "flagship": 1.0
+    }
+   },
+   "random_test": {
+    "quality": 1.0,
+    "savings_per_prompt": 0.0
+   }
+  },
+  {
+   "eps": 0.1,
+   "tune": {
+    "quality": 1.0,
+    "savings": 0.0,
+    "savings_per_prompt": 0.0,
+    "mix": {
+     "cheap": 0.0,
+     "balanced": 0.0,
+     "flagship": 1.0
+    }
+   },
+   "test": {
+    "quality": 1.0,
+    "savings": 0.0,
+    "savings_per_prompt": 0.0,
+    "mix": {
+     "cheap": 0.0,
+     "balanced": 0.0,
+     "flagship": 1.0
+    }
+   },
+   "random_test": {
+    "quality": 1.0,
+    "savings_per_prompt": 0.0
+   }
+  },
+  {
+   "eps": 0.11,
+   "tune": {
+    "quality": 1.0,
+    "savings": 0.0,
+    "savings_per_prompt": 0.0,
+    "mix": {
+     "cheap": 0.0,
+     "balanced": 0.0,
+     "flagship": 1.0
+    }
+   },
+   "test": {
+    "quality": 1.0,
+    "savings": 0.0,
+    "savings_per_prompt": 0.0,
+    "mix": {
+     "cheap": 0.0,
+     "balanced": 0.0,
+     "flagship": 1.0
+    }
+   },
+   "random_test": {
+    "quality": 1.0,
+    "savings_per_prompt": 0.0
+   }
+  },
+  {
+   "eps": 0.12,
+   "tune": {
+    "quality": 1.0,
+    "savings": 0.0,
+    "savings_per_prompt": 0.0,
+    "mix": {
+     "cheap": 0.0,
+     "balanced": 0.0,
+     "flagship": 1.0
+    }
+   },
+   "test": {
+    "quality": 1.0,
+    "savings": 0.0,
+    "savings_per_prompt": 0.0,
+    "mix": {
+     "cheap": 0.0,
+     "balanced": 0.0,
+     "flagship": 1.0
+    }
+   },
+   "random_test": {
+    "quality": 1.0,
+    "savings_per_prompt": 0.0
+   }
+  },
+  {
+   "eps": 0.13,
+   "tune": {
+    "quality": 1.0,
+    "savings": 0.0,
+    "savings_per_prompt": 0.0,
+    "mix": {
+     "cheap": 0.0,
+     "balanced": 0.0,
+     "flagship": 1.0
+    }
+   },
+   "test": {
+    "quality": 1.0,
+    "savings": 0.0,
+    "savings_per_prompt": 0.0,
+    "mix": {
+     "cheap": 0.0,
+     "balanced": 0.0,
+     "flagship": 1.0
+    }
+   },
+   "random_test": {
+    "quality": 1.0,
+    "savings_per_prompt": 0.0
+   }
+  },
+  {
+   "eps": 0.14,
+   "tune": {
+    "quality": 1.0,
+    "savings": 0.0,
+    "savings_per_prompt": 0.0,
+    "mix": {
+     "cheap": 0.0,
+     "balanced": 0.0,
+     "flagship": 1.0
+    }
+   },
+   "test": {
+    "quality": 1.0,
+    "savings": 0.0,
+    "savings_per_prompt": 0.0,
+    "mix": {
+     "cheap": 0.0,
+     "balanced": 0.0,
+     "flagship": 1.0
+    }
+   },
+   "random_test": {
+    "quality": 1.0,
+    "savings_per_prompt": 0.0
+   }
+  },
+  {
+   "eps": 0.15,
+   "tune": {
+    "quality": 1.0,
+    "savings": 0.0,
+    "savings_per_prompt": 0.0,
+    "mix": {
+     "cheap": 0.0,
+     "balanced": 0.0,
+     "flagship": 1.0
+    }
+   },
+   "test": {
+    "quality": 1.0,
+    "savings": 0.0,
+    "savings_per_prompt": 0.0,
+    "mix": {
+     "cheap": 0.0,
+     "balanced": 0.0,
+     "flagship": 1.0
+    }
+   },
+   "random_test": {
+    "quality": 1.0,
+    "savings_per_prompt": 0.0
+   }
+  },
+  {
+   "eps": 0.16,
+   "tune": {
+    "quality": 1.0,
+    "savings": 0.0,
+    "savings_per_prompt": 0.0,
+    "mix": {
+     "cheap": 0.0,
+     "balanced": 0.0,
+     "flagship": 1.0
+    }
+   },
+   "test": {
+    "quality": 1.0,
+    "savings": 0.0,
+    "savings_per_prompt": 0.0,
+    "mix": {
+     "cheap": 0.0,
+     "balanced": 0.0,
+     "flagship": 1.0
+    }
+   },
+   "random_test": {
+    "quality": 1.0,
+    "savings_per_prompt": 0.0
+   }
+  },
+  {
+   "eps": 0.17,
+   "tune": {
+    "quality": 1.0,
+    "savings": 0.0,
+    "savings_per_prompt": 0.0,
+    "mix": {
+     "cheap": 0.0,
+     "balanced": 0.0,
+     "flagship": 1.0
+    }
+   },
+   "test": {
+    "quality": 1.0,
+    "savings": 0.0,
+    "savings_per_prompt": 0.0,
+    "mix": {
+     "cheap": 0.0,
+     "balanced": 0.0,
+     "flagship": 1.0
+    }
+   },
+   "random_test": {
+    "quality": 1.0,
+    "savings_per_prompt": 0.0
+   }
+  },
+  {
+   "eps": 0.18,
+   "tune": {
+    "quality": 1.0,
+    "savings": 0.0,
+    "savings_per_prompt": 0.0,
+    "mix": {
+     "cheap": 0.0,
+     "balanced": 0.0,
+     "flagship": 1.0
+    }
+   },
+   "test": {
+    "quality": 1.0,
+    "savings": 0.0,
+    "savings_per_prompt": 0.0,
+    "mix": {
+     "cheap": 0.0,
+     "balanced": 0.0,
+     "flagship": 1.0
+    }
+   },
+   "random_test": {
+    "quality": 1.0,
+    "savings_per_prompt": 0.0
+   }
+  },
+  {
+   "eps": 0.19,
+   "tune": {
+    "quality": 1.0,
+    "savings": 0.0,
+    "savings_per_prompt": 0.0,
+    "mix": {
+     "cheap": 0.0,
+     "balanced": 0.0,
+     "flagship": 1.0
+    }
+   },
+   "test": {
+    "quality": 1.0,
+    "savings": 0.0,
+    "savings_per_prompt": 0.0,
+    "mix": {
+     "cheap": 0.0,
+     "balanced": 0.0,
+     "flagship": 1.0
+    }
+   },
+   "random_test": {
+    "quality": 1.0,
+    "savings_per_prompt": 0.0
+   }
+  },
+  {
+   "eps": 0.2,
+   "tune": {
+    "quality": 1.0,
+    "savings": 0.0,
+    "savings_per_prompt": 0.0,
+    "mix": {
+     "cheap": 0.0,
+     "balanced": 0.0,
+     "flagship": 1.0
+    }
+   },
+   "test": {
+    "quality": 1.0,
+    "savings": 0.0,
+    "savings_per_prompt": 0.0,
+    "mix": {
+     "cheap": 0.0,
+     "balanced": 0.0,
+     "flagship": 1.0
+    }
+   },
+   "random_test": {
+    "quality": 1.0,
+    "savings_per_prompt": 0.0
+   }
+  },
+  {
+   "eps": 0.21,
+   "tune": {
+    "quality": 1.0,
+    "savings": 0.0,
+    "savings_per_prompt": 0.0,
+    "mix": {
+     "cheap": 0.0,
+     "balanced": 0.0,
+     "flagship": 1.0
+    }
+   },
+   "test": {
+    "quality": 1.0,
+    "savings": 0.0,
+    "savings_per_prompt": 0.0,
+    "mix": {
+     "cheap": 0.0,
+     "balanced": 0.0,
+     "flagship": 1.0
+    }
+   },
+   "random_test": {
+    "quality": 1.0,
+    "savings_per_prompt": 0.0
+   }
+  },
+  {
+   "eps": 0.22,
+   "tune": {
+    "quality": 1.0,
+    "savings": 0.0006583242264748268,
+    "savings_per_prompt": 0.004383339171416744,
+    "mix": {
+     "cheap": 0.0,
+     "balanced": 0.0064516129032258064,
+     "flagship": 0.9935483870967742
+    }
+   },
+   "test": {
+    "quality": 1.0,
+    "savings": 0.0007181519040082573,
+    "savings_per_prompt": 0.006365734140406335,
+    "mix": {
+     "cheap": 0.0,
+     "balanced": 0.014634146341463415,
+     "flagship": 0.9853658536585366
+    }
+   },
+   "random_test": {
+    "quality": 0.993718024985128,
+    "savings_per_prompt": 0.007063447521866999
+   }
+  },
+  {
+   "eps": 0.23,
+   "tune": {
+    "quality": 0.9935483870967742,
+    "savings": 0.002348015103435408,
+    "savings_per_prompt": 0.014301328048176154,
+    "mix": {
+     "cheap": 0.0,
+     "balanced": 0.025806451612903226,
+     "flagship": 0.9741935483870968
+    }
+   },
+   "test": {
+    "quality": 1.0,
+    "savings": 0.0012022574555166088,
+    "savings_per_prompt": 0.012593852581920601,
+    "mix": {
+     "cheap": 0.0,
+     "balanced": 0.02926829268292683,
+     "flagship": 0.9707317073170731
+    }
+   },
+   "random_test": {
+    "quality": 0.9874360499702557,
+    "savings_per_prompt": 0.014126895043733998
+   }
+  },
+  {
+   "eps": 0.24,
+   "tune": {
+    "quality": 0.9935483870967742,
+    "savings": 0.004177836019158998,
+    "savings_per_prompt": 0.023694290818950716,
+    "mix": {
+     "cheap": 0.0,
+     "balanced": 0.04516129032258064,
+     "flagship": 0.9548387096774194
+    }
+   },
+   "test": {
+    "quality": 1.0,
+    "savings": 0.0014422884072166076,
+    "savings_per_prompt": 0.015042778289039648,
+    "mix": {
+     "cheap": 0.0,
+     "balanced": 0.03414634146341464,
+     "flagship": 0.9658536585365853
+    }
+   },
+   "random_test": {
+    "quality": 0.9853420582986318,
+    "savings_per_prompt": 0.016481377551022997
+   }
+  },
+  {
+   "eps": 0.25,
+   "tune": {
+    "quality": 0.9935483870967742,
+    "savings": 0.006679611557619536,
+    "savings_per_prompt": 0.03712486150503582,
+    "mix": {
+     "cheap": 0.0,
+     "balanced": 0.07096774193548387,
+     "flagship": 0.9290322580645162
+    }
+   },
+   "test": {
+    "quality": 1.0,
+    "savings": 0.0029817861149534775,
+    "savings_per_prompt": 0.02308905027482575,
+    "mix": {
+     "cheap": 0.0,
+     "balanced": 0.05365853658536585,
+     "flagship": 0.9463414634146341
+    }
+   },
+   "random_test": {
+    "quality": 0.9769660916121357,
+    "savings_per_prompt": 0.025899307580178995
+   }
+  },
+  {
+   "eps": 0.26,
+   "tune": {
+    "quality": 0.9870967741935484,
+    "savings": 0.008617040864884573,
+    "savings_per_prompt": 0.04539846234740241,
+    "mix": {
+     "cheap": 0.0,
+     "balanced": 0.09032258064516129,
+     "flagship": 0.9096774193548387
+    }
+   },
+   "test": {
+    "quality": 0.9951219512195122,
+    "savings": 0.005223584626114497,
+    "savings_per_prompt": 0.029072589236878374,
+    "mix": {
+     "cheap": 0.0,
+     "balanced": 0.06341463414634146,
+     "flagship": 0.9365853658536586
+    }
+   },
+   "random_test": {
+    "quality": 0.9727781082688877,
+    "savings_per_prompt": 0.030608272594756996
+   }
+  },
+  {
+   "eps": 0.27,
+   "tune": {
+    "quality": 0.9870967741935484,
+    "savings": 0.008617040864884573,
+    "savings_per_prompt": 0.04539846234740241,
+    "mix": {
+     "cheap": 0.0,
+     "balanced": 0.09032258064516129,
+     "flagship": 0.9096774193548387
+    }
+   },
+   "test": {
+    "quality": 0.9951219512195122,
+    "savings": 0.005223584626114497,
+    "savings_per_prompt": 0.029072589236878374,
+    "mix": {
+     "cheap": 0.0,
+     "balanced": 0.06341463414634146,
+     "flagship": 0.9365853658536586
+    }
+   },
+   "random_test": {
+    "quality": 0.9727781082688877,
+    "savings_per_prompt": 0.030608272594756996
+   }
+  },
+  {
+   "eps": 0.28,
+   "tune": {
+    "quality": 0.9870967741935484,
+    "savings": 0.008617040864884573,
+    "savings_per_prompt": 0.04539846234740241,
+    "mix": {
+     "cheap": 0.0,
+     "balanced": 0.09032258064516129,
+     "flagship": 0.9096774193548387
+    }
+   },
+   "test": {
+    "quality": 0.9951219512195122,
+    "savings": 0.006706633006261398,
+    "savings_per_prompt": 0.034259170193667456,
+    "mix": {
+     "cheap": 0.0,
+     "balanced": 0.07317073170731707,
+     "flagship": 0.926829268292683
+    }
+   },
+   "random_test": {
+    "quality": 0.9685901249256396,
+    "savings_per_prompt": 0.035317237609334994
+   }
+  },
+  {
+   "eps": 0.29,
+   "tune": {
+    "quality": 0.9806451612903225,
+    "savings": 0.010322753435696774,
+    "savings_per_prompt": 0.05575719921977054,
+    "mix": {
+     "cheap": 0.0,
+     "balanced": 0.10967741935483871,
+     "flagship": 0.8903225806451613
+    }
+   },
+   "test": {
+    "quality": 0.9951219512195122,
+    "savings": 0.00859129651651036,
+    "savings_per_prompt": 0.03996924371634322,
+    "mix": {
+     "cheap": 0.0,
+     "balanced": 0.08292682926829269,
+     "flagship": 0.9170731707317074
+    }
+   },
+   "random_test": {
+    "quality": 0.9644021415823915,
+    "savings_per_prompt": 0.040026202623912994
+   }
+  },
+  {
+   "eps": 0.3,
+   "tune": {
+    "quality": 0.9806451612903225,
+    "savings": 0.010322753435696774,
+    "savings_per_prompt": 0.05575719921977054,
+    "mix": {
+     "cheap": 0.0,
+     "balanced": 0.10967741935483871,
+     "flagship": 0.8903225806451613
+    }
+   },
+   "test": {
+    "quality": 0.9902439024390244,
+    "savings": 0.009330960628454066,
+    "savings_per_prompt": 0.044291234686662836,
+    "mix": {
+     "cheap": 0.0,
+     "balanced": 0.09268292682926829,
+     "flagship": 0.9073170731707317
+    }
+   },
+   "random_test": {
+    "quality": 0.9602141582391434,
+    "savings_per_prompt": 0.04473516763849099
+   }
+  },
+  {
+   "eps": 0.31,
+   "tune": {
+    "quality": 0.9806451612903225,
+    "savings": 0.010322753435696774,
+    "savings_per_prompt": 0.05575719921977054,
+    "mix": {
+     "cheap": 0.0,
+     "balanced": 0.10967741935483871,
+     "flagship": 0.8903225806451613
+    }
+   },
+   "test": {
+    "quality": 0.9902439024390244,
+    "savings": 0.009928611818839306,
+    "savings_per_prompt": 0.04979237284516524,
+    "mix": {
+     "cheap": 0.0,
+     "balanced": 0.1024390243902439,
+     "flagship": 0.8975609756097561
+    }
+   },
+   "random_test": {
+    "quality": 0.9560261748958954,
+    "savings_per_prompt": 0.04944413265306898
+   }
+  },
+  {
+   "eps": 0.32,
+   "tune": {
+    "quality": 0.9806451612903225,
+    "savings": 0.010322753435696774,
+    "savings_per_prompt": 0.05575719921977054,
+    "mix": {
+     "cheap": 0.0,
+     "balanced": 0.10967741935483871,
+     "flagship": 0.8903225806451613
+    }
+   },
+   "test": {
+    "quality": 0.9902439024390244,
+    "savings": 0.010443772587818256,
+    "savings_per_prompt": 0.051981240887691814,
+    "mix": {
+     "cheap": 0.0,
+     "balanced": 0.1073170731707317,
+     "flagship": 0.8926829268292683
+    }
+   },
+   "random_test": {
+    "quality": 0.9539321832242713,
+    "savings_per_prompt": 0.05179861516035799
+   }
+  },
+  {
+   "eps": 0.33,
+   "tune": {
+    "quality": 0.9806451612903225,
+    "savings": 0.011217337864044996,
+    "savings_per_prompt": 0.058643528312208676,
+    "mix": {
+     "cheap": 0.0,
+     "balanced": 0.11612903225806452,
+     "flagship": 0.8838709677419355
+    }
+   },
+   "test": {
+    "quality": 0.9853658536585366,
+    "savings": 0.013309748620954243,
+    "savings_per_prompt": 0.0617486351537381,
+    "mix": {
+     "cheap": 0.0,
+     "balanced": 0.12682926829268293,
+     "flagship": 0.8731707317073171
+    }
+   },
+   "random_test": {
+    "quality": 0.9455562165377751,
+    "savings_per_prompt": 0.06121654518951399
+   }
+  },
+  {
+   "eps": 0.34,
+   "tune": {
+    "quality": 0.9806451612903225,
+    "savings": 0.011217337864044996,
+    "savings_per_prompt": 0.058643528312208676,
+    "mix": {
+     "cheap": 0.0,
+     "balanced": 0.11612903225806452,
+     "flagship": 0.8838709677419355
+    }
+   },
+   "test": {
+    "quality": 0.9853658536585366,
+    "savings": 0.014484832761184063,
+    "savings_per_prompt": 0.06408260672843805,
+    "mix": {
+     "cheap": 0.0,
+     "balanced": 0.13170731707317074,
+     "flagship": 0.8682926829268293
+    }
+   },
+   "random_test": {
+    "quality": 0.9434622248661511,
+    "savings_per_prompt": 0.06357102769680298
+   }
+  },
+  {
+   "eps": 0.35,
+   "tune": {
+    "quality": 0.9806451612903225,
+    "savings": 0.011217337864044996,
+    "savings_per_prompt": 0.058643528312208676,
+    "mix": {
+     "cheap": 0.0,
+     "balanced": 0.11612903225806452,
+     "flagship": 0.8838709677419355
+    }
+   },
+   "test": {
+    "quality": 0.9853658536585366,
+    "savings": 0.014484832761184063,
+    "savings_per_prompt": 0.06408260672843805,
+    "mix": {
+     "cheap": 0.0,
+     "balanced": 0.13170731707317074,
+     "flagship": 0.8682926829268293
+    }
+   },
+   "random_test": {
+    "quality": 0.9434622248661511,
+    "savings_per_prompt": 0.06357102769680298
+   }
+  },
+  {
+   "eps": 0.36,
+   "tune": {
+    "quality": 0.9612903225806452,
+    "savings": 0.0188317076495218,
+    "savings_per_prompt": 0.07424687712272914,
+    "mix": {
+     "cheap": 0.0,
+     "balanced": 0.14838709677419354,
+     "flagship": 0.8516129032258064
+    }
+   },
+   "test": {
+    "quality": 0.9804878048780488,
+    "savings": 0.015029269542466084,
+    "savings_per_prompt": 0.06877470577342953,
+    "mix": {
+     "cheap": 0.0,
+     "balanced": 0.14146341463414633,
+     "flagship": 0.8585365853658536
+    }
+   },
+   "random_test": {
+    "quality": 0.939274241522903,
+    "savings_per_prompt": 0.06827999271138098
+   }
+  },
+  {
+   "eps": 0.37,
+   "tune": {
+    "quality": 0.9612903225806452,
+    "savings": 0.022957413381223035,
+    "savings_per_prompt": 0.08216736963691808,
+    "mix": {
+     "cheap": 0.0,
+     "balanced": 0.16129032258064516,
+     "flagship": 0.8387096774193549
+    }
+   },
+   "test": {
+    "quality": 0.9804878048780488,
+    "savings": 0.01688562751595779,
+    "savings_per_prompt": 0.07367890667324381,
+    "mix": {
+     "cheap": 0.0,
+     "balanced": 0.15121951219512195,
+     "flagship": 0.848780487804878
+    }
+   },
+   "random_test": {
+    "quality": 0.935086258179655,
+    "savings_per_prompt": 0.07298895772595898
+   }
+  },
+  {
+   "eps": 0.38,
+   "tune": {
+    "quality": 0.9612903225806452,
+    "savings": 0.030728413158832346,
+    "savings_per_prompt": 0.10545584453647205,
+    "mix": {
+     "cheap": 0.0,
+     "balanced": 0.2064516129032258,
+     "flagship": 0.7935483870967742
+    }
+   },
+   "test": {
+    "quality": 0.975609756097561,
+    "savings": 0.02000360369919396,
+    "savings_per_prompt": 0.08083895198636004,
+    "mix": {
+     "cheap": 0.0,
+     "balanced": 0.16585365853658537,
+     "flagship": 0.8341463414634146
+    }
+   },
+   "random_test": {
+    "quality": 0.9288042831647829,
+    "savings_per_prompt": 0.08005240524782599
+   }
+  },
+  {
+   "eps": 0.39,
+   "tune": {
+    "quality": 0.9548387096774194,
+    "savings": 0.03603828945700793,
+    "savings_per_prompt": 0.12545395126269926,
+    "mix": {
+     "cheap": 0.0,
+     "balanced": 0.24516129032258063,
+     "flagship": 0.7548387096774194
+    }
+   },
+   "test": {
+    "quality": 0.9609756097560975,
+    "savings": 0.026353425196391833,
+    "savings_per_prompt": 0.09560250019645741,
+    "mix": {
+     "cheap": 0.0,
+     "balanced": 0.1951219512195122,
+     "flagship": 0.8048780487804879
+    }
+   },
+   "random_test": {
+    "quality": 0.9162403331350387,
+    "savings_per_prompt": 0.09417930029155998
+   }
+  },
+  {
+   "eps": 0.4,
+   "tune": {
+    "quality": 0.9548387096774194,
+    "savings": 0.040326364295057315,
+    "savings_per_prompt": 0.13511784487371148,
+    "mix": {
+     "cheap": 0.0,
+     "balanced": 0.2709677419354839,
+     "flagship": 0.7290322580645161
+    }
+   },
+   "test": {
+    "quality": 0.9560975609756097,
+    "savings": 0.030201684227960768,
+    "savings_per_prompt": 0.1101952647824367,
+    "mix": {
+     "cheap": 0.0,
+     "balanced": 0.22439024390243903,
+     "flagship": 0.775609756097561
+    }
+   },
+   "random_test": {
+    "quality": 0.9036763831052944,
+    "savings_per_prompt": 0.10830619533529398
+   }
+  },
+  {
+   "eps": 0.41,
+   "tune": {
+    "quality": 0.9419354838709677,
+    "savings": 0.048561275805090065,
+    "savings_per_prompt": 0.1530720404248453,
+    "mix": {
+     "cheap": 0.0,
+     "balanced": 0.3096774193548387,
+     "flagship": 0.6903225806451613
+    }
+   },
+   "test": {
+    "quality": 0.926829268292683,
+    "savings": 0.03698239686756377,
+    "savings_per_prompt": 0.1376081590063845,
+    "mix": {
+     "cheap": 0.0,
+     "balanced": 0.28780487804878047,
+     "flagship": 0.7121951219512195
+    }
+   },
+   "random_test": {
+    "quality": 0.876454491374182,
+    "savings_per_prompt": 0.13891446793005097
+   }
+  },
+  {
+   "eps": 0.42,
+   "tune": {
+    "quality": 0.9419354838709677,
+    "savings": 0.05161926716294052,
+    "savings_per_prompt": 0.15930393846682753,
+    "mix": {
+     "cheap": 0.0,
+     "balanced": 0.3225806451612903,
+     "flagship": 0.6774193548387096
+    }
+   },
+   "test": {
+    "quality": 0.9170731707317074,
+    "savings": 0.04434377737549766,
+    "savings_per_prompt": 0.1578672670499823,
+    "mix": {
+     "cheap": 0.0,
+     "balanced": 0.32682926829268294,
+     "flagship": 0.6731707317073171
+    }
+   },
+   "random_test": {
+    "quality": 0.8597025580011898,
+    "savings_per_prompt": 0.15775032798836297
+   }
+  },
+  {
+   "eps": 0.43,
+   "tune": {
+    "quality": 0.9419354838709677,
+    "savings": 0.06363721146005452,
+    "savings_per_prompt": 0.17903206921960063,
+    "mix": {
+     "cheap": 0.0,
+     "balanced": 0.36129032258064514,
+     "flagship": 0.6387096774193548
+    }
+   },
+   "test": {
+    "quality": 0.9024390243902439,
+    "savings": 0.061702996957882617,
+    "savings_per_prompt": 0.1882408234186567,
+    "mix": {
+     "cheap": 0.0,
+     "balanced": 0.3853658536585366,
+     "flagship": 0.6146341463414634
+    }
+   },
+   "random_test": {
+    "quality": 0.8345746579417014,
+    "savings_per_prompt": 0.18600411807583095
+   }
+  },
+  {
+   "eps": 0.44,
+   "tune": {
+    "quality": 0.9354838709677419,
+    "savings": 0.06682146333064698,
+    "savings_per_prompt": 0.18535213833528477,
+    "mix": {
+     "cheap": 0.0,
+     "balanced": 0.3741935483870968,
+     "flagship": 0.6258064516129033
+    }
+   },
+   "test": {
+    "quality": 0.8926829268292683,
+    "savings": 0.07122061238300914,
+    "savings_per_prompt": 0.2096298116015862,
+    "mix": {
+     "cheap": 0.0,
+     "balanced": 0.43414634146341463,
+     "flagship": 0.5658536585365853
+    }
+   },
+   "random_test": {
+    "quality": 0.813634741225461,
+    "savings_per_prompt": 0.20954894314872097
+   }
+  },
+  {
+   "eps": 0.45,
+   "tune": {
+    "quality": 0.9161290322580645,
+    "savings": 0.07753901999842161,
+    "savings_per_prompt": 0.20739686744014627,
+    "mix": {
+     "cheap": 0.0,
+     "balanced": 0.4129032258064516,
+     "flagship": 0.5870967741935483
+    }
+   },
+   "test": {
+    "quality": 0.8780487804878049,
+    "savings": 0.10149767021170597,
+    "savings_per_prompt": 0.2311743870382582,
+    "mix": {
+     "cheap": 0.0,
+     "balanced": 0.47317073170731705,
+     "flagship": 0.526829268292683
+    }
+   },
+   "random_test": {
+    "quality": 0.7968828078524688,
+    "savings_per_prompt": 0.22838480320703292
+   }
+  },
+  {
+   "eps": 0.46,
+   "tune": {
+    "quality": 0.8774193548387097,
+    "savings": 0.1098597982223094,
+    "savings_per_prompt": 0.24502701634925078,
+    "mix": {
+     "cheap": 0.0,
+     "balanced": 0.4838709677419355,
+     "flagship": 0.5161290322580645
+    }
+   },
+   "test": {
+    "quality": 0.8341463414634146,
+    "savings": 0.12555198222865172,
+    "savings_per_prompt": 0.2705233683199288,
+    "mix": {
+     "cheap": 0.014634146341463415,
+     "balanced": 0.5219512195121951,
+     "flagship": 0.4634146341463415
+    }
+   },
+   "random_test": {
+    "quality": 0.7656632956573468,
+    "savings_per_prompt": 0.2661870879910572
+   }
+  },
+  {
+   "eps": 0.47,
+   "tune": {
+    "quality": 0.8709677419354839,
+    "savings": 0.12616083150199786,
+    "savings_per_prompt": 0.2806936791337355,
+    "mix": {
+     "cheap": 0.01935483870967742,
+     "balanced": 0.5225806451612903,
+     "flagship": 0.45806451612903226
+    }
+   },
+   "test": {
+    "quality": 0.8097560975609757,
+    "savings": 0.14472365385337027,
+    "savings_per_prompt": 0.30425952234826475,
+    "mix": {
+     "cheap": 0.02926829268292683,
+     "balanced": 0.551219512195122,
+     "flagship": 0.4195121951219512
+    }
+   },
+   "random_test": {
+    "quality": 0.742819750148721,
+    "savings_per_prompt": 0.29457144274592556
+   }
+  },
+  {
+   "eps": 0.48,
+   "tune": {
+    "quality": 0.8516129032258064,
+    "savings": 0.1499006774546071,
+    "savings_per_prompt": 0.31495774015368133,
+    "mix": {
+     "cheap": 0.03225806451612903,
+     "balanced": 0.5612903225806452,
+     "flagship": 0.4064516129032258
+    }
+   },
+   "test": {
+    "quality": 0.8,
+    "savings": 0.15143857633825342,
+    "savings_per_prompt": 0.31967577960113197,
+    "mix": {
+     "cheap": 0.03414634146341464,
+     "balanced": 0.5707317073170731,
+     "flagship": 0.3951219512195122
+    }
+   },
+   "random_test": {
+    "quality": 0.7310172516359309,
+    "savings_per_prompt": 0.3087418593454596
+   }
+  },
+  {
+   "eps": 0.49,
+   "tune": {
+    "quality": 0.832258064516129,
+    "savings": 0.16920992723281436,
+    "savings_per_prompt": 0.33972827101868297,
+    "mix": {
+     "cheap": 0.04516129032258064,
+     "balanced": 0.5870967741935483,
+     "flagship": 0.36774193548387096
+    }
+   },
+   "test": {
+    "quality": 0.7804878048780488,
+    "savings": 0.16862169504552826,
+    "savings_per_prompt": 0.3403677829203586,
+    "mix": {
+     "cheap": 0.03902439024390244,
+     "balanced": 0.6,
+     "flagship": 0.36097560975609755
+    }
+   },
+   "random_test": {
+    "quality": 0.7150267697798929,
+    "savings_per_prompt": 0.32762124095957174
+   }
+  },
+  {
+   "eps": 0.5,
+   "tune": {
+    "quality": 0.8064516129032258,
+    "savings": 0.20111748923318262,
+    "savings_per_prompt": 0.369550263331649,
+    "mix": {
+     "cheap": 0.04516129032258064,
+     "balanced": 0.6451612903225806,
+     "flagship": 0.3096774193548387
+    }
+   },
+   "test": {
+    "quality": 0.7609756097560976,
+    "savings": 0.17792395385971072,
+    "savings_per_prompt": 0.35741400278871294,
+    "mix": {
+     "cheap": 0.04390243902439024,
+     "balanced": 0.6195121951219512,
+     "flagship": 0.33658536585365856
+    }
+   },
+   "random_test": {
+    "quality": 0.7032242712671029,
+    "savings_per_prompt": 0.3417916575591058
+   }
+  },
+  {
+   "eps": 0.51,
+   "tune": {
+    "quality": 0.8,
+    "savings": 0.209302482406028,
+    "savings_per_prompt": 0.3934040408065033,
+    "mix": {
+     "cheap": 0.07741935483870968,
+     "balanced": 0.6258064516129033,
+     "flagship": 0.2967741935483871
+    }
+   },
+   "test": {
+    "quality": 0.7170731707317073,
+    "savings": 0.2166745976084895,
+    "savings_per_prompt": 0.38947145397903543,
+    "mix": {
+     "cheap": 0.06341463414634146,
+     "balanced": 0.6536585365853659,
+     "flagship": 0.28292682926829266
+    }
+   },
+   "random_test": {
+    "quality": 0.6748602022605592,
+    "savings_per_prompt": 0.37728298139164124
+   }
+  },
+  {
+   "eps": 0.52,
+   "tune": {
+    "quality": 0.7806451612903226,
+    "savings": 0.22507239653453148,
+    "savings_per_prompt": 0.40739620451807546,
+    "mix": {
+     "cheap": 0.08387096774193549,
+     "balanced": 0.6387096774193548,
+     "flagship": 0.27741935483870966
+    }
+   },
+   "test": {
+    "quality": 0.7121951219512195,
+    "savings": 0.21813532505107924,
+    "savings_per_prompt": 0.39497795602616953,
+    "mix": {
+     "cheap": 0.06341463414634146,
+     "balanced": 0.6634146341463415,
+     "flagship": 0.2731707317073171
+    }
+   },
+   "random_test": {
+    "quality": 0.6706722189173112,
+    "savings_per_prompt": 0.38199194640621925
+   }
+  },
+  {
+   "eps": 0.53,
+   "tune": {
+    "quality": 0.7741935483870968,
+    "savings": 0.2355148344145983,
+    "savings_per_prompt": 0.42202456555759266,
+    "mix": {
+     "cheap": 0.09032258064516129,
+     "balanced": 0.6580645161290323,
+     "flagship": 0.25161290322580643
+    }
+   },
+   "test": {
+    "quality": 0.697560975609756,
+    "savings": 0.24568890500597163,
+    "savings_per_prompt": 0.4147892241748035,
+    "mix": {
+     "cheap": 0.06341463414634146,
+     "balanced": 0.697560975609756,
+     "flagship": 0.23902439024390243
+    }
+   },
+   "random_test": {
+    "quality": 0.6560142772159429,
+    "savings_per_prompt": 0.39847332395724216
+   }
+  },
+  {
+   "eps": 0.54,
+   "tune": {
+    "quality": 0.7548387096774194,
+    "savings": 0.26335073400879516,
+    "savings_per_prompt": 0.4428020851124433,
+    "mix": {
+     "cheap": 0.09032258064516129,
+     "balanced": 0.6903225806451613,
+     "flagship": 0.21935483870967742
+    }
+   },
+   "test": {
+    "quality": 0.6829268292682927,
+    "savings": 0.2593533705262694,
+    "savings_per_prompt": 0.433724166834473,
+    "mix": {
+     "cheap": 0.06829268292682927,
+     "balanced": 0.7268292682926829,
+     "flagship": 0.2048780487804878
+    }
+   },
+   "random_test": {
+    "quality": 0.6400237953599047,
+    "savings_per_prompt": 0.4173527055713543
+   }
+  },
+  {
+   "eps": 0.55,
+   "tune": {
+    "quality": 0.7483870967741936,
+    "savings": 0.27192305760875024,
+    "savings_per_prompt": 0.45037490210192027,
+    "mix": {
+     "cheap": 0.09032258064516129,
+     "balanced": 0.7032258064516129,
+     "flagship": 0.2064516129032258
+    }
+   },
+   "test": {
+    "quality": 0.6731707317073171,
+    "savings": 0.2748369762828716,
+    "savings_per_prompt": 0.4461940667341314,
+    "mix": {
+     "cheap": 0.07804878048780488,
+     "balanced": 0.7317073170731707,
+     "flagship": 0.1902439024390244
+    }
+   },
+   "random_test": {
+    "quality": 0.631076740035693,
+    "savings_per_prompt": 0.4292121612193995
+   }
+  },
+  {
+   "eps": 0.56,
+   "tune": {
+    "quality": 0.7354838709677419,
+    "savings": 0.28171691580002056,
+    "savings_per_prompt": 0.46207473796428067,
+    "mix": {
+     "cheap": 0.0967741935483871,
+     "balanced": 0.7161290322580646,
+     "flagship": 0.1870967741935484
+    }
+   },
+   "test": {
+    "quality": 0.6731707317073171,
+    "savings": 0.30909379257961456,
+    "savings_per_prompt": 0.4495150456924372,
+    "mix": {
+     "cheap": 0.07804878048780488,
+     "balanced": 0.7414634146341463,
+     "flagship": 0.18048780487804877
+    }
+   },
+   "random_test": {
+    "quality": 0.6268887566924449,
+    "savings_per_prompt": 0.4339211262339775
+   }
+  },
+  {
+   "eps": 0.57,
+   "tune": {
+    "quality": 0.7290322580645161,
+    "savings": 0.2961582010746491,
+    "savings_per_prompt": 0.48158595842040125,
+    "mix": {
+     "cheap": 0.1032258064516129,
+     "balanced": 0.7419354838709677,
+     "flagship": 0.15483870967741936
+    }
+   },
+   "test": {
+    "quality": 0.6536585365853659,
+    "savings": 0.32005359936440314,
+    "savings_per_prompt": 0.46316900593341215,
+    "mix": {
+     "cheap": 0.08780487804878048,
+     "balanced": 0.751219512195122,
+     "flagship": 0.16097560975609757
+    }
+   },
+   "random_test": {
+    "quality": 0.6158477096966092,
+    "savings_per_prompt": 0.44813506438931167
+   }
+  },
+  {
+   "eps": 0.58,
+   "tune": {
+    "quality": 0.7161290322580646,
+    "savings": 0.29745938978868103,
+    "savings_per_prompt": 0.48707681985026896,
+    "mix": {
+     "cheap": 0.10967741935483871,
+     "balanced": 0.7419354838709677,
+     "flagship": 0.14838709677419354
+    }
+   },
+   "test": {
+    "quality": 0.6487804878048781,
+    "savings": 0.319749897129592,
+    "savings_per_prompt": 0.4648411727306368,
+    "mix": {
+     "cheap": 0.09268292682926829,
+     "balanced": 0.7560975609756098,
+     "flagship": 0.15121951219512195
+    }
+   },
+   "random_test": {
+    "quality": 0.6103271861986912,
+    "savings_per_prompt": 0.45524203346697883
+   }
+  },
+  {
+   "eps": 0.59,
+   "tune": {
+    "quality": 0.7161290322580646,
+    "savings": 0.29745938978868103,
+    "savings_per_prompt": 0.48707681985026896,
+    "mix": {
+     "cheap": 0.10967741935483871,
+     "balanced": 0.7419354838709677,
+     "flagship": 0.14838709677419354
+    }
+   },
+   "test": {
+    "quality": 0.6341463414634146,
+    "savings": 0.3473828538968474,
+    "savings_per_prompt": 0.47952170703802693,
+    "mix": {
+     "cheap": 0.1024390243902439,
+     "balanced": 0.7609756097560976,
+     "flagship": 0.13658536585365855
+    }
+   },
+   "random_test": {
+    "quality": 0.6013801308744795,
+    "savings_per_prompt": 0.46710148911502397
+   }
+  },
+  {
+   "eps": 0.6,
+   "tune": {
+    "quality": 0.7032258064516129,
+    "savings": 0.31173591465937156,
+    "savings_per_prompt": 0.4980186264228765,
+    "mix": {
+     "cheap": 0.10967741935483871,
+     "balanced": 0.7612903225806451,
+     "flagship": 0.12903225806451613
+    }
+   },
+   "test": {
+    "quality": 0.6292682926829268,
+    "savings": 0.35256327662305564,
+    "savings_per_prompt": 0.48674998810995884,
+    "mix": {
+     "cheap": 0.1073170731707317,
+     "balanced": 0.7658536585365854,
+     "flagship": 0.12682926829268293
+    }
+   },
+   "random_test": {
+    "quality": 0.5958596073765616,
+    "savings_per_prompt": 0.47420845819269114
+   }
+  },
+  {
+   "eps": 0.61,
+   "tune": {
+    "quality": 0.6774193548387096,
+    "savings": 0.3971619123685085,
+    "savings_per_prompt": 0.5227394813292231,
+    "mix": {
+     "cheap": 0.10967741935483871,
+     "balanced": 0.8064516129032258,
+     "flagship": 0.08387096774193549
+    }
+   },
+   "test": {
+    "quality": 0.6,
+    "savings": 0.3804245620243861,
+    "savings_per_prompt": 0.5051482341368245,
+    "mix": {
+     "cheap": 0.11219512195121951,
+     "balanced": 0.7951219512195122,
+     "flagship": 0.09268292682926829
+    }
+   },
+   "random_test": {
+    "quality": 0.5798691255205235,
+    "savings_per_prompt": 0.4930878398068032
+   }
+  },
+  {
+   "eps": 0.62,
+   "tune": {
+    "quality": 0.6774193548387096,
+    "savings": 0.3982154583041395,
+    "savings_per_prompt": 0.5261386912728236,
+    "mix": {
+     "cheap": 0.11612903225806452,
+     "balanced": 0.8,
+     "flagship": 0.08387096774193549
+    }
+   },
+   "test": {
+    "quality": 0.5804878048780487,
+    "savings": 0.3980332019093783,
+    "savings_per_prompt": 0.5192798641563985,
+    "mix": {
+     "cheap": 0.12682926829268293,
+     "balanced": 0.7951219512195122,
+     "flagship": 0.07804878048780488
+    }
+   },
+   "random_test": {
+    "quality": 0.5695895300416419,
+    "savings_per_prompt": 0.5073452995179375
+   }
+  },
+  {
+   "eps": 0.63,
+   "tune": {
+    "quality": 0.6580645161290323,
+    "savings": 0.448000600215695,
+    "savings_per_prompt": 0.5435086076324244,
+    "mix": {
+     "cheap": 0.11612903225806452,
+     "balanced": 0.832258064516129,
+     "flagship": 0.05161290322580645
+    }
+   },
+   "test": {
+    "quality": 0.5609756097560976,
+    "savings": 0.4197481987973867,
+    "savings_per_prompt": 0.5255034387870066,
+    "mix": {
+     "cheap": 0.13170731707317074,
+     "balanced": 0.8097560975609757,
+     "flagship": 0.05853658536585366
+    }
+   },
+   "random_test": {
+    "quality": 0.559881023200476,
+    "savings_per_prompt": 0.5191612336101826
+   }
+  },
+  {
+   "eps": 0.64,
+   "tune": {
+    "quality": 0.6451612903225806,
+    "savings": 0.5127777432368126,
+    "savings_per_prompt": 0.5531311306979169,
+    "mix": {
+     "cheap": 0.11612903225806452,
+     "balanced": 0.8451612903225807,
+     "flagship": 0.03870967741935484
+    }
+   },
+   "test": {
+    "quality": 0.5560975609756098,
+    "savings": 0.40896573024402927,
+    "savings_per_prompt": 0.5288696548322452,
+    "mix": {
+     "cheap": 0.13170731707317074,
+     "balanced": 0.824390243902439,
+     "flagship": 0.04390243902439024
+    }
+   },
+   "random_test": {
+    "quality": 0.5535990481856038,
+    "savings_per_prompt": 0.5262246811320496
+   }
+  },
+  {
+   "eps": 0.65,
+   "tune": {
+    "quality": 0.6451612903225806,
+    "savings": 0.5136840928493027,
+    "savings_per_prompt": 0.5574166026968315,
+    "mix": {
+     "cheap": 0.12258064516129032,
+     "balanced": 0.8387096774193549,
+     "flagship": 0.03870967741935484
+    }
+   },
+   "test": {
+    "quality": 0.5463414634146342,
+    "savings": 0.45420299210550485,
+    "savings_per_prompt": 0.5356787536774461,
+    "mix": {
+     "cheap": 0.13170731707317074,
+     "balanced": 0.8341463414634146,
+     "flagship": 0.03414634146341464
+    }
+   },
+   "random_test": {
+    "quality": 0.5494110648423557,
+    "savings_per_prompt": 0.5309336461466275
+   }
+  },
+  {
+   "eps": 0.66,
+   "tune": {
+    "quality": 0.6387096774193548,
+    "savings": 0.5456847241518665,
+    "savings_per_prompt": 0.5719151671663043,
+    "mix": {
+     "cheap": 0.14193548387096774,
+     "balanced": 0.832258064516129,
+     "flagship": 0.025806451612903226
+    }
+   },
+   "test": {
+    "quality": 0.5463414634146342,
+    "savings": 0.45420299210550485,
+    "savings_per_prompt": 0.5356787536774461,
+    "mix": {
+     "cheap": 0.13170731707317074,
+     "balanced": 0.8341463414634146,
+     "flagship": 0.03414634146341464
+    }
+   },
+   "random_test": {
+    "quality": 0.5494110648423557,
+    "savings_per_prompt": 0.5309336461466275
+   }
+  },
+  {
+   "eps": 0.67,
+   "tune": {
+    "quality": 0.632258064516129,
+    "savings": 0.5468007905629831,
+    "savings_per_prompt": 0.5752548929584443,
+    "mix": {
+     "cheap": 0.14838709677419354,
+     "balanced": 0.8258064516129032,
+     "flagship": 0.025806451612903226
+    }
+   },
+   "test": {
+    "quality": 0.551219512195122,
+    "savings": 0.45563480746412144,
+    "savings_per_prompt": 0.5425907402660631,
+    "mix": {
+     "cheap": 0.14634146341463414,
+     "balanced": 0.8195121951219512,
+     "flagship": 0.03414634146341464
+    }
+   },
+   "random_test": {
+    "quality": 0.5454134443783462,
+    "savings_per_prompt": 0.5381276583358948
+   }
+  },
+  {
+   "eps": 0.68,
+   "tune": {
+    "quality": 0.6258064516129033,
+    "savings": 0.5499031285346367,
+    "savings_per_prompt": 0.5864789540960214,
+    "mix": {
+     "cheap": 0.17419354838709677,
+     "balanced": 0.8,
+     "flagship": 0.025806451612903226
+    }
+   },
+   "test": {
+    "quality": 0.551219512195122,
+    "savings": 0.45563480746412144,
+    "savings_per_prompt": 0.5425907402660631,
+    "mix": {
+     "cheap": 0.14634146341463414,
+     "balanced": 0.8195121951219512,
+     "flagship": 0.03414634146341464
+    }
+   },
+   "random_test": {
+    "quality": 0.5454134443783462,
+    "savings_per_prompt": 0.5381276583358948
+   }
+  },
+  {
+   "eps": 0.69,
+   "tune": {
+    "quality": 0.6193548387096774,
+    "savings": 0.5559157234990423,
+    "savings_per_prompt": 0.6039301382765042,
+    "mix": {
+     "cheap": 0.2129032258064516,
+     "balanced": 0.7612903225806451,
+     "flagship": 0.025806451612903226
+    }
+   },
+   "test": {
+    "quality": 0.5463414634146342,
+    "savings": 0.4578253648664561,
+    "savings_per_prompt": 0.5476980154396014,
+    "mix": {
+     "cheap": 0.15609756097560976,
+     "balanced": 0.8097560975609757,
+     "flagship": 0.03414634146341464
+    }
+   },
+   "random_test": {
+    "quality": 0.5427483640690065,
+    "savings_per_prompt": 0.5429236664620731
+   }
+  },
+  {
+   "eps": 0.7,
+   "tune": {
+    "quality": 0.6129032258064516,
+    "savings": 0.5578055301148062,
+    "savings_per_prompt": 0.6131510804508103,
+    "mix": {
+     "cheap": 0.23225806451612904,
+     "balanced": 0.7419354838709677,
+     "flagship": 0.025806451612903226
+    }
+   },
+   "test": {
+    "quality": 0.5414634146341464,
+    "savings": 0.467672044287328,
+    "savings_per_prompt": 0.5650979318814098,
+    "mix": {
+     "cheap": 0.1902439024390244,
+     "balanced": 0.7804878048780488,
+     "flagship": 0.02926829268292683
+    }
+   },
+   "random_test": {
+    "quality": 0.5313265913146936,
+    "savings_per_prompt": 0.5620641774109858
+   }
+  },
+  {
+   "eps": 0.71,
+   "tune": {
+    "quality": 0.6064516129032258,
+    "savings": 0.5628028518615056,
+    "savings_per_prompt": 0.6227687576706881,
+    "mix": {
+     "cheap": 0.25161290322580643,
+     "balanced": 0.7225806451612903,
+     "flagship": 0.025806451612903226
+    }
+   },
+   "test": {
+    "quality": 0.5317073170731708,
+    "savings": 0.48106053891154055,
+    "savings_per_prompt": 0.5932600640162514,
+    "mix": {
+     "cheap": 0.23902439024390243,
+     "balanced": 0.7317073170731707,
+     "flagship": 0.02926829268292683
+    }
+   },
+   "random_test": {
+    "quality": 0.5180011897679953,
+    "savings_per_prompt": 0.5860442180418768
+   }
+  },
+  {
+   "eps": 0.72,
+   "tune": {
+    "quality": 0.5870967741935483,
+    "savings": 0.5681929801067953,
+    "savings_per_prompt": 0.6440303394334629,
+    "mix": {
+     "cheap": 0.2903225806451613,
+     "balanced": 0.6838709677419355,
+     "flagship": 0.025806451612903226
+    }
+   },
+   "test": {
+    "quality": 0.5219512195121951,
+    "savings": 0.48607746885743974,
+    "savings_per_prompt": 0.6103921543321411,
+    "mix": {
+     "cheap": 0.2780487804878049,
+     "balanced": 0.6926829268292682,
+     "flagship": 0.02926829268292683
+    }
+   },
+   "random_test": {
+    "quality": 0.5073408685306365,
+    "savings_per_prompt": 0.6052282505465896
+   }
+  },
+  {
+   "eps": 0.73,
+   "tune": {
+    "quality": 0.5741935483870968,
+    "savings": 0.5753020447985691,
+    "savings_per_prompt": 0.6573431057160332,
+    "mix": {
+     "cheap": 0.3161290322580645,
+     "balanced": 0.6580645161290323,
+     "flagship": 0.025806451612903226
+    }
+   },
+   "test": {
+    "quality": 0.48292682926829267,
+    "savings": 0.4947522586200873,
+    "savings_per_prompt": 0.6415908181582745,
+    "mix": {
+     "cheap": 0.33170731707317075,
+     "balanced": 0.6390243902439025,
+     "flagship": 0.02926829268292683
+    }
+   },
+   "random_test": {
+    "quality": 0.4926829268292683,
+    "savings_per_prompt": 0.6316062952405697
+   }
+  },
+  {
+   "eps": 0.74,
+   "tune": {
+    "quality": 0.5612903225806452,
+    "savings": 0.5848732492712521,
+    "savings_per_prompt": 0.6758736314450665,
+    "mix": {
+     "cheap": 0.3548387096774194,
+     "balanced": 0.6193548387096774,
+     "flagship": 0.025806451612903226
+    }
+   },
+   "test": {
+    "quality": 0.4585365853658537,
+    "savings": 0.5089493049454139,
+    "savings_per_prompt": 0.6673620808632815,
+    "mix": {
+     "cheap": 0.3902439024390244,
+     "balanced": 0.5804878048780487,
+     "flagship": 0.02926829268292683
+    }
+   },
+   "random_test": {
+    "quality": 0.4766924449732302,
+    "savings_per_prompt": 0.6603823439976388
+   }
+  },
+  {
+   "eps": 0.75,
+   "tune": {
+    "quality": 0.5612903225806452,
+    "savings": 0.5904527563291668,
+    "savings_per_prompt": 0.6854676956250506,
+    "mix": {
+     "cheap": 0.3741935483870968,
+     "balanced": 0.6,
+     "flagship": 0.025806451612903226
+    }
+   },
+   "test": {
+    "quality": 0.45365853658536587,
+    "savings": 0.5256519816463665,
+    "savings_per_prompt": 0.6897811222277972,
+    "mix": {
+     "cheap": 0.43902439024390244,
+     "balanced": 0.5317073170731708,
+     "flagship": 0.02926829268292683
+    }
+   },
+   "random_test": {
+    "quality": 0.46336704342653184,
+    "savings_per_prompt": 0.6843623846285298
+   }
+  },
+  {
+   "eps": 0.76,
+   "tune": {
+    "quality": 0.5548387096774193,
+    "savings": 0.6094945633849296,
+    "savings_per_prompt": 0.7116467280339974,
+    "mix": {
+     "cheap": 0.432258064516129,
+     "balanced": 0.5419354838709678,
+     "flagship": 0.025806451612903226
+    }
+   },
+   "test": {
+    "quality": 0.43414634146341463,
+    "savings": 0.5386904095665597,
+    "savings_per_prompt": 0.7161803812060322,
+    "mix": {
+     "cheap": 0.5024390243902439,
+     "balanced": 0.4682926829268293,
+     "flagship": 0.02926829268292683
+    }
+   },
+   "random_test": {
+    "quality": 0.4460440214158239,
+    "savings_per_prompt": 0.7155364374486881
+   }
+  },
+  {
+   "eps": 0.77,
+   "tune": {
+    "quality": 0.535483870967742,
+    "savings": 0.635359555505604,
+    "savings_per_prompt": 0.7446811759708598,
+    "mix": {
+     "cheap": 0.5096774193548387,
+     "balanced": 0.4645161290322581,
+     "flagship": 0.025806451612903226
+    }
+   },
+   "test": {
+    "quality": 0.4195121951219512,
+    "savings": 0.551911214103727,
+    "savings_per_prompt": 0.7429842628259858,
+    "mix": {
+     "cheap": 0.5609756097560976,
+     "balanced": 0.4097560975609756,
+     "flagship": 0.02926829268292683
+    }
+   },
+   "random_test": {
+    "quality": 0.4300535395597858,
+    "savings_per_prompt": 0.7443124862057574
+   }
+  },
+  {
+   "eps": 0.78,
+   "tune": {
+    "quality": 0.4774193548387097,
+    "savings": 0.6565118500752063,
+    "savings_per_prompt": 0.7824068056698085,
+    "mix": {
+     "cheap": 0.5935483870967742,
+     "balanced": 0.38064516129032255,
+     "flagship": 0.025806451612903226
+    }
+   },
+   "test": {
+    "quality": 0.40487804878048783,
+    "savings": 0.5709798697492421,
+    "savings_per_prompt": 0.77056351827173,
+    "mix": {
+     "cheap": 0.624390243902439,
+     "balanced": 0.3463414634146341,
+     "flagship": 0.02926829268292683
+    }
+   },
+   "random_test": {
+    "quality": 0.4127305175490779,
+    "savings_per_prompt": 0.7754865390259156
+   }
+  },
+  {
+   "eps": 0.79,
+   "tune": {
+    "quality": 0.44516129032258067,
+    "savings": 0.6916024204714204,
+    "savings_per_prompt": 0.8071746859814731,
+    "mix": {
+     "cheap": 0.6451612903225806,
+     "balanced": 0.32903225806451614,
+     "flagship": 0.025806451612903226
+    }
+   },
+   "test": {
+    "quality": 0.40487804878048783,
+    "savings": 0.5795236938369627,
+    "savings_per_prompt": 0.7799983074286103,
+    "mix": {
+     "cheap": 0.6487804878048781,
+     "balanced": 0.32195121951219513,
+     "flagship": 0.02926829268292683
+    }
+   },
+   "random_test": {
+    "quality": 0.4060678167757288,
+    "savings_per_prompt": 0.7874765593413612
+   }
+  },
+  {
+   "eps": 0.8,
+   "tune": {
+    "quality": 0.432258064516129,
+    "savings": 0.7147855603886336,
+    "savings_per_prompt": 0.83694576066641,
+    "mix": {
+     "cheap": 0.7096774193548387,
+     "balanced": 0.2645161290322581,
+     "flagship": 0.025806451612903226
+    }
+   },
+   "test": {
+    "quality": 0.3902439024390244,
+    "savings": 0.6026628393267746,
+    "savings_per_prompt": 0.8085112709997146,
+    "mix": {
+     "cheap": 0.7073170731707317,
+     "balanced": 0.2634146341463415,
+     "flagship": 0.02926829268292683
+    }
+   },
+   "random_test": {
+    "quality": 0.39007733491969065,
+    "savings_per_prompt": 0.8162526080984304
+   }
+  },
+  {
+   "eps": 0.81,
+   "tune": {
+    "quality": 0.4129032258064516,
+    "savings": 0.7287582828570267,
+    "savings_per_prompt": 0.8508131758690638,
+    "mix": {
+     "cheap": 0.7419354838709677,
+     "balanced": 0.23225806451612904,
+     "flagship": 0.025806451612903226
+    }
+   },
+   "test": {
+    "quality": 0.375609756097561,
+    "savings": 0.6999139592555547,
+    "savings_per_prompt": 0.835527834347047,
+    "mix": {
+     "cheap": 0.7560975609756098,
+     "balanced": 0.2146341463414634,
+     "flagship": 0.02926829268292683
+    }
+   },
+   "random_test": {
+    "quality": 0.3767519333729923,
+    "savings_per_prompt": 0.8402326487293214
+   }
+  },
+  {
+   "eps": 0.82,
+   "tune": {
+    "quality": 0.4,
+    "savings": 0.7498274320094312,
+    "savings_per_prompt": 0.8664910599858973,
+    "mix": {
+     "cheap": 0.7806451612903226,
+     "balanced": 0.1935483870967742,
+     "flagship": 0.025806451612903226
+    }
+   },
+   "test": {
+    "quality": 0.36585365853658536,
+    "savings": 0.7157835473986727,
+    "savings_per_prompt": 0.8468508203231638,
+    "mix": {
+     "cheap": 0.7853658536585366,
+     "balanced": 0.18536585365853658,
+     "flagship": 0.02926829268292683
+    }
+   },
+   "random_test": {
+    "quality": 0.3687566924449732,
+    "savings_per_prompt": 0.8546206731078559
+   }
+  },
+  {
+   "eps": 0.83,
+   "tune": {
+    "quality": 0.3935483870967742,
+    "savings": 0.758060466350856,
+    "savings_per_prompt": 0.8771094085533901,
+    "mix": {
+     "cheap": 0.8064516129032258,
+     "balanced": 0.16774193548387098,
+     "flagship": 0.025806451612903226
+    }
+   },
+   "test": {
+    "quality": 0.35609756097560974,
+    "savings": 0.7309545791565144,
+    "savings_per_prompt": 0.8584079811018558,
+    "mix": {
+     "cheap": 0.8146341463414634,
+     "balanced": 0.15609756097560976,
+     "flagship": 0.02926829268292683
+    }
+   },
+   "random_test": {
+    "quality": 0.36076145151695416,
+    "savings_per_prompt": 0.8690086974863905
+   }
+  },
+  {
+   "eps": 0.84,
+   "tune": {
+    "quality": 0.36774193548387096,
+    "savings": 0.7739019161467586,
+    "savings_per_prompt": 0.8968187293956047,
+    "mix": {
+     "cheap": 0.8451612903225807,
+     "balanced": 0.12903225806451613,
+     "flagship": 0.025806451612903226
+    }
+   },
+   "test": {
+    "quality": 0.35121951219512193,
+    "savings": 0.7369694652809138,
+    "savings_per_prompt": 0.8685348454096992,
+    "mix": {
+     "cheap": 0.8341463414634146,
+     "balanced": 0.13658536585365855,
+     "flagship": 0.02926829268292683
+    }
+   },
+   "random_test": {
+    "quality": 0.3554312908982748,
+    "savings_per_prompt": 0.8786007137387468
+   }
+  },
+  {
+   "eps": 0.85,
+   "tune": {
+    "quality": 0.36774193548387096,
+    "savings": 0.7783558155161735,
+    "savings_per_prompt": 0.8993506340215714,
+    "mix": {
+     "cheap": 0.8516129032258064,
+     "balanced": 0.12258064516129032,
+     "flagship": 0.025806451612903226
+    }
+   },
+   "test": {
+    "quality": 0.35121951219512193,
+    "savings": 0.7487216976981614,
+    "savings_per_prompt": 0.8793011408249625,
+    "mix": {
+     "cheap": 0.8585365853658536,
+     "balanced": 0.11219512195121951,
+     "flagship": 0.02926829268292683
+    }
+   },
+   "random_test": {
+    "quality": 0.34876859012492567,
+    "savings_per_prompt": 0.8905907340541924
+   }
+  },
+  {
+   "eps": 0.86,
+   "tune": {
+    "quality": 0.3548387096774194,
+    "savings": 0.7893829376134371,
+    "savings_per_prompt": 0.9101644504758307,
+    "mix": {
+     "cheap": 0.8774193548387097,
+     "balanced": 0.0967741935483871,
+     "flagship": 0.025806451612903226
+    }
+   },
+   "test": {
+    "quality": 0.3463414634146341,
+    "savings": 0.7715803353187106,
+    "savings_per_prompt": 0.8980285704252208,
+    "mix": {
+     "cheap": 0.8829268292682927,
+     "balanced": 0.08780487804878048,
+     "flagship": 0.02926829268292683
+    }
+   },
+   "random_test": {
+    "quality": 0.34210588935157643,
+    "savings_per_prompt": 0.9025807543696379
+   }
+  },
+  {
+   "eps": 0.87,
+   "tune": {
+    "quality": 0.33548387096774196,
+    "savings": 0.8866002204776378,
+    "savings_per_prompt": 0.9351063609280686,
+    "mix": {
+     "cheap": 0.9354838709677419,
+     "balanced": 0.03870967741935484,
+     "flagship": 0.025806451612903226
+    }
+   },
+   "test": {
+    "quality": 0.33658536585365856,
+    "savings": 0.8166859440850809,
+    "savings_per_prompt": 0.9227952983653088,
+    "mix": {
+     "cheap": 0.926829268292683,
+     "balanced": 0.04390243902439024,
+     "flagship": 0.02926829268292683
+    }
+   },
+   "random_test": {
+    "quality": 0.3301130279595479,
+    "savings_per_prompt": 0.9241627909374398
+   }
+  },
+  {
+   "eps": 0.88,
+   "tune": {
+    "quality": 0.33548387096774196,
+    "savings": 0.9163789537116526,
+    "savings_per_prompt": 0.9437956844347734,
+    "mix": {
+     "cheap": 0.9612903225806452,
+     "balanced": 0.012903225806451613,
+     "flagship": 0.025806451612903226
+    }
+   },
+   "test": {
+    "quality": 0.32682926829268294,
+    "savings": 0.886982631399154,
+    "savings_per_prompt": 0.9398382361305692,
+    "mix": {
+     "cheap": 0.9560975609756097,
+     "balanced": 0.014634146341463415,
+     "flagship": 0.02926829268292683
+    }
+   },
+   "random_test": {
+    "quality": 0.3221177870315288,
+    "savings_per_prompt": 0.9385508153159744
+   }
+  },
+  {
+   "eps": 0.89,
+   "tune": {
+    "quality": 0.32903225806451614,
+    "savings": 0.9430599163524103,
+    "savings_per_prompt": 0.949605904213648,
+    "mix": {
+     "cheap": 0.9741935483870968,
+     "balanced": 0.0,
+     "flagship": 0.025806451612903226
+    }
+   },
+   "test": {
+    "quality": 0.32682926829268294,
+    "savings": 0.9021469992249135,
+    "savings_per_prompt": 0.9426956113736658,
+    "mix": {
+     "cheap": 0.9658536585365853,
+     "balanced": 0.004878048780487805,
+     "flagship": 0.02926829268292683
+    }
+   },
+   "random_test": {
+    "quality": 0.3194527067221892,
+    "savings_per_prompt": 0.9433468234421525
+   }
+  },
+  {
+   "eps": 0.9,
+   "tune": {
+    "quality": 0.32903225806451614,
+    "savings": 0.9430599163524103,
+    "savings_per_prompt": 0.949605904213648,
+    "mix": {
+     "cheap": 0.9741935483870968,
+     "balanced": 0.0,
+     "flagship": 0.025806451612903226
+    }
+   },
+   "test": {
+    "quality": 0.32682926829268294,
+    "savings": 0.9021469992249135,
+    "savings_per_prompt": 0.9426956113736658,
+    "mix": {
+     "cheap": 0.9658536585365853,
+     "balanced": 0.004878048780487805,
+     "flagship": 0.02926829268292683
+    }
+   },
+   "random_test": {
+    "quality": 0.3194527067221892,
+    "savings_per_prompt": 0.9433468234421525
+   }
+  },
+  {
+   "eps": 0.91,
+   "tune": {
+    "quality": 0.32903225806451614,
+    "savings": 0.9430599163524103,
+    "savings_per_prompt": 0.949605904213648,
+    "mix": {
+     "cheap": 0.9741935483870968,
+     "balanced": 0.0,
+     "flagship": 0.025806451612903226
+    }
+   },
+   "test": {
+    "quality": 0.32682926829268294,
+    "savings": 0.9021469992249135,
+    "savings_per_prompt": 0.9426956113736658,
+    "mix": {
+     "cheap": 0.9658536585365853,
+     "balanced": 0.004878048780487805,
+     "flagship": 0.02926829268292683
+    }
+   },
+   "random_test": {
+    "quality": 0.3194527067221892,
+    "savings_per_prompt": 0.9433468234421525
+   }
+  },
+  {
+   "eps": 0.92,
+   "tune": {
+    "quality": 0.32903225806451614,
+    "savings": 0.9430599163524103,
+    "savings_per_prompt": 0.949605904213648,
+    "mix": {
+     "cheap": 0.9741935483870968,
+     "balanced": 0.0,
+     "flagship": 0.025806451612903226
+    }
+   },
+   "test": {
+    "quality": 0.32195121951219513,
+    "savings": 0.9125720578092873,
+    "savings_per_prompt": 0.9458787639013397,
+    "mix": {
+     "cheap": 0.9707317073170731,
+     "balanced": 0.0,
+     "flagship": 0.02926829268292683
+    }
+   },
+   "random_test": {
+    "quality": 0.31812016656751935,
+    "savings_per_prompt": 0.9457448275052417
+   }
+  },
+  {
+   "eps": 0.93,
+   "tune": {
+    "quality": 0.32903225806451614,
+    "savings": 0.9430599163524103,
+    "savings_per_prompt": 0.949605904213648,
+    "mix": {
+     "cheap": 0.9741935483870968,
+     "balanced": 0.0,
+     "flagship": 0.025806451612903226
+    }
+   },
+   "test": {
+    "quality": 0.32195121951219513,
+    "savings": 0.9125720578092873,
+    "savings_per_prompt": 0.9458787639013397,
+    "mix": {
+     "cheap": 0.9707317073170731,
+     "balanced": 0.0,
+     "flagship": 0.02926829268292683
+    }
+   },
+   "random_test": {
+    "quality": 0.31812016656751935,
+    "savings_per_prompt": 0.9457448275052417
+   }
+  },
+  {
+   "eps": 0.94,
+   "tune": {
+    "quality": 0.32903225806451614,
+    "savings": 0.9430599163524103,
+    "savings_per_prompt": 0.949605904213648,
+    "mix": {
+     "cheap": 0.9741935483870968,
+     "balanced": 0.0,
+     "flagship": 0.025806451612903226
+    }
+   },
+   "test": {
+    "quality": 0.32195121951219513,
+    "savings": 0.9125720578092873,
+    "savings_per_prompt": 0.9458787639013397,
+    "mix": {
+     "cheap": 0.9707317073170731,
+     "balanced": 0.0,
+     "flagship": 0.02926829268292683
+    }
+   },
+   "random_test": {
+    "quality": 0.31812016656751935,
+    "savings_per_prompt": 0.9457448275052417
+   }
+  },
+  {
+   "eps": 0.95,
+   "tune": {
+    "quality": 0.32903225806451614,
+    "savings": 0.9430599163524103,
+    "savings_per_prompt": 0.949605904213648,
+    "mix": {
+     "cheap": 0.9741935483870968,
+     "balanced": 0.0,
+     "flagship": 0.025806451612903226
+    }
+   },
+   "test": {
+    "quality": 0.32195121951219513,
+    "savings": 0.9125720578092873,
+    "savings_per_prompt": 0.9458787639013397,
+    "mix": {
+     "cheap": 0.9707317073170731,
+     "balanced": 0.0,
+     "flagship": 0.02926829268292683
+    }
+   },
+   "random_test": {
+    "quality": 0.31812016656751935,
+    "savings_per_prompt": 0.9457448275052417
+   }
+  },
+  {
+   "eps": 0.96,
+   "tune": {
+    "quality": 0.32903225806451614,
+    "savings": 0.9430599163524103,
+    "savings_per_prompt": 0.949605904213648,
+    "mix": {
+     "cheap": 0.9741935483870968,
+     "balanced": 0.0,
+     "flagship": 0.025806451612903226
+    }
+   },
+   "test": {
+    "quality": 0.32195121951219513,
+    "savings": 0.9125720578092873,
+    "savings_per_prompt": 0.9458787639013397,
+    "mix": {
+     "cheap": 0.9707317073170731,
+     "balanced": 0.0,
+     "flagship": 0.02926829268292683
+    }
+   },
+   "random_test": {
+    "quality": 0.31812016656751935,
+    "savings_per_prompt": 0.9457448275052417
+   }
+  },
+  {
+   "eps": 0.97,
+   "tune": {
+    "quality": 0.32903225806451614,
+    "savings": 0.9430599163524103,
+    "savings_per_prompt": 0.949605904213648,
+    "mix": {
+     "cheap": 0.9741935483870968,
+     "balanced": 0.0,
+     "flagship": 0.025806451612903226
+    }
+   },
+   "test": {
+    "quality": 0.32195121951219513,
+    "savings": 0.9125720578092873,
+    "savings_per_prompt": 0.9458787639013397,
+    "mix": {
+     "cheap": 0.9707317073170731,
+     "balanced": 0.0,
+     "flagship": 0.02926829268292683
+    }
+   },
+   "random_test": {
+    "quality": 0.31812016656751935,
+    "savings_per_prompt": 0.9457448275052417
+   }
+  },
+  {
+   "eps": 0.98,
+   "tune": {
+    "quality": 0.32903225806451614,
+    "savings": 0.9430599163524103,
+    "savings_per_prompt": 0.949605904213648,
+    "mix": {
+     "cheap": 0.9741935483870968,
+     "balanced": 0.0,
+     "flagship": 0.025806451612903226
+    }
+   },
+   "test": {
+    "quality": 0.32195121951219513,
+    "savings": 0.9125720578092873,
+    "savings_per_prompt": 0.9458787639013397,
+    "mix": {
+     "cheap": 0.9707317073170731,
+     "balanced": 0.0,
+     "flagship": 0.02926829268292683
+    }
+   },
+   "random_test": {
+    "quality": 0.31812016656751935,
+    "savings_per_prompt": 0.9457448275052417
+   }
+  },
+  {
+   "eps": 0.99,
+   "tune": {
+    "quality": 0.32903225806451614,
+    "savings": 0.9430599163524103,
+    "savings_per_prompt": 0.949605904213648,
+    "mix": {
+     "cheap": 0.9741935483870968,
+     "balanced": 0.0,
+     "flagship": 0.025806451612903226
+    }
+   },
+   "test": {
+    "quality": 0.32195121951219513,
+    "savings": 0.9125720578092873,
+    "savings_per_prompt": 0.9458787639013397,
+    "mix": {
+     "cheap": 0.9707317073170731,
+     "balanced": 0.0,
+     "flagship": 0.02926829268292683
+    }
+   },
+   "random_test": {
+    "quality": 0.31812016656751935,
+    "savings_per_prompt": 0.9457448275052417
+   }
+  },
+  {
+   "eps": 1.0,
+   "tune": {
+    "quality": 0.32903225806451614,
+    "savings": 0.9430599163524103,
+    "savings_per_prompt": 0.949605904213648,
+    "mix": {
+     "cheap": 0.9741935483870968,
+     "balanced": 0.0,
+     "flagship": 0.025806451612903226
+    }
+   },
+   "test": {
+    "quality": 0.32195121951219513,
+    "savings": 0.9125720578092873,
+    "savings_per_prompt": 0.9458787639013397,
+    "mix": {
+     "cheap": 0.9707317073170731,
+     "balanced": 0.0,
+     "flagship": 0.02926829268292683
+    }
+   },
+   "random_test": {
+    "quality": 0.31812016656751935,
+    "savings_per_prompt": 0.9457448275052417
+   }
+  }
+ ]
+}

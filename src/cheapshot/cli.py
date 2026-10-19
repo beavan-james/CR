@@ -14,7 +14,8 @@ from rich.progress import Progress
 from rich.prompt import Prompt
 from rich.table import Table
 
-from . import classifier, providers, router, tracking
+from . import classifier, curves, providers, router, tracking
+from .routing import resolve_path
 from .bench import judge as bench_judge
 from .bench import matrix as bench_matrix
 from .bench import replay as bench_replay
@@ -25,8 +26,10 @@ from .bench.dataset import load_dataset
 from .bench.store import Store
 from .pricing import FAMILY_MODELS, PRICING, cost_usd
 
-load_dotenv()
-app = typer.Typer(add_completion=False, help="Cheapshot — a Laya decision model routes each prompt to the cheapest capable model.")
+load_dotenv(Path(os.getenv("CHEAPSHOT_HOME", Path.home() / ".cheapshot")) / "config.env")  # user config wins
+load_dotenv()  # then the repo's .env
+app = typer.Typer(add_completion=False, invoke_without_command=True,
+                  help="Cheapshot — Claude Code where a Laya decision model routes every turn to the cheapest capable model.")
 bench = typer.Typer(add_completion=False, help="Benchmark: cached answers + judge, replayed offline for any routing policy.")
 app.add_typer(bench, name="bench")
 console = Console()
@@ -35,6 +38,46 @@ FAMILIES = ["anthropic", "claude-code", "openai", "gemini", "mock"]
 ENV_KEYS = {"anthropic": "ANTHROPIC_API_KEY", "claude-code": "", "openai": "OPENAI_API_KEY",
             "gemini": "GEMINI_API_KEY", "mock": ""}
 KEYLESS = ("mock", "claude-code")  # claude-code uses your Pro/Max login via the `claude` CLI
+
+
+@app.callback()
+def main(
+    ctx: typer.Context,
+    quality: float | None = typer.Option(None, "--quality", "-q", help="Quality target 0-1 (default CHEAPSHOT_QUALITY or 0.95)"),
+    mode: str = typer.Option("acceptEdits", "--mode", help="Claude Code permission mode: acceptEdits|plan|default|bypassPermissions"),
+    which: str = typer.Option("laya", "--classifier", help="laya|heuristic"),
+    variant: str = typer.Option("variants/a_score.yaml", "--variant", "-v", help="Router variant YAML"),
+):
+    """With no command: start an interactive Claude Code session routed per turn (Pro/Max subscription)."""
+    if ctx.invoked_subcommand is not None:
+        return
+    from .repl import Repl
+    from .routing import Routing
+    from .session import PERMISSION_MODES, ClaudeCodeSession
+    if not providers.claude_code_available():
+        console.print("[red]`claude` CLI not found. Install Claude Code and log in with your Pro/Max account.[/red]")
+        raise typer.Exit(1)
+    if mode not in PERMISSION_MODES:
+        raise typer.BadParameter(f"--mode must be one of {', '.join(PERMISSION_MODES)}")
+    Repl(console, Routing(variant, quality, which), ClaudeCodeSession(permission_mode=mode)).loop()
+
+
+@app.command("curve")
+def curve_cmd(
+    variant: str = typer.Option("variants/a_score.yaml", "--variant", "-v"),
+    router_model: str | None = typer.Option(None, "--router-model", help="Default: LAYA_MODEL"),
+):
+    """Show the savings-vs-quality trade-off measured for the router, one row per quality target."""
+    from .repl import curve_table
+    name = classifier.load_variant(resolve_path(variant))["name"]
+    model = router_model or os.getenv("LAYA_MODEL") or classifier.DEFAULT_LAYA_MODEL
+    c = curves.load_curve(name, model)
+    if not c:
+        console.print(f"[red]No curve for {name} / {model}. Build it with `cheapshot bench curve`.[/red]")
+        raise typer.Exit(1)
+    console.print(curve_table(c))
+    console.print("[dim]quality = share of prompts the Opus judge rated as good as Opus's answer. "
+                  "savings/prompt counts each prompt equally; total-bill savings weights by cost.[/dim]")
 
 
 def resolve_family(family: str | None) -> str:
@@ -60,6 +103,7 @@ def resolve_key(family: str, api_key: str | None) -> str:
 
 VARIANT_OPT = typer.Option("variants/a_score.yaml", "--variant", "-v", help="Router variant YAML")
 EPS_OPT = typer.Option(None, "--epsilon", "-e", help="Risk dial in [0,1]; default from variant")
+QUALITY_OPT = typer.Option(None, "--quality", "-q", help="Quality target 0-1, mapped to epsilon via the benchmark curve")
 CLASSIFIER_OPT = typer.Option("laya", "--classifier", help="laya|heuristic")
 
 
@@ -68,7 +112,7 @@ def classify_prompt(prompt: str, variant_path: str, which: str) -> tuple[classif
         return classifier.heuristic_classify(prompt), None
     if which != "laya":
         raise typer.BadParameter("classifier must be laya|heuristic")
-    variant = classifier.load_variant(variant_path)
+    variant = classifier.load_variant(resolve_path(variant_path))
     try:
         client = classifier.LayaClient()
         try:
@@ -80,12 +124,18 @@ def classify_prompt(prompt: str, variant_path: str, which: str) -> tuple[classif
         raise typer.Exit(1)
 
 
-def effective_epsilon(epsilon: float | None, variant: dict | None) -> float:
-    """--epsilon, else the variant's epsilon for the configured LAYA_MODEL (tuned on the benchmark), else its default."""
+def effective_epsilon(epsilon: float | None, variant: dict | None, quality: float | None = None) -> float:
+    """--epsilon; else --quality via the router's benchmark curve; else the variant's epsilon for
+    the configured LAYA_MODEL (tuned on the benchmark); else its default."""
     if epsilon is not None:
         return epsilon
     v = variant or {}
     model = os.getenv("LAYA_MODEL") or classifier.DEFAULT_LAYA_MODEL
+    if quality is not None and v.get("name"):
+        c = curves.load_curve(v["name"], model)
+        if c:
+            return curves.eps_for_quality(c, quality)[0]
+        console.print(f"[yellow]No benchmark curve for {model}; ignoring --quality.[/yellow]")
     return float((v.get("epsilon_by_model") or {}).get(model, v.get("epsilon", 0.2)))
 
 
@@ -101,6 +151,7 @@ def run(
     api_key: str | None = typer.Option(None, "--api-key", help="BYOK key (else env/prompt)"),
     variant: str = VARIANT_OPT,
     epsilon: float | None = EPS_OPT,
+    quality: float | None = QUALITY_OPT,
     which: str = CLASSIFIER_OPT,
     dry_run: bool = typer.Option(False, "--dry-run", help="Classify + route only, no generation call"),
     explain: bool = typer.Option(True, "--explain/--no-explain", help="Show routing panel"),
@@ -108,7 +159,7 @@ def run(
     """Classify the prompt, route with the risk dial, call the routed model."""
     fam = resolve_family(family)
     c, v = classify_prompt(prompt, variant, which)
-    rt = router.route(c, effective_epsilon(epsilon, v), fam)
+    rt = router.route(c, effective_epsilon(epsilon, v, quality), fam)
     if dry_run:
         console.print(Panel(_routing_text(c, rt), title=f"dry-run ({fam})"))
         return
@@ -133,12 +184,13 @@ def classify(
     prompt: str = typer.Argument(...),
     variant: str = VARIANT_OPT,
     epsilon: float | None = EPS_OPT,
+    quality: float | None = QUALITY_OPT,
     which: str = CLASSIFIER_OPT,
     save_fixture: Path | None = typer.Option(None, "--save-fixture", help="Write raw router response JSON here"),
 ):
     """Classify only (no generation): tier distribution, routed tier, raw response."""
     c, v = classify_prompt(prompt, variant, which)
-    rt = router.route(c, effective_epsilon(epsilon, v))
+    rt = router.route(c, effective_epsilon(epsilon, v, quality))
     console.print(Panel(_routing_text(c, rt) + f"\nraw={json.dumps(c.raw)[:500]}", title="classification"))
     if save_fixture:
         save_fixture.parent.mkdir(parents=True, exist_ok=True)
@@ -346,6 +398,25 @@ def bench_export_cmd(
     if len(rows) < 1000:
         console.print("[yellow]Under ~1,000 rows: the Laya docs report small fine-tunes collapsing. "
                       "Add more train prompts or more epochs, and repeat runs across seeds.[/yellow]")
+
+
+@bench.command("curve")
+def bench_curve_cmd(
+    dataset: Path = DATASET_OPT, run_dir: Path = RUN_OPT, family: str = BENCH_FAMILY_OPT,
+    variant: str = VARIANT_OPT,
+    router_model: str = typer.Option(..., "--router-model", help="Laya model these classifications came from"),
+):
+    """Save the savings-vs-quality curve of a run's classifications, so --quality can pick epsilon."""
+    v = classifier.load_variant(resolve_path(variant))
+    m = bench_replay.build_matrix(load_dataset(dataset), Store(run_dir / "answers.jsonl"), Store(run_dir / "judgments.jsonl"),
+                                  Store(run_dir / "classifications.jsonl"), family, bench_judge.JUDGE_MODEL)
+    if v["name"] not in m.policies:
+        console.print(f"[red]{run_dir} has no complete classifications for {v['name']}.[/red]")
+        raise typer.Exit(1)
+    path = curves.save_curve(curves.build_curve(m, v["name"], router_model, f"{dataset.name} / {run_dir.name}"))
+    console.print(f"Saved {path}")
+    from .repl import curve_table
+    console.print(curve_table(curves.load_curve(v["name"], router_model)))
 
 
 @bench.command("report")

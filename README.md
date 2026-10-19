@@ -20,6 +20,44 @@ cheapshot run "Explain this Safari crash..." --family anthropic -e 0.1
 cheapshot models
 ```
 
+## Interactive CLI: Claude Code with per-turn routing
+
+Run `cheapshot` in any project directory. It works like Claude Code: it reads and edits files and runs commands. The difference is that Laya picks Haiku, Sonnet or Opus for **every turn**. Each turn runs `claude -p --model <routed> --resume <session>` under your Pro/Max login, so the conversation keeps its context when the model switches.
+
+```bash
+cd ~/my-project
+cheapshot                      # quality target 95% (default)
+cheapshot -q 0.90              # trade some quality for more savings
+cheapshot --mode plan          # Claude Code permission mode (acceptEdits by default)
+```
+
+```
+❯ There is a bug in calc.py. Fix it.
+→ Sonnet 5.5 · P(needs more)=0.31 ≤ ε 0.40
+  ⏺ Read(calc.py)
+  ⏺ Edit(calc.py)
+Fixed: `subtract` returned a + b ...
+Sonnet 5.5 · $0.0412 (Opus est. $0.0687) · 9s · session $0.041, 40% saved
+```
+
+| command | what it does |
+|---|---|
+| `/quality 0.9` (or `90%`) | set the quality target and show the trade-off table |
+| `/curve` | savings vs quality for the current router (held-out benchmark) |
+| `/model auto\|haiku\|sonnet\|opus` | pin a model, or go back to routing |
+| `/why` | how the last turn was routed |
+| `/cost` | session spend vs an always-Opus estimate |
+| `/mode acceptEdits\|plan\|default\|bypassPermissions` | Claude Code permission mode |
+| `/new`, `/exit` | fresh conversation, quit |
+
+- **Quality target, not ε.** "Quality" means the share of prompts answered as well as Opus, as scored by the Opus judge on the benchmark. Each router model has a stored curve (`src/cheapshot/curves/`). A target maps to the ε with the most per-prompt savings that met it on the tune split. The banner shows what that ε achieved on the held-out test split. `cheapshot curve` prints the whole table, and `cheapshot bench curve -r <run>` rebuilds it after a new benchmark.
+- **Follow-ups** shorter than 160 characters ("yes, do it") are routed together with the previous request, so a short reply to a hard task doesn't drop to Haiku.
+- **If Laya is unreachable**, the turn goes to Opus and the routing line says so. An outage costs money, never quality.
+- **Permissions:** headless Claude Code can't stop to ask for approval. With `acceptEdits`, file edits go through but shell commands are blocked, and Cheapshot tells you which tools were blocked. Allow the commands you trust in your project's `.claude/settings.json` (`permissions.allow`, e.g. `"Bash(pytest:*)"`), or use `/mode bypassPermissions` in a sandbox.
+- **Usage log:** every turn is appended to `~/.cheapshot/usage.jsonl` (override with `CHEAPSHOT_LOG`). It records model, tier, routing probabilities, cost and the Opus estimate, but not prompt text.
+- **Config:** put `LAYA_URL`, `LAYA_API_KEY`, `LAYA_MODEL` and optionally `CHEAPSHOT_QUALITY` in `~/.cheapshot/config.env` so `cheapshot` works from any directory.
+- `cheapshot run "..." --quality 0.9` and `cheapshot classify --quality 0.9` accept the same target.
+
 ## Using a Claude Pro/Max subscription instead of an API key
 
 Use `--family claude-code`. Cheapshot then runs the official Claude Code CLI headless (`claude -p`) under your own login. It never reads or reuses the subscription's OAuth token itself.
@@ -46,7 +84,7 @@ prompt -> Laya (laya-serve /v1/systemone, question from variants/*.yaml)
 ```
 
 - **Overflow:** Laya reads at most ~1024 tokens. If a prompt doesn't fit (laya-serve reports `usage.truncated`, or the prompt is over `LAYA_MAX_CHARS`), it goes straight to the flagship instead of being routed on a partial read.
-- **No silent fallback:** if Laya is unreachable the command fails. The keyword heuristic only runs with `--classifier heuristic`.
+- **No silent fallback:** if Laya is unreachable, `run` and `classify` fail, and the interactive CLI visibly sends the turn to the flagship. The keyword heuristic only runs with `--classifier heuristic`.
 - **Variants:** `variants/a_score.yaml` (complexity Score, the control) and `variants/c_tier_choice.yaml` (pick a tier directly).
 
 ## Benchmark

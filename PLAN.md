@@ -153,3 +153,11 @@ On a Pro/Max subscription (`-f claude-code`) these are ~3,000 calls with no per-
 - Neither fine-tune routes anything to Haiku; total-bill savings stay 3–5% because long answers still go to Opus.
 - **Changes:** ε grid now 0.00–1.00 in 0.01 steps; `epsilon_by_model` in variants (looked up by `LAYA_MODEL`); `variants/length_score.yaml` for the cost-signal experiment.
 - **Next:** zero-shot "answer length" question vs real flagship cost on the 360 eval prompts → cost-aware rule combining tier risk and predicted length. If promising, Opus answers for the remaining ~1,200 train prompts as length labels and a two-question fine-tune. Target: ≥20% total-bill savings at 95% quality.
+
+## Status (2026-10-19, later): interactive CLI
+- **Length signal (zero-shot, scratch experiment):** cost-aware routing with Laya's answer-length score reached 15.2% total-bill savings at 92.2% quality (90% floor), vs 10.1% for the ε rule; the true-cost ceiling is 38–50%. Haiku vs Opus answer length correlate 0.90 (log tokens), so ~1,200 **Haiku** answers would be cheap length labels. Deferred.
+- **`cheapshot` REPL:** Claude Code with per-turn routing. Each turn = `claude -p --model <routed> --session-id/--resume <uuid>` in the user's directory with tools on, so context carries across model switches (verified). Streams text and tool calls, prints per-turn cost vs an Opus estimate, logs to `~/.cheapshot/usage.jsonl`.
+- **Quality target instead of ε:** per-router curves in `src/cheapshot/curves/` (`cheapshot bench curve`); a target picks the ε with the most per-prompt savings that met it on tune, and the test numbers are shown. `/quality`, `/curve`, `cheapshot curve`, `run --quality`.
+- Short follow-ups (<160 chars) are routed with the previous request; Laya outage → flagship with a visible note.
+- Permissions: `-p` mode can't prompt, so `acceptEdits` blocks Bash; denials are surfaced with a pointer to `permissions.allow`.
+- **Next:** live routed REPL test with Laya up; then decide on the Haiku length labels + two-question fine-tune.
