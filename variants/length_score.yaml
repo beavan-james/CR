@@ -1,0 +1,17 @@
+# Experimental cost signal (not a routing variant): how long a complete answer will be.
+# Long answers dominate flagship cost, so this feeds cost-aware routing alongside the tier
+# question. tier_map is only there to satisfy the loader; never route on it directly.
+name: length_score
+question_id: answer_length
+question:
+  type: score
+  instructions: "How long does a complete, high-quality answer to this request need to be?"
+  criteria:
+    - "Short: a word, a number, a sentence, or a short paragraph"
+    - "Medium: a few paragraphs, a short list, or a small code snippet"
+    - "Long: a detailed multi-section explanation, a long story or document, or a large program"
+tier_map:
+  "0": cheap
+  "1": balanced
+  "2": flagship
+epsilon: 0.2

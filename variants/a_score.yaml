@@ -15,3 +15,9 @@ tier_map:
   "1": balanced
   "2": flagship
 epsilon: 0.2
+# Chosen on the v2 tune split for a 95% quality floor (per-prompt savings objective).
+# Fine-tuned checkpoints are served under these names via LAYA_EXTRA_MODELS.
+epsilon_by_model:
+  typed-decisions: 0.2
+  cheapshot-s0: 0.4
+  cheapshot-v2: 0.37

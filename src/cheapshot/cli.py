@@ -81,9 +81,12 @@ def classify_prompt(prompt: str, variant_path: str, which: str) -> tuple[classif
 
 
 def effective_epsilon(epsilon: float | None, variant: dict | None) -> float:
+    """--epsilon, else the variant's epsilon for the configured LAYA_MODEL (tuned on the benchmark), else its default."""
     if epsilon is not None:
         return epsilon
-    return float((variant or {}).get("epsilon", 0.2))
+    v = variant or {}
+    model = os.getenv("LAYA_MODEL") or classifier.DEFAULT_LAYA_MODEL
+    return float((v.get("epsilon_by_model") or {}).get(model, v.get("epsilon", 0.2)))
 
 
 def _routing_text(c: classifier.Classification, rt: router.Route) -> str:

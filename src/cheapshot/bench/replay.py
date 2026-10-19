@@ -20,7 +20,9 @@ from .judge import CANDIDATE_TIERS, ORDERS, combine, judgment_key
 from .matrix import answer_lookup
 from .store import Store
 
-EPS_GRID = (0.0, 0.02, 0.05, 0.1, 0.15, 0.2, 0.25, 0.3, 0.4, 0.5, 0.6, 0.8, 1.0)
+# Fine steps: fine-tuned routers compress probabilities into a narrow band, and a coarse
+# grid skipped their best settings (v2 test, ft1 at the 90% floor: 11% -> 23% per prompt).
+EPS_GRID = tuple(i / 100 for i in range(101))
 OBJECTIVES = ("per-prompt", "total")
 TEMP_GRID = tuple(round(0.2 * (50 ** (k / 39)), 4) for k in range(40))  # 0.2 .. 10, geometric
 

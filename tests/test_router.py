@@ -89,3 +89,12 @@ def test_claude_code_strips_api_keys(monkeypatch):
     c = providers.complete("claude-code", "claude-haiku-5-5", "hi")
     assert c.text == "ok" and "ANTHROPIC_API_KEY" not in seen["env"] and seen["input"] == "hi"
     assert "cheapshot-cc-" in seen["cwd"]
+
+
+def test_epsilon_per_router_model(monkeypatch):
+    from cheapshot.cli import effective_epsilon
+    v = {"epsilon": 0.2, "epsilon_by_model": {"cheapshot-s0": 0.4}}
+    monkeypatch.setenv("LAYA_MODEL", "cheapshot-s0")
+    assert effective_epsilon(None, v) == 0.4 and effective_epsilon(0.1, v) == 0.1
+    monkeypatch.setenv("LAYA_MODEL", "other")
+    assert effective_epsilon(None, v) == 0.2

@@ -142,3 +142,14 @@ On a Pro/Max subscription (`-f claude-code`) these are ~3,000 calls with no per-
 - **Changes:** per-prompt savings in the report (default ε objective); lazy judging for train prompts; `--subset`; `export-train --judge-weight` (default 2); teacher recalibration also fits on judged train prompts.
 - **v2 dataset (`evals/build_v2.py`):** v1 unchanged + 150 long-answer eval prompts (90 Arena-Hard, 60 oasst2; 50 tune / 100 test) + 300 train prompts tagged for judge labels. Running on subscription in `runs/v2-sub` (`run.sh`); fine-tuned classifications in `runs/v2-sub-ft` (shares the answer/judge cache).
 - **Next:** judge labels → export → fine-tune 2 → compare zero-shot / teacher-trained / judge-trained on the 255-prompt test split. Use real answer lengths from judged prompts to fit a cost estimator.
+
+## Status (2026-10-19)
+- **v2 run complete (`runs/v2-sub`):** 360 tune+test prompts fully answered and judged (test = 205). 298/300 judge-subset train prompts labeled (2 answers time out at 600s; they keep teacher labels).
+- **Judge vs teacher on 298 train prompts:** mean level 1.29 vs 0.47, corr 0.40; judge mix 21% cheap / 30% balanced / 50% flagship. Recalibration now fit on 403 pairs.
+- **Three routers on v2 test (per-prompt savings, ε on tune with 0.01 steps):**
+  - zero-shot: 8.4% @ 91.7% (95% floor missed), AUC ~0.50; no better than random at the same mix.
+  - **ft1 `cheapshot-s0` (teacher labels): 11.0% @ 95.6% (95% floor), 23.1% @ 87.8% (90% floor); +5–8 quality points vs random at the same mix; AUC 0.68.** Default router.
+  - ft2 `cheapshot-v2` (teacher + 2× judge labels): 9.1% @ 96.1%, 20.0% @ 87.8%; statistically tied with ft1. More judge labels are not worth ~7 calls/prompt.
+- Neither fine-tune routes anything to Haiku; total-bill savings stay 3–5% because long answers still go to Opus.
+- **Changes:** ε grid now 0.00–1.00 in 0.01 steps; `epsilon_by_model` in variants (looked up by `LAYA_MODEL`); `variants/length_score.yaml` for the cost-signal experiment.
+- **Next:** zero-shot "answer length" question vs real flagship cost on the 360 eval prompts → cost-aware rule combining tier risk and predicted length. If promising, Opus answers for the remaining ~1,200 train prompts as length labels and a two-question fine-tune. Target: ≥20% total-bill savings at 95% quality.
