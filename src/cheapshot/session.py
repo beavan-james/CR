@@ -89,10 +89,12 @@ class ClaudeCodeSession:
         self.permission_mode = permission_mode
         self.session_id = str(uuid.uuid4())
         self.turns = 0
+        self.reported_total = 0.0  # Claude Code's total_cost_usd is cumulative over a resumed session
 
     def reset(self) -> None:
         self.session_id = str(uuid.uuid4())
         self.turns = 0
+        self.reported_total = 0.0
 
     def run_turn(self, prompt: str, model: str, on_text: Callable[[str], None] = lambda s: None,
                  on_tool: Callable[[str], None] = lambda s: None, effort: str | None = None) -> TurnResult:
@@ -122,4 +124,14 @@ class ClaudeCodeSession:
             res.is_error, res.error = True, (proc.stderr.read() or f"claude exited {proc.returncode}").strip()[:500]
         if not res.is_error or res.text:
             self.turns += 1  # the session exists on disk once a turn produced output
+        res.cost_usd = self.turn_cost(res.cost_usd)
         return res
+
+    def turn_cost(self, reported: float) -> float:
+        """This turn's cost from the session's running total (0 when the turn reported none)."""
+        if not reported:
+            return 0.0
+        if reported < self.reported_total:  # counter restarted; take the report as this turn's cost
+            self.reported_total = 0.0
+        cost, self.reported_total = reported - self.reported_total, reported
+        return cost

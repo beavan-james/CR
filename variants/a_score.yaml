@@ -21,3 +21,4 @@ epsilon_by_model:
   typed-decisions: 0.2
   cheapshot-s0: 0.4
   cheapshot-v2: 0.37
+  cheapshot-v3: 0.38

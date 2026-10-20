@@ -138,14 +138,19 @@ class LayaClient:
         self._http = httpx.Client(timeout=timeout, headers=headers, transport=transport)
 
     def classify(self, prompt: str, variant: dict) -> Classification:
+        return self.classify_many(prompt, [variant])[0]
+
+    def classify_many(self, prompt: str, variants: list[dict]) -> list[Classification]:
+        """Ask several variants' questions in one request (one Laya forward pass over the prompt)."""
         if len(prompt) > self.max_chars:
-            return overflow_classification(f"prompt over {self.max_chars} chars; not sent")
+            return [overflow_classification(f"prompt over {self.max_chars} chars; not sent") for _ in variants]
         body = {"state": prompt, "model": self.model,
-                "questions": {variant["question_id"]: variant["question"]}}
+                "questions": {v["question_id"]: v["question"] for v in variants}}
         try:
             r = self._http.post(f"{self.url}/v1/systemone", json=body)
             r.raise_for_status()
-            return classification_from_response(r.json(), variant)
+            resp = r.json()
+            return [classification_from_response(resp, v) for v in variants]
         except httpx.HTTPStatusError as e:
             raise RouterError(f"Laya returned {e.response.status_code}: {e.response.text[:300]}") from e
         except httpx.HTTPError as e:

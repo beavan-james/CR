@@ -163,3 +163,10 @@ On a Pro/Max subscription (`-f claude-code`) these are ~3,000 calls with no per-
 - **Next:** live routed REPL test with Laya up; then decide on the Haiku length labels + two-question fine-tune.
 - **Haiku length labels (2026-10-19):** 1,498 of 1,500 train prompts answered by Haiku (2 failed). `runs/v2-sub/laya_train_len.jsonl`: 1,797 rows (judge ×2 + teacher) with both `complexity` and `answer_length` gold; length mass 39% short / 37% medium / 24% long. Next: Kaggle fine-tune on it, classify tune/test with both questions, then compare cost-aware routing vs the ε rule.
 - **Not doing (for now):** Opus judge labels for the other 1,200 train prompts (~6,000 mostly-Opus calls; ft2 showed 300 judged prompts didn't move routing). If revisited, first test Sonnet-as-judge agreement on the 360 already-judged eval prompts.
+
+## Status (2026-10-20): two-question router (cheapshot-v3)
+- Fine-tune on `laya_train_len.jsonl` (complexity + Haiku-labeled answer length). Length level vs log Opus cost: corr 0.77 on test (prompt length: 0.25). Complexity head unchanged (threshold rule 11.5% per-prompt @ 95.6%).
+- **Cost-aware rule** (`costaware.py`, curve `cost_aware__cheapshot-v3.json`) on v2 test, total-bill savings: 9.2% @ 97.1%, 24.8% @ 95.6%, 28.0% @ 93.7%, 32.0% @ 90.7% (threshold rule: 5.0% @ 95.6%, 7.7% @ 90.2%). At 95% the tune split ties λ 2.38× and 2.18× (test 9% vs 25%); the safer one is kept.
+- **Agent sessions differ:** each turn re-sends ~38K+ tokens of context, so turn cost is mostly fixed and the length signal doesn't help short turns. The REPL defaults to `threshold`; `cost` is opt-in. Revisit with real `usage.jsonl` data.
+- **Bug fixed:** Claude Code's `total_cost_usd` is cumulative over a resumed session; per-turn cost is now the delta (earlier REPL cost lines overstated later turns).
+- Idea: switching models loses the prompt cache (the new model re-writes the whole context), so frequent up-switches cost extra; consider a stickiness term.

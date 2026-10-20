@@ -51,6 +51,9 @@ Sonnet 5.5 · $0.0412 (Opus est. $0.0687) · 9s · session $0.041, 40% saved
 | `/new`, `/exit` | fresh conversation, quit |
 
 - **Quality target, not ε.** "Quality" means the share of prompts answered as well as Opus, as scored by the Opus judge on the benchmark. Each router model has a stored curve (`src/cheapshot/curves/`). A target maps to the ε with the most per-prompt savings that met it on the tune split. The banner shows what that ε achieved on the held-out test split. `cheapshot curve` prints the whole table, and `cheapshot bench curve -r <run>` rebuilds it after a new benchmark.
+- **Two routing rules** (`--rule`, `/rule`, `CHEAPSHOT_RULE`):
+  - `threshold` (default): the cheapest tier whose P(needs a higher tier) ≤ ε. In an agent session every turn re-sends the whole context (about 38K tokens even for a one-word answer), so turns cost about the same and per-prompt savings is what reduces your usage.
+  - `cost`: Laya also estimates how long the answer will be, and the router risks a cheaper tier where the answer is expensive. On the v2 chat benchmark it saves far more of the total bill (about 25–30% at 93–96% quality, vs 5–8% for `threshold`), but it leaves short turns on Opus. Use it for long-answer work such as writing docs or generating large files.
 - **Follow-ups** shorter than 160 characters ("yes, do it") are routed together with the previous request, so a short reply to a hard task doesn't drop to Haiku.
 - **Thanks and sign-offs** ("ok thanks", "great, thank you") skip the router and go to Haiku, since they ask for no work. "ok", "yes" and "go ahead" are still routed, because after a plan they mean "do it". Turn this off with `CHEAPSHOT_TRIVIAL=0`.
 - **If Laya is unreachable**, the turn goes to Opus and the routing line says so. An outage costs money, never quality.

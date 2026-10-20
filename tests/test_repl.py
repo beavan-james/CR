@@ -90,3 +90,38 @@ def test_length_gold():
         assert abs(sum(g.values()) - 1) < 1e-9 and max(g, key=g.get) == top
     near = length_gold(700)
     assert 0.4 < near["0"] < 0.6
+
+
+def test_cost_model_recovers_weights_and_picks_by_size():
+    from cheapshot import costaware
+    import math
+    rows = []
+    for lvl_d in ({"cheap": 1.0}, {"balanced": 1.0}, {"flagship": 1.0}, {"cheap": .5, "balanced": .5}):
+        for chars in (20, 200, 2000):
+            rows.append((lvl_d, chars, math.exp(-5 + 1.5 * costaware.level(lvl_d) + 0.1 * math.log(chars + 1))))
+    w = costaware.fit_cost_model(rows, ridge=0.0)
+    assert [round(x, 3) for x in w] == [-5.0, 1.5, 0.1]
+    ratios = costaware.price_ratios("claude-code")
+    dist = {"cheap": 0.3, "balanced": 0.3, "flagship": 0.4}
+    # same risk: a big answer is worth sending to Haiku, a small one is not
+    assert costaware.pick_tier_cost(dist, est_cost=1.0, lam=0.5, ratios=ratios)[0] == "cheap"
+    assert costaware.pick_tier_cost(dist, est_cost=0.01, lam=0.5, ratios=ratios)[0] == "flagship"
+
+
+def test_cost_curve_point_selection_uses_total_savings_and_safest_fallback():
+    def pt(lam, q, tot, pp):
+        m = {"quality": q, "savings": tot, "savings_per_prompt": pp, "mix": {}}
+        return {"lam": lam, "tune": m, "test": m, "random_test": {"quality": q, "savings_per_prompt": pp}}
+    c = {"rule": "cost", "objective": "savings", "cost_model": {"w": [0, 0, 0], "mean_cost": 0.1},
+         "points": [pt(8, 1.0, 0.0, 0.0), pt(2, 0.96, 0.25, 0.05), pt(1.5, 0.95, 0.20, 0.15), pt(1, 0.85, 0.5, 0.3)]}
+    assert curves.point_for_quality(c, 0.95)["lam"] == 2  # most TOTAL savings, not per-prompt
+    assert abs(curves.knob(c, curves.point_for_quality(c, 0.95)) - 0.2) < 1e-12
+    assert curves.point_for_quality(c, 1.01)["lam"] == 8
+    assert curves.knob_label(c, c["points"][1]) == "λ 2.00×"
+
+
+def test_turn_cost_is_delta_of_cumulative_total():
+    s = session.ClaudeCodeSession(cwd="/tmp")
+    assert [round(s.turn_cost(x), 4) for x in (0.1394, 0.6399, 0.0, 0.6467)] == [0.1394, 0.5005, 0.0, 0.0068]
+    s.reset()
+    assert s.turn_cost(0.05) == 0.05

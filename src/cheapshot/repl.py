@@ -24,6 +24,7 @@ HISTORY = Path(os.getenv("CHEAPSHOT_HOME", Path.home() / ".cheapshot")) / "histo
 HELP = """[bold]Commands[/bold]
   /quality [0.80-1.00]   quality target (share of turns as good as Opus); shows the trade-off
   /curve                 savings vs quality for the current router
+  /rule [threshold|cost] risk threshold (default) or cost-aware routing (saves on long answers)
   /model [auto|haiku|sonnet|opus]   pin a model, or back to routing
   /why                   how the last turn was routed
   /cost                  spend this session vs always-Opus
@@ -46,14 +47,15 @@ def opus_equivalent(cost: float, model: str) -> float:
 
 
 def curve_table(curve: dict, current: float | None = None) -> Table:
-    t = Table(title=f"Savings vs quality — {curve['router_model']} "
-                    f"(held-out {curve['n_test']} prompts; ε chosen on {curve['n_tune']} tune prompts)")
-    for col in ("quality target", "ε", "quality", "savings/prompt", "total-bill savings", "mix H/S/O", "random @ same mix"):
+    rule = "cost-aware" if curve.get("rule") == "cost" else "threshold"
+    t = Table(title=f"Savings vs quality — {curve['router_model']}, {rule} routing "
+                    f"(held-out {curve['n_test']} prompts; setting chosen on {curve['n_tune']} tune prompts)")
+    for col in ("quality target", "setting", "quality", "savings/prompt", "total-bill savings", "mix H/S/O", "random @ same mix"):
         t.add_column(col, justify="right")
     for r in curves.frontier(curve):
         mark = " ◀" if current is not None and abs(r["target"] - current) < 1e-9 else ""
         mix = "/".join(f"{100 * r['mix'].get(k, 0):.0f}" for k in TIERS)
-        t.add_row(f"{r['target']:.0%}{mark}", f"{r['eps']:.2f}", f"{r['quality']:.1%}", f"{r['savings_per_prompt']:.1%}",
+        t.add_row(f"{r['target']:.0%}{mark}", r["knob"], f"{r['quality']:.1%}", f"{r['savings_per_prompt']:.1%}",
                   f"{r['savings']:.1%}", mix, f"{r['random_quality']:.1%}")
     return t
 
@@ -77,10 +79,11 @@ class Repl:
         r = self.routing
         if r.forced_tier:
             return f"model pinned to [bold]{pretty(FAMILY_MODELS[FAMILY][r.forced_tier])}[/bold]"
-        s = f"quality target [bold]{r.quality:.0%}[/bold] (ε {r.epsilon:.2f})"
+        s = f"{r.rule} routing · quality target [bold]{r.quality:.0%}[/bold] ({r.setting})"
         if r.expected:
             x = r.expected["test"]
-            s += f" · benchmark: {x['quality']:.0%} as good as Opus, {x['savings_per_prompt']:.0%} saved per prompt"
+            s += (f" · benchmark: {x['quality']:.0%} as good as Opus, {x['savings']:.0%} of the bill saved "
+                  f"({x['savings_per_prompt']:.0%} per prompt)")
         elif r.client:
             s += " · [yellow]no benchmark curve for this router; ε from the variant[/yellow]"
         return s
@@ -112,6 +115,14 @@ class Repl:
                 self.c.print(curve_table(r.curve))
             else:
                 self.c.print("[yellow]No curve for this router. Build one with `cheapshot bench curve`.[/yellow]")
+        elif cmd == "rule":
+            if arg:
+                try:
+                    r.set_rule(arg)
+                except ValueError as e:
+                    self.c.print(f"[red]{e}[/red]")
+                    return True
+            self.c.print(self.quality_line())
         elif cmd == "model":
             if not arg or arg == "auto":
                 r.forced_tier = None
@@ -157,8 +168,7 @@ class Repl:
         d = self.routing.decide(prompt, self.previous)
         self.last = d
         model = d.route.model
-        why = d.rule or ("overflow/unavailable" if d.classification.overflow
-                         else f"P(needs more)={d.route.p_exceed:.2f} ≤ ε {d.route.epsilon:.2f}")
+        why = d.rule or d.why
         self.c.print(f"[dim]→ {pretty(model)} · {why}[/dim]" + (f" [yellow]{d.note}[/yellow]" if d.note else ""))
 
         out = sys.stdout
@@ -193,8 +203,10 @@ class Repl:
                      f"session ${self.spent:.3f}, {saved:.0%} saved[/dim]\n")
         tracking.log({"mode": "repl", "session": self.session.session_id, "cwd": self.session.cwd,
                       "router": self.routing.router_model, "quality_target": self.routing.quality,
-                      "epsilon": d.route.epsilon, "dist": d.classification.dist, "overflow": d.classification.overflow,
-                      "pinned": bool(self.routing.forced_tier), "rule": d.rule or None, "tier": d.route.tier, "model": model,
+                      "rule": self.routing.rule, "epsilon": d.route.epsilon, "lam": self.routing.lam,
+                      "dist": d.classification.dist, "length_dist": d.length.dist if d.length else None,
+                      "est_cost": d.est_cost, "overflow": d.classification.overflow,
+                      "pinned": bool(self.routing.forced_tier), "override": d.rule or None, "tier": d.route.tier, "model": model,
                       "cost": res.cost_usd, "opus_est": est, "input_tokens": res.input_tokens,
                       "output_tokens": res.output_tokens, "tools": len(res.tools), "error": res.error or None})
 

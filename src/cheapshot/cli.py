@@ -14,7 +14,7 @@ from rich.progress import Progress
 from rich.prompt import Prompt
 from rich.table import Table
 
-from . import classifier, curves, providers, router, tracking
+from . import classifier, costaware, curves, providers, router, tracking
 from .classifier import TIERS
 from .routing import resolve_path
 from .bench import judge as bench_judge
@@ -48,6 +48,7 @@ def main(
     mode: str = typer.Option("acceptEdits", "--mode", help="Claude Code permission mode: acceptEdits|plan|default|bypassPermissions"),
     which: str = typer.Option("laya", "--classifier", help="laya|heuristic"),
     variant: str = typer.Option("variants/a_score.yaml", "--variant", "-v", help="Router variant YAML"),
+    rule: str | None = typer.Option(None, "--rule", help="threshold (default) | cost"),
 ):
     """With no command: start an interactive Claude Code session routed per turn (Pro/Max subscription)."""
     if ctx.invoked_subcommand is not None:
@@ -60,17 +61,23 @@ def main(
         raise typer.Exit(1)
     if mode not in PERMISSION_MODES:
         raise typer.BadParameter(f"--mode must be one of {', '.join(PERMISSION_MODES)}")
-    Repl(console, Routing(variant, quality, which), ClaudeCodeSession(permission_mode=mode)).loop()
+    try:
+        routing = Routing(variant, quality, which, rule=rule)
+    except ValueError as e:
+        console.print(f"[red]{e}[/red]")
+        raise typer.Exit(1)
+    Repl(console, routing, ClaudeCodeSession(permission_mode=mode)).loop()
 
 
 @app.command("curve")
 def curve_cmd(
     variant: str = typer.Option("variants/a_score.yaml", "--variant", "-v"),
     router_model: str | None = typer.Option(None, "--router-model", help="Default: LAYA_MODEL"),
+    rule: str = typer.Option("threshold", "--rule", help="threshold | cost"),
 ):
     """Show the savings-vs-quality trade-off measured for the router, one row per quality target."""
     from .repl import curve_table
-    name = classifier.load_variant(resolve_path(variant))["name"]
+    name = curves.COST_CURVE_NAME if rule == "cost" else classifier.load_variant(resolve_path(variant))["name"]
     model = router_model or os.getenv("LAYA_MODEL") or classifier.DEFAULT_LAYA_MODEL
     c = curves.load_curve(name, model)
     if not c:
@@ -416,18 +423,26 @@ def bench_curve_cmd(
     dataset: Path = DATASET_OPT, run_dir: Path = RUN_OPT, family: str = BENCH_FAMILY_OPT,
     variant: str = VARIANT_OPT,
     router_model: str = typer.Option(..., "--router-model", help="Laya model these classifications came from"),
+    rule: str = typer.Option("threshold", "--rule",
+                             help="threshold (epsilon on --variant) | cost (also needs length_score classifications)"),
 ):
-    """Save the savings-vs-quality curve of a run's classifications, so --quality can pick epsilon."""
+    """Save the savings-vs-quality curve of a run's classifications, so --quality can pick a setting."""
     v = classifier.load_variant(resolve_path(variant))
     m = bench_replay.build_matrix(load_dataset(dataset), Store(run_dir / "answers.jsonl"), Store(run_dir / "judgments.jsonl"),
                                   Store(run_dir / "classifications.jsonl"), family, bench_judge.JUDGE_MODEL)
-    if v["name"] not in m.policies:
-        console.print(f"[red]{run_dir} has no complete classifications for {v['name']}.[/red]")
+    length_name = classifier.load_variant(resolve_path(costaware.LENGTH_VARIANT))["name"]
+    need = [v["name"]] + ([length_name] if rule == "cost" else [])
+    missing = [n for n in need if n not in m.policies]
+    if missing:
+        console.print(f"[red]{run_dir} has no complete classifications for {', '.join(missing)}.[/red]")
         raise typer.Exit(1)
-    path = curves.save_curve(curves.build_curve(m, v["name"], router_model, f"{dataset.name} / {run_dir.name}"))
+    source = f"{dataset.name} / {run_dir.name}"
+    curve = (curves.build_cost_curve(m, v["name"], length_name, router_model, family, source) if rule == "cost"
+             else curves.build_curve(m, v["name"], router_model, source))
+    path = curves.save_curve(curve)
     console.print(f"Saved {path}")
     from .repl import curve_table
-    console.print(curve_table(curves.load_curve(v["name"], router_model)))
+    console.print(curve_table(curves.load_curve(curve["variant"], router_model)))
 
 
 @bench.command("report")
