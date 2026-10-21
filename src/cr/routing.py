@@ -6,12 +6,12 @@ If Laya can't be reached the turn goes to the flagship, so an outage costs money
 """
 from __future__ import annotations
 
-import os
 import re
 from dataclasses import dataclass
 from pathlib import Path
 
 from . import classifier, costaware, curves, router
+from .env import env
 
 REPO_ROOT = Path(__file__).resolve().parents[2]
 DEFAULT_VARIANT = "variants/a_score.yaml"
@@ -35,7 +35,7 @@ def is_trivial(prompt: str) -> bool:
 
 
 def resolve_path(path: str) -> str:
-    """Variant paths work from any directory: as given, else relative to the Cheapshot repo."""
+    """Variant paths work from any directory: as given, else relative to the CR repo."""
     p = Path(path).expanduser()
     return str(p if p.exists() or p.is_absolute() else REPO_ROOT / p)
 
@@ -78,9 +78,9 @@ class Routing:
                            "cost": curves.load_curve(curves.COST_CURVE_NAME, self.router_model)}
         self.ratios = costaware.price_ratios(family)
         self.forced_tier: str | None = None
-        self.trivial_rule = os.getenv("CHEAPSHOT_TRIVIAL", "1") != "0"
-        self.quality = quality if quality is not None else float(os.getenv("CHEAPSHOT_QUALITY", curves.DEFAULT_QUALITY))
-        rule = rule or os.getenv("CHEAPSHOT_RULE") or "threshold"
+        self.trivial_rule = env("TRIVIAL", "1") != "0"
+        self.quality = quality if quality is not None else float(env("QUALITY", curves.DEFAULT_QUALITY))
+        rule = rule or env("RULE") or "threshold"
         self.set_rule(rule)
 
     @property
@@ -92,7 +92,7 @@ class Routing:
             raise ValueError(f"rule must be one of {RULES}")
         if rule == "cost" and not self.curves.get("cost"):
             raise ValueError(f"no cost-aware curve for router {self.router_model}; build one with "
-                             "`cheapshot bench curve --rule cost`")
+                             "`cr bench curve --rule cost`")
         self.rule = rule
         self.set_quality(self.quality)
 

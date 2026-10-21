@@ -86,7 +86,7 @@ def build_report(m: Matrix, floor: float, B: int = 2000, objective: str = "per-p
 def render_markdown(r: dict) -> str:
     meta = r["meta"]
     split = "test split" if meta["held_out"] else "all prompts (no held-out split!)"
-    out = ["# Cheapshot benchmark report", ""]
+    out = ["# CR benchmark report", ""]
     head = next((e for e in r["policies"] if e["name"] == r["headline"]), None)
     if head:
         t, ci, rnd = head["test"], head["ci"], head["random_at_mix"]
@@ -103,7 +103,7 @@ def render_markdown(r: dict) -> str:
                 "counts each prompt equally; total savings is what the bill sees but is dominated by a few long answers.",
                 ""]
     elif not r["policies"]:
-        out += ["**No router classifications yet.** Run `cheapshot bench classify --backend laya` once Laya is up.", ""]
+        out += ["**No router classifications yet.** Run `cr bench classify --backend laya` once Laya is up.", ""]
     else:
         out += [f"**No policy met the {_pct(meta['floor'])} quality floor on the tune split.**", ""]
 

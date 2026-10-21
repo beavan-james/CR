@@ -2,7 +2,7 @@
 picked, resuming the same session so context carries across model switches.
 
 Claude Code does the agent work (reading and editing files, running commands) in the
-user's working directory, under the user's own Pro/Max login. Cheapshot only chooses
+user's working directory, under the user's own Pro/Max login. CR only chooses
 the model per turn and accounts for cost.
 """
 from __future__ import annotations

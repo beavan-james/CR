@@ -1,7 +1,7 @@
 [project]
-name = "cheapshot"
+name = "cr"
 version = "0.1.0"
-description = "Cheapshot — cost-aware LLM router: a Laya decision model routes each prompt to the cheapest capable model (BYOK)"
+description = "CR — cost-aware router for Claude Code: a Laya decision model routes each prompt or turn to the cheapest capable model"
 requires-python = ">=3.11"
 dependencies = [
   "typer>=0.9",
@@ -16,7 +16,8 @@ dependencies = [
 dev = ["pytest>=8"]
 
 [project.scripts]
-cheapshot = "cheapshot.cli:app"
+cr = "cr.cli:app"
+cheapshot = "cr.cli:app"  # pre-rename alias
 
 [build-system]
 requires = ["setuptools>=61"]
@@ -26,4 +27,4 @@ build-backend = "setuptools.build_meta"
 where = ["src"]
 
 [tool.setuptools.package-data]
-cheapshot = ["curves/*.json"]
+cr = ["curves/*.json"]

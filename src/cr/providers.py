@@ -8,7 +8,7 @@ No refusal fallback: in a benchmark it would silently swap which model answered.
 
 The "claude-code" family uses a Claude Pro/Max subscription instead of an API
 key, by running the official Claude Code CLI headless (`claude -p`) under the
-user's own login. Cheapshot never touches the subscription's OAuth token. Tools,
+user's own login. CR never touches the subscription's OAuth token. Tools,
 MCP servers and session persistence are off, and the coding-agent system prompt is
 replaced. Usage counts against the subscription's limits; there is no per-token bill.
 """
@@ -24,6 +24,8 @@ import time
 from dataclasses import dataclass
 
 import httpx
+
+from .env import env
 
 DEFAULT_MAX_TOKENS = 16000  # includes thinking tokens; hitting it is flagged, not hidden
 
@@ -65,7 +67,7 @@ def complete(family: str, model: str, prompt: str, api_key: str = "", timeout: f
     family = family.lower()
     if family == "claude-code":
         return _claude_code(model, prompt, timeout, system, effort or MODEL_EFFORT.get(model))
-    if family == "mock" or os.getenv("CHEAPSHOT_MOCK_LLM") == "1" or not api_key:
+    if family == "mock" or env("MOCK_LLM") == "1" or not api_key:
         # Offline-safe path: if no key provided we still return mock rather than crash.
         # CLI warns the user in this case.
         t0 = time.time()
@@ -153,7 +155,7 @@ def _claude_code(model: str, prompt: str, timeout: float, system: str | None, ef
     env = {k: v for k, v in os.environ.items() if k not in _API_AUTH_ENV}
     t0 = time.time()
     # Empty working dir: no project CLAUDE.md or files leak into the answer.
-    with tempfile.TemporaryDirectory(prefix="cheapshot-cc-") as cwd:
+    with tempfile.TemporaryDirectory(prefix="cr-cc-") as cwd:
         try:
             proc = subprocess.run(claude_code_command(model, system, effort), input=prompt, capture_output=True,
                                   text=True, timeout=timeout, cwd=cwd, env=env)

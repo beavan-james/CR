@@ -170,3 +170,6 @@ On a Pro/Max subscription (`-f claude-code`) these are ~3,000 calls with no per-
 - **Agent sessions differ:** each turn re-sends ~38K+ tokens of context, so turn cost is mostly fixed and the length signal doesn't help short turns. The REPL defaults to `threshold`; `cost` is opt-in. Revisit with real `usage.jsonl` data.
 - **Bug fixed:** Claude Code's `total_cost_usd` is cumulative over a resumed session; per-turn cost is now the delta (earlier REPL cost lines overstated later turns).
 - Idea: switching models loses the prompt cache (the new model re-writes the whole context), so frequent up-switches cost extra; consider a stickiness term.
+
+## Status (2026-10-20, later): renamed to CR
+- Package, command and paths are now `cr` (`src/cr/`, `~/.cr/`, `CR_*`). Earlier sections keep the old names. The `cheapshot` command, `CHEAPSHOT_*` variables and `~/.cheapshot/` (used while `~/.cr/` doesn't exist) still work. Router checkpoints keep their `cheapshot-*` names on the Laya server.

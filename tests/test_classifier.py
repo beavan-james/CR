@@ -3,7 +3,7 @@ import json
 import httpx
 import pytest
 
-from cheapshot import classifier
+from cr import classifier
 
 A = classifier.load_variant("variants/a_score.yaml")
 C = classifier.load_variant("variants/c_tier_choice.yaml")

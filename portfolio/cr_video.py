@@ -43,7 +43,7 @@ def part(m, plain, sub):
 
 def frontier(name):
     """Upper frontier of held-out (quality, total-bill savings), walking down from 100% quality."""
-    c = json.loads((REPO / f"src/cheapshot/curves/{name}__cheapshot-v3.json").read_text())
+    c = json.loads((REPO / f"src/cr/curves/{name}__cheapshot-v3.json").read_text())
     pts = sorted({(p["test"]["quality"], p["test"]["savings"]) for p in c["points"]}, reverse=True)
     out = [pts[0]]
     for q, s in pts[1:]:

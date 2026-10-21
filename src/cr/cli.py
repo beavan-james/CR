@@ -25,12 +25,13 @@ from .bench import report as bench_report
 from .bench import teacher as bench_teacher
 from .bench.dataset import load_dataset
 from .bench.store import Store
+from .env import home
 from .pricing import FAMILY_MODELS, PRICING, cost_usd
 
-load_dotenv(Path(os.getenv("CHEAPSHOT_HOME", Path.home() / ".cheapshot")) / "config.env")  # user config wins
+load_dotenv(home() / "config.env")  # user config wins
 load_dotenv()  # then the repo's .env
 app = typer.Typer(add_completion=False, invoke_without_command=True,
-                  help="Cheapshot — Claude Code where a Laya decision model routes every turn to the cheapest capable model.")
+                  help="CR — Claude Code where a Laya decision model routes every turn to the cheapest capable model.")
 bench = typer.Typer(add_completion=False, help="Benchmark: cached answers + judge, replayed offline for any routing policy.")
 app.add_typer(bench, name="bench")
 console = Console()
@@ -44,7 +45,7 @@ KEYLESS = ("mock", "claude-code")  # claude-code uses your Pro/Max login via the
 @app.callback()
 def main(
     ctx: typer.Context,
-    quality: float | None = typer.Option(None, "--quality", "-q", help="Quality target 0-1 (default CHEAPSHOT_QUALITY or 0.95)"),
+    quality: float | None = typer.Option(None, "--quality", "-q", help="Quality target 0-1 (default CR_QUALITY or 0.95)"),
     mode: str = typer.Option("acceptEdits", "--mode", help="Claude Code permission mode: acceptEdits|plan|default|bypassPermissions"),
     which: str = typer.Option("laya", "--classifier", help="laya|heuristic"),
     variant: str = typer.Option("variants/a_score.yaml", "--variant", "-v", help="Router variant YAML"),
@@ -81,7 +82,7 @@ def curve_cmd(
     model = router_model or os.getenv("LAYA_MODEL") or classifier.DEFAULT_LAYA_MODEL
     c = curves.load_curve(name, model)
     if not c:
-        console.print(f"[red]No curve for {name} / {model}. Build it with `cheapshot bench curve`.[/red]")
+        console.print(f"[red]No curve for {name} / {model}. Build it with `cr bench curve`.[/red]")
         raise typer.Exit(1)
     console.print(curve_table(c))
     console.print("[dim]quality = share of prompts the Opus judge rated as good as Opus's answer. "

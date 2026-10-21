@@ -4,7 +4,7 @@
 
 [Case study and 28-second demo video](https://portfolio.stockidence.com/portfolio/cr)
 
-> The package, command and config names are still `cheapshot` while the rename to CR is in progress.
+> **Upgrading from `cheapshot`:** the old command and `CHEAPSHOT_*` variables still work, and `~/.cheapshot/` is used until `~/.cr/` exists (`mv ~/.cheapshot ~/.cr` to switch).
 
 | tier | model (Anthropic) | effort |
 |---|---|---|
@@ -33,21 +33,21 @@ On 205 held-out prompts, each answered by all three models and judged against Op
 python3 -m venv .venv && .venv/bin/pip install -e ".[dev]"
 cp .env.example .env   # ANTHROPIC_API_KEY, LAYA_URL, LAYA_API_KEY
 
-cheapshot classify "What is the capital of France?"                 # Laya -> tier
-cheapshot classify "Write a debounce in TS" --classifier heuristic  # no Laya needed
-cheapshot run "Explain this Safari crash..." --family anthropic -e 0.1
-cheapshot models
+cr classify "What is the capital of France?"                 # Laya -> tier
+cr classify "Write a debounce in TS" --classifier heuristic  # no Laya needed
+cr run "Explain this Safari crash..." --family anthropic -e 0.1
+cr models
 ```
 
 ## Interactive CLI: Claude Code with per-turn routing
 
-Run `cheapshot` in any project directory. It works like Claude Code: it reads and edits files and runs commands. The difference is that Laya picks Haiku, Sonnet or Opus for **every turn**. Each turn runs `claude -p --model <routed> --resume <session>` under your Pro/Max login, so the conversation keeps its context when the model switches.
+Run `cr` in any project directory. It works like Claude Code: it reads and edits files and runs commands. The difference is that Laya picks Haiku, Sonnet or Opus for **every turn**. Each turn runs `claude -p --model <routed> --resume <session>` under your Pro/Max login, so the conversation keeps its context when the model switches.
 
 ```bash
 cd ~/my-project
-cheapshot                      # quality target 95% (default)
-cheapshot -q 0.90              # trade some quality for more savings
-cheapshot --mode plan          # Claude Code permission mode (acceptEdits by default)
+cr                      # quality target 95% (default)
+cr -q 0.90              # trade some quality for more savings
+cr --mode plan          # Claude Code permission mode (acceptEdits by default)
 ```
 
 ```
@@ -69,17 +69,17 @@ Sonnet 5.5 · $0.0412 (Opus est. $0.0687) · 9s · session $0.041, 40% saved
 | `/mode acceptEdits\|plan\|default\|bypassPermissions` | Claude Code permission mode |
 | `/new`, `/exit` | fresh conversation, quit |
 
-- **Quality target, not ε.** "Quality" means the share of prompts answered as well as Opus, as scored by the Opus judge on the benchmark. Each router model has a stored curve (`src/cheapshot/curves/`). A target maps to the ε with the most per-prompt savings that met it on the tune split. The banner shows what that ε achieved on the held-out test split. `cheapshot curve` prints the whole table, and `cheapshot bench curve -r <run>` rebuilds it after a new benchmark.
-- **Two routing rules** (`--rule`, `/rule`, `CHEAPSHOT_RULE`):
+- **Quality target, not ε.** "Quality" means the share of prompts answered as well as Opus, as scored by the Opus judge on the benchmark. Each router model has a stored curve (`src/cr/curves/`). A target maps to the ε with the most per-prompt savings that met it on the tune split. The banner shows what that ε achieved on the held-out test split. `cr curve` prints the whole table, and `cr bench curve -r <run>` rebuilds it after a new benchmark.
+- **Two routing rules** (`--rule`, `/rule`, `CR_RULE`):
   - `threshold` (default): the cheapest tier whose P(needs a higher tier) ≤ ε. In an agent session every turn re-sends the whole context (about 38K tokens even for a one-word answer), so turns cost about the same and per-prompt savings is what reduces your usage.
   - `cost`: Laya also estimates how long the answer will be, and the router risks a cheaper tier where the answer is expensive. On the v2 chat benchmark it saves far more of the total bill (about 25–30% at 93–96% quality, vs 5–8% for `threshold`), but it leaves short turns on Opus. Use it for long-answer work such as writing docs or generating large files.
 - **Follow-ups** shorter than 160 characters ("yes, do it") are routed together with the previous request, so a short reply to a hard task doesn't drop to Haiku.
-- **Thanks and sign-offs** ("ok thanks", "great, thank you") skip the router and go to Haiku, since they ask for no work. "ok", "yes" and "go ahead" are still routed, because after a plan they mean "do it". Turn this off with `CHEAPSHOT_TRIVIAL=0`.
+- **Thanks and sign-offs** ("ok thanks", "great, thank you") skip the router and go to Haiku, since they ask for no work. "ok", "yes" and "go ahead" are still routed, because after a plan they mean "do it". Turn this off with `CR_TRIVIAL=0`.
 - **If Laya is unreachable**, the turn goes to Opus and the routing line says so. An outage costs money, never quality.
 - **Permissions:** headless Claude Code can't stop to ask for approval. With `acceptEdits`, file edits go through but shell commands are blocked, and CR tells you which tools were blocked. Allow the commands you trust in your project's `.claude/settings.json` (`permissions.allow`, e.g. `"Bash(pytest:*)"`), or use `/mode bypassPermissions` in a sandbox.
-- **Usage log:** every turn is appended to `~/.cheapshot/usage.jsonl` (override with `CHEAPSHOT_LOG`). It records model, tier, routing probabilities, cost and the Opus estimate, but not prompt text.
-- **Config:** put `LAYA_URL`, `LAYA_API_KEY`, `LAYA_MODEL` and optionally `CHEAPSHOT_QUALITY` in `~/.cheapshot/config.env` so `cheapshot` works from any directory.
-- `cheapshot run "..." --quality 0.9` and `cheapshot classify --quality 0.9` accept the same target.
+- **Usage log:** every turn is appended to `~/.cr/usage.jsonl` (override with `CR_LOG`). It records model, tier, routing probabilities, cost and the Opus estimate, but not prompt text.
+- **Config:** put `LAYA_URL`, `LAYA_API_KEY`, `LAYA_MODEL` and optionally `CR_QUALITY` in `~/.cr/config.env` so `cr` works from any directory.
+- `cr run "..." --quality 0.9` and `cr classify --quality 0.9` accept the same target.
 
 ## Using a Claude Pro/Max subscription instead of an API key
 
@@ -87,8 +87,8 @@ Use `--family claude-code`. CR then runs the official Claude Code CLI headless (
 
 ```bash
 claude auth status                       # should show authMethod "claude.ai"
-cheapshot run "Explain this Safari crash..." --family claude-code
-cheapshot bench answers -r runs/v1-sub -d evals/datasets/v1.jsonl -f claude-code -w 2
+cr run "Explain this Safari crash..." --family claude-code
+cr bench answers -r runs/v1-sub -d evals/datasets/v1.jsonl -f claude-code -w 2
 ```
 
 - Tools, MCP servers and session saving are off, and Claude Code's coding-agent system prompt is replaced with a neutral one. Each call runs in an empty temp directory.
@@ -115,11 +115,11 @@ prompt -> Laya (laya-serve /v1/systemone, question from variants/*.yaml)
 Every prompt is answered by all three tiers once. An Opus judge compares the cheap and balanced answers against the flagship's, in both orders. Everything is cached under `runs/<name>/`, so any routing policy (variant × ε × calibration) is scored offline without new Claude calls.
 
 ```bash
-cheapshot bench answers  -r runs/v1 -d evals/datasets/v1.jsonl -f anthropic   # paid; asks first
-cheapshot bench classify -r runs/v1 -d evals/datasets/v1.jsonl                  # Laya, free
-cheapshot bench classify -r runs/v1 -d evals/datasets/v1.jsonl -b heuristic     # baseline
-cheapshot bench judge    -r runs/v1 -d evals/datasets/v1.jsonl -f anthropic    # paid; asks first
-cheapshot bench report   -r runs/v1 -d evals/datasets/v1.jsonl -f anthropic --floor 0.95
+cr bench answers  -r runs/v1 -d evals/datasets/v1.jsonl -f anthropic   # paid; asks first
+cr bench classify -r runs/v1 -d evals/datasets/v1.jsonl                  # Laya, free
+cr bench classify -r runs/v1 -d evals/datasets/v1.jsonl -b heuristic     # baseline
+cr bench judge    -r runs/v1 -d evals/datasets/v1.jsonl -f anthropic    # paid; asks first
+cr bench report   -r runs/v1 -d evals/datasets/v1.jsonl -f anthropic --floor 0.95
 ```
 
 Re-running any step resumes where it stopped. Use `-f mock` (the default) to run the whole pipeline offline.
@@ -131,8 +131,8 @@ Dataset rows: `{"id", "prompt", "category", "source", "split": "train"|"tune"|"t
 Zero-shot Laya barely separates easy from hard prompts (see `PLAN.md`), so it gets fine-tuned. Labels are hybrid: judge-based where the benchmark has run on a prompt, otherwise an Opus "teacher" probability over tiers (one call per prompt).
 
 ```bash
-cheapshot bench teacher      -r runs/ft -d evals/datasets/v1.jsonl -f anthropic   # paid; train split only
-cheapshot bench export-train -r runs/ft -d evals/datasets/v1.jsonl -f anthropic   # -> runs/ft/laya_train.jsonl
+cr bench teacher      -r runs/ft -d evals/datasets/v1.jsonl -f anthropic   # paid; train split only
+cr bench export-train -r runs/ft -d evals/datasets/v1.jsonl -f anthropic   # -> runs/ft/laya_train.jsonl
 ```
 
 Check the file with `laya-train --data laya_train.jsonl --base typed-decisions --dry-run` (works on the A1, no GPU needed). Train on a 16 GB GPU (Kaggle T4), then load the checkpoint on the server via `LAYA_EXTRA_MODELS`.
@@ -140,9 +140,9 @@ Check the file with `laya-train --data laya_train.jsonl --base typed-decisions -
 Judge labels for part of the train split (`evals/build_v2.py` tags 300 prompts `"subset": "judge"`):
 
 ```bash
-cheapshot bench answers -r runs/v2 -d evals/datasets/v2.jsonl -f claude-code --split train --subset judge
-cheapshot bench judge   -r runs/v2 -d evals/datasets/v2.jsonl -f claude-code --split train --subset judge
-cheapshot bench export-train -r runs/v2 -d evals/datasets/v2.jsonl -f claude-code --judge-weight 2
+cr bench answers -r runs/v2 -d evals/datasets/v2.jsonl -f claude-code --split train --subset judge
+cr bench judge   -r runs/v2 -d evals/datasets/v2.jsonl -f claude-code --split train --subset judge
+cr bench export-train -r runs/v2 -d evals/datasets/v2.jsonl -f claude-code --judge-weight 2
 ```
 
 Train prompts are judged lazily: in each judge order, Sonnet is judged only if Haiku lost, since a Haiku pass already fixes the label. `--judge-weight` writes each judge-labeled row that many times. Judge-labeled train prompts also join the tune split in fitting the teacher recalibration.

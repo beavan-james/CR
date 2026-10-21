@@ -1,10 +1,10 @@
 import pytest
 
-from cheapshot import classifier
-from cheapshot.bench import judge, matrix, replay, report
-from cheapshot.bench.dataset import load_dataset
-from cheapshot.bench.replay import Matrix, PolicyRow
-from cheapshot.bench.store import Store
+from cr import classifier
+from cr.bench import judge, matrix, replay, report
+from cr.bench.dataset import load_dataset
+from cr.bench.replay import Matrix, PolicyRow
+from cr.bench.store import Store
 
 A = classifier.load_variant("variants/a_score.yaml")
 C = classifier.load_variant("variants/c_tier_choice.yaml")
@@ -144,7 +144,7 @@ def test_pipeline_end_to_end(tmp_path):
 
 # ---------------------------------------------------------------- teacher + fine-tuning export
 
-from cheapshot.bench import export, teacher
+from cr.bench import export, teacher
 
 
 def test_parse_teacher():
@@ -217,7 +217,7 @@ def test_unicode_line_separator_survives_jsonl(tmp_path):
 
 
 def test_pool_stops_after_consecutive_failures():
-    from cheapshot.bench.pool import run_pool
+    from cr.bench.pool import run_pool
 
     def fn(i):
         raise RuntimeError("usage limit reached")
@@ -227,7 +227,7 @@ def test_pool_stops_after_consecutive_failures():
 
 
 def test_pool_success_resets_streak():
-    from cheapshot.bench.pool import run_pool
+    from cr.bench.pool import run_pool
 
     def fn(i):
         if i % 2:

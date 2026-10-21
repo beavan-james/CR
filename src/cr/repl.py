@@ -1,17 +1,16 @@
-"""Interactive Cheapshot: a Claude Code session where every turn is routed to the cheapest
-capable model. Run `cheapshot` in a project directory.
+"""Interactive CR: a Claude Code session where every turn is routed to the cheapest
+capable model. Run `cr` in a project directory.
 """
 from __future__ import annotations
 
-import os
 import sys
-from pathlib import Path
 
 from rich.console import Console
 from rich.table import Table
 
 from . import curves, tracking
 from .classifier import TIERS
+from .env import home
 from .pricing import FAMILY_MODELS, PRICING
 from .routing import Routing
 from .session import PERMISSION_MODES, ClaudeCodeSession
@@ -19,7 +18,7 @@ from .session import PERMISSION_MODES, ClaudeCodeSession
 FAMILY = "claude-code"
 TIER_ALIASES = {"haiku": "cheap", "sonnet": "balanced", "opus": "flagship",
                 "cheap": "cheap", "balanced": "balanced", "flagship": "flagship"}
-HISTORY = Path(os.getenv("CHEAPSHOT_HOME", Path.home() / ".cheapshot")) / "history"
+HISTORY = home() / "history"
 
 HELP = """[bold]Commands[/bold]
   /quality [0.80-1.00]   quality target (share of turns as good as Opus); shows the trade-off
@@ -71,7 +70,7 @@ class Repl:
     # ------------------------------------------------------------------ display
     def banner(self) -> None:
         r = self.routing
-        self.c.print(f"[bold]Cheapshot[/bold] · Claude Code with per-turn routing · [dim]{self.session.cwd}[/dim]")
+        self.c.print(f"[bold]CR[/bold] · Claude Code with per-turn routing · [dim]{self.session.cwd}[/dim]")
         self.c.print(f"router [cyan]{r.router_model}[/cyan] · {self.quality_line()} · permissions [cyan]{self.session.permission_mode}[/cyan]")
         self.c.print("[dim]/help for commands[/dim]\n")
 
@@ -114,7 +113,7 @@ class Repl:
             if r.curve:
                 self.c.print(curve_table(r.curve))
             else:
-                self.c.print("[yellow]No curve for this router. Build one with `cheapshot bench curve`.[/yellow]")
+                self.c.print("[yellow]No curve for this router. Build one with `cr bench curve`.[/yellow]")
         elif cmd == "rule":
             if arg:
                 try:

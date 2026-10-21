@@ -2,11 +2,12 @@
 from __future__ import annotations
 
 import json
-import os
 import time
 from pathlib import Path
 
-LOG = Path(os.getenv("CHEAPSHOT_LOG", Path.home() / ".cheapshot" / "usage.jsonl"))
+from .env import env, home
+
+LOG = Path(env("LOG") or home() / "usage.jsonl")
 
 
 def log(entry: dict) -> None:

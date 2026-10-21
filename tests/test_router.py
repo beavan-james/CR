@@ -1,8 +1,8 @@
 import pytest
 
-from cheapshot import router
-from cheapshot.classifier import Classification, overflow_classification
-from cheapshot.pricing import cost_usd
+from cr import router
+from cr.classifier import Classification, overflow_classification
+from cr.pricing import cost_usd
 
 DIST = {"cheap": 0.5, "balanced": 0.3, "flagship": 0.2}
 
@@ -53,7 +53,7 @@ def test_costs():
 import json
 import subprocess
 
-from cheapshot import providers
+from cr import providers
 
 
 def test_claude_code_command_disables_tools_and_sets_effort():
@@ -88,11 +88,11 @@ def test_claude_code_strips_api_keys(monkeypatch):
     monkeypatch.setattr(providers.subprocess, "run", fake_run)
     c = providers.complete("claude-code", "claude-haiku-5-5", "hi")
     assert c.text == "ok" and "ANTHROPIC_API_KEY" not in seen["env"] and seen["input"] == "hi"
-    assert "cheapshot-cc-" in seen["cwd"]
+    assert "cr-cc-" in seen["cwd"]
 
 
 def test_epsilon_per_router_model(monkeypatch):
-    from cheapshot.cli import effective_epsilon
+    from cr.cli import effective_epsilon
     v = {"epsilon": 0.2, "epsilon_by_model": {"cheapshot-s0": 0.4}}
     monkeypatch.setenv("LAYA_MODEL", "cheapshot-s0")
     assert effective_epsilon(None, v) == 0.4 and effective_epsilon(0.1, v) == 0.1

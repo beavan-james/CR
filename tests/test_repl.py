@@ -1,6 +1,6 @@
 import json
 
-from cheapshot import curves, repl, routing, session
+from cr import curves, repl, routing, session
 
 
 def test_handle_event_streams_text_tools_and_usage():
@@ -84,7 +84,7 @@ def test_trivial_turns():
 
 
 def test_length_gold():
-    from cheapshot.bench.export import length_gold
+    from cr.bench.export import length_gold
     for n, top in ((50, "0"), (1100, "1"), (8000, "2")):
         g = length_gold(n)
         assert abs(sum(g.values()) - 1) < 1e-9 and max(g, key=g.get) == top
@@ -93,7 +93,7 @@ def test_length_gold():
 
 
 def test_cost_model_recovers_weights_and_picks_by_size():
-    from cheapshot import costaware
+    from cr import costaware
     import math
     rows = []
     for lvl_d in ({"cheap": 1.0}, {"balanced": 1.0}, {"flagship": 1.0}, {"cheap": .5, "balanced": .5}):

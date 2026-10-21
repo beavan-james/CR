@@ -1,6 +1,6 @@
 """Savings-vs-quality curves: let users pick a quality target instead of epsilon.
 
-A curve is built once from a benchmark run (`cheapshot bench curve`) for one router model
+A curve is built once from a benchmark run (`cr bench curve`) for one router model
 and variant. For each epsilon it stores tune and test metrics. A quality target maps to
 the epsilon with the most per-prompt savings whose TUNE quality meets it, and the test
 numbers at that epsilon are what we show the user as the expected outcome.
