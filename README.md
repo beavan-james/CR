@@ -2,7 +2,7 @@
 
 **A cost-aware router for Claude Code.** A self-hosted, fine-tuned [Laya](https://huggingface.co/convaiinnovations/laya-typed-decisions) decision model reads each prompt or turn and estimates which Claude model it needs. CR sends it to the cheapest one likely to answer as well as Opus, using your own API key or your Claude Pro/Max subscription, and benchmarks the savings against always using Opus.
 
-[Case study and 28-second demo video](https://portfolio.stockidence.com/portfolio/cr)
+[Case study and 1.5-minute demo video](https://portfolio.stockidence.com/portfolio/cr)
 
 > **Upgrading from `cheapshot`:** the old command and `CHEAPSHOT_*` variables still work, and `~/.cheapshot/` is used until `~/.cr/` exists (`mv ~/.cheapshot ~/.cr` to switch).
 
