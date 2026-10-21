@@ -7,10 +7,15 @@ usage_log.jsonl
 report.md
 /tmp/
 .venv/
-runs/
+runs*/
 .DS_Store
 evals/raw/
 evals/datasets/v1.jsonl
 evals/datasets/v2.jsonl
 ckpt-*
 *.zip
+
+# video tooling
+portfolio/.venv/
+portfolio/media/
+portfolio/*.mp4
