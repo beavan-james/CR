@@ -1,12 +1,31 @@
-# Cheapshot
+# CR
 
-A cost-aware LLM router. A self-hosted [Laya](https://huggingface.co/convaiinnovations/laya-typed-decisions) decision model reads each prompt and estimates which model tier it needs. Cheapshot then sends it to the cheapest tier that's likely good enough (BYOK) and benchmarks the savings against always using the flagship.
+**A cost-aware router for Claude Code.** A self-hosted, fine-tuned [Laya](https://huggingface.co/convaiinnovations/laya-typed-decisions) decision model reads each prompt or turn and estimates which Claude model it needs. CR sends it to the cheapest one likely to answer as well as Opus, using your own API key or your Claude Pro/Max subscription, and benchmarks the savings against always using Opus.
+
+[Case study and 28-second demo video](https://portfolio.stockidence.com/portfolio/cr)
+
+> The package, command and config names are still `cheapshot` while the rename to CR is in progress.
 
 | tier | model (Anthropic) | effort |
 |---|---|---|
 | cheap | `claude-haiku-5-5` | medium |
 | balanced | `claude-sonnet-5-5` | high |
 | flagship | `claude-opus-5-5` | medium |
+
+## Results
+
+On 205 held-out prompts, each answered by all three models and judged against Opus by an Opus judge in both orders. Settings are chosen on a separate 155-prompt tune split.
+
+| rule | quality (share of answers as good as Opus) | share of the bill saved |
+|---|---|---|
+| cost-aware | 97.1% | 9.2% |
+| cost-aware | 93.7% | 28.0% |
+| cost-aware | 90.7% | 32.0% |
+| risk threshold | 95.6% | 5.0% (11.5% per prompt) |
+
+- The fine-tuned router keeps about 5 more quality points than random routing at the same model mix.
+- Routing costs $0 per call: Laya runs on an always-free Oracle Ampere A1 and takes about 2.7 s per turn.
+- Caveats: same-family judging likely makes savings err low, and 205 prompts ranks the rules more reliably than it pins exact percentages. See `PLAN.md`.
 
 ## Quickstart
 
@@ -57,14 +76,14 @@ Sonnet 5.5 · $0.0412 (Opus est. $0.0687) · 9s · session $0.041, 40% saved
 - **Follow-ups** shorter than 160 characters ("yes, do it") are routed together with the previous request, so a short reply to a hard task doesn't drop to Haiku.
 - **Thanks and sign-offs** ("ok thanks", "great, thank you") skip the router and go to Haiku, since they ask for no work. "ok", "yes" and "go ahead" are still routed, because after a plan they mean "do it". Turn this off with `CHEAPSHOT_TRIVIAL=0`.
 - **If Laya is unreachable**, the turn goes to Opus and the routing line says so. An outage costs money, never quality.
-- **Permissions:** headless Claude Code can't stop to ask for approval. With `acceptEdits`, file edits go through but shell commands are blocked, and Cheapshot tells you which tools were blocked. Allow the commands you trust in your project's `.claude/settings.json` (`permissions.allow`, e.g. `"Bash(pytest:*)"`), or use `/mode bypassPermissions` in a sandbox.
+- **Permissions:** headless Claude Code can't stop to ask for approval. With `acceptEdits`, file edits go through but shell commands are blocked, and CR tells you which tools were blocked. Allow the commands you trust in your project's `.claude/settings.json` (`permissions.allow`, e.g. `"Bash(pytest:*)"`), or use `/mode bypassPermissions` in a sandbox.
 - **Usage log:** every turn is appended to `~/.cheapshot/usage.jsonl` (override with `CHEAPSHOT_LOG`). It records model, tier, routing probabilities, cost and the Opus estimate, but not prompt text.
 - **Config:** put `LAYA_URL`, `LAYA_API_KEY`, `LAYA_MODEL` and optionally `CHEAPSHOT_QUALITY` in `~/.cheapshot/config.env` so `cheapshot` works from any directory.
 - `cheapshot run "..." --quality 0.9` and `cheapshot classify --quality 0.9` accept the same target.
 
 ## Using a Claude Pro/Max subscription instead of an API key
 
-Use `--family claude-code`. Cheapshot then runs the official Claude Code CLI headless (`claude -p`) under your own login. It never reads or reuses the subscription's OAuth token itself.
+Use `--family claude-code`. CR then runs the official Claude Code CLI headless (`claude -p`) under your own login. It never reads or reuses the subscription's OAuth token itself.
 
 ```bash
 claude auth status                       # should show authMethod "claude.ai"
