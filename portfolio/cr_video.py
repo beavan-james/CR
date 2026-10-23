@@ -171,7 +171,7 @@ class CRVideo(Scene):
         note = VGroup(
             T("est. cost comes from the router’s second answer: how long will the reply be?", 24, DIM,
               t2c={"how long will the reply be?": WHITE}),
-            T("most of a bill sits in a few long answers, so that is where cheaper models pay off", 24, DIM,
+            T("most of a bill sits in a few long answers: the biggest savings, and the biggest risk", 24, DIM,
               italic=True)).arrange(DOWN, buff=0.18).to_edge(DOWN, buff=0.45)
 
         self.play(FadeIn(head, shift=DOWN * 0.15), FadeIn(sub, shift=DOWN * 0.15), run_time=0.9)
@@ -221,9 +221,9 @@ class CRVideo(Scene):
             self.play(Create(line), FadeIn(label, shift=LEFT * 0.1), run_time=1.6, rate_func=smooth)
             self.wait(1.3)
 
-        # a dot rides the cost-aware frontier down to the 93.7%-quality point
+        # a dot rides the cost-aware frontier down to the 97.1%-quality point
         pts = curves["cost_aware"]
-        k = min(range(len(pts)), key=lambda j: abs(pts[j][0] - 0.937))
+        k = min(range(len(pts)), key=lambda j: abs(pts[j][0] - 0.971))
         path = VMobject().set_points_as_corners([ax.c2p(q, s) for q, s in pts[:k + 1]])
         dot = Dot(path.get_start(), radius=0.09, color=KNOB)
         drops = always_redraw(lambda: VGroup(
@@ -234,21 +234,21 @@ class CRVideo(Scene):
         self.play(Flash(dot, color=KNOB, line_length=0.18, flash_radius=0.22), run_time=0.6)
         self.wait(0.5)
 
-        stats = [(28, "%", ("of the bill saved", "at 93.7% quality"), KNOB),
-                 (5, " pts", ("quality vs. random routing", "at the same model mix"), BLUE_C),
-                 (72, "%", ("saved in a live", "two-turn session"), HAIKU)]
-        for i, (n, unit, label, col) in enumerate(stats):
+        # weighted = each prompt counted by its Opus cost; the cost-aware rule's misses are its biggest turns
+        stats = [(9.2, "{:.1f}%", ("of the bill saved", "at 97.1% quality"), KNOB, 2.0),
+                 (91, "{:.0f}%", ("quality weighted by task size:", "the misses are big tasks"), RISK, 2.6),
+                 (5, "+{:.0f} pts", ("risk threshold vs. random", "routing at the same mix"), BLUE_C, 2.2)]
+        for i, (n, fmt, label, col, hold) in enumerate(stats):
             t = ValueTracker(0)
             pos = RIGHT * 2.0 + UP * (1.65 - i * 1.65)
-            big = always_redraw(lambda t=t, unit=unit, col=col, pos=pos:
-                                T(("+" if unit == " pts" else "") + f"{t.get_value():.0f}{unit}", 60, col)
-                                .move_to(pos, aligned_edge=LEFT))
+            big = always_redraw(lambda t=t, fmt=fmt, col=col, pos=pos:
+                                T(fmt.format(t.get_value()), 60, col).move_to(pos, aligned_edge=LEFT))
             lab = Paragraph(*label, font=SERIF, font_size=22, line_spacing=0.8, alignment="left")
             lab.move_to(pos + DOWN * 0.42, aligned_edge=UL)
             self.add(big)
             self.play(t.animate.set_value(n), FadeIn(lab, shift=UP * 0.1), run_time=1.0, rate_func=smooth)
-            self.wait(1.7)
-        self.wait(0.8)
+            self.wait(hold)
+        self.wait(0.6)
         self.clear_all()
 
     # ------------------------------------------------------------------ 5. outro

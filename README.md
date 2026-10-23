@@ -14,16 +14,18 @@
 
 ## Results
 
-On 205 held-out prompts, each answered by all three models and judged against Opus by an Opus judge in both orders. Settings are chosen on a separate 155-prompt tune split.
+On 205 held-out prompts, each answered by all three models and judged against Opus by an Opus judge in both orders. Settings are chosen on a separate 155-prompt tune split. **Quality** is the share of prompts whose answer was judged as good as Opus's. **Weighted** quality counts each prompt by what it costs on Opus, so a miss on a big task counts for more.
 
-| rule | quality (share of answers as good as Opus) | share of the bill saved |
-|---|---|---|
-| cost-aware | 97.1% | 9.2% |
-| cost-aware | 93.7% | 28.0% |
-| cost-aware | 90.7% | 32.0% |
-| risk threshold | 95.6% | 5.0% (11.5% per prompt) |
+| rule | quality | weighted by task size | share of the bill saved |
+|---|---|---|---|
+| cost-aware | 97.1% | 91.1% | 9.2% |
+| cost-aware | 95.6% | 77.5% | 24.8% |
+| cost-aware | 93.7% | 74.5% | 28.0% |
+| risk threshold | 95.6% | 96.4% | 5.0% (11.5% per prompt) |
 
-- The fine-tuned router keeps about 5 more quality points than random routing at the same model mix.
+- **Where the losses land.** The cost-aware rule saves by sending the biggest jobs to Haiku, and the bigger the job, the more often Haiku's answer loses to Opus's: 41% of the time on the cheapest quarter of prompts, 94% on the most expensive. So its misses are big tasks. At 93.7% quality, 25 of the 28 points saved come from the 13 prompts judged worse. The risk threshold's misses are mostly small prompts, so its weighted quality stays high, but it saves less of the bill.
+- A loss means the judge preferred Opus's answer, not that the cheaper answer was wrong.
+- **Against random routing at the same model mix:** the risk threshold keeps about 5 more quality points (95.6% vs 90.2%). The cost-aware rule has about the same quality as random but saves 2.4× as much at 97.1% (9.2% vs 3.8%); its edge is choosing the expensive turns.
 - Routing costs $0 per call: Laya runs on an always-free Oracle Ampere A1 and takes about 2.7 s per turn.
 - Caveats: same-family judging likely makes savings err low, and 205 prompts ranks the rules more reliably than it pins exact percentages. See `PLAN.md`.
 
@@ -72,7 +74,7 @@ Sonnet 5.5 · $0.0412 (Opus est. $0.0687) · 9s · session $0.041, 40% saved
 - **Quality target, not ε.** "Quality" means the share of prompts answered as well as Opus, as scored by the Opus judge on the benchmark. Each router model has a stored curve (`src/cr/curves/`). A target maps to the ε with the most per-prompt savings that met it on the tune split. The banner shows what that ε achieved on the held-out test split. `cr curve` prints the whole table, and `cr bench curve -r <run>` rebuilds it after a new benchmark.
 - **Two routing rules** (`--rule`, `/rule`, `CR_RULE`):
   - `threshold` (default): the cheapest tier whose P(needs a higher tier) ≤ ε. In an agent session every turn re-sends the whole context (about 38K tokens even for a one-word answer), so turns cost about the same and per-prompt savings is what reduces your usage.
-  - `cost`: Laya also estimates how long the answer will be, and the router risks a cheaper tier where the answer is expensive. On the v2 chat benchmark it saves far more of the total bill (about 25–30% at 93–96% quality, vs 5–8% for `threshold`), but it leaves short turns on Opus. Use it for long-answer work such as writing docs or generating large files.
+  - `cost`: Laya also estimates how long the answer will be, and the router risks a cheaper tier where the answer is expensive. On the v2 chat benchmark it saves more of the total bill (9% at 97% quality, 25–28% at 94–96%, vs 5–8% for `threshold`), but its misses are the long answers it moves to Haiku (weighted quality 75–91%; see Results), and it leaves short turns on Opus. Use it for long-answer work where a less thorough answer is acceptable, such as first drafts of docs.
 - **Follow-ups** shorter than 160 characters ("yes, do it") are routed together with the previous request, so a short reply to a hard task doesn't drop to Haiku.
 - **Thanks and sign-offs** ("ok thanks", "great, thank you") skip the router and go to Haiku, since they ask for no work. "ok", "yes" and "go ahead" are still routed, because after a plan they mean "do it". Turn this off with `CR_TRIVIAL=0`.
 - **If Laya is unreachable**, the turn goes to Opus and the routing line says so. An outage costs money, never quality.

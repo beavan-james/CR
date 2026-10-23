@@ -173,3 +173,9 @@ On a Pro/Max subscription (`-f claude-code`) these are ~3,000 calls with no per-
 
 ## Status (2026-10-20, later): renamed to CR
 - Package, command and paths are now `cr` (`src/cr/`, `~/.cr/`, `CR_*`). Earlier sections keep the old names. The `cheapshot` command, `CHEAPSHOT_*` variables and `~/.cheapshot/` (used while `~/.cr/` doesn't exist) still work. Router checkpoints keep their `cheapshot-*` names on the Laya server.
+
+## Status (2026-10-23): where the losses land
+- Replayed the cost-aware curve on v2 test (cheapshot-v3, from cache). Haiku's loss rate vs Opus rises with prompt size: 41% / 65% / 80% / 94% by quarter of Opus cost. The cost rule sends the biggest prompts to Haiku, so its misses are big tasks: at λ 2.0 (93.7%, 28.0% saved), 12 of 13 losses are in the top cost quarter and 25.0 of the 28.0 points saved come from prompts judged worse. The #1 prompt by cost (adversarial "simple lookup: write a compiler", $1.16 on Opus) alone is 9.3 points.
+- New metric, **weighted quality** (each prompt counted by its Opus cost): cost-aware 91.1% @ 97.1%, 77.5% @ 95.6%, 74.5% @ 93.7%; risk threshold ε 0.38: 96.4% @ 95.6%.
+- Against random routing at the same mix: the threshold rule is +5.4 pts (95.6 vs 90.2); the cost rule is level on quality (97.1 vs 97.3) and saves 2.4× (9.2% vs 3.8%). The cost rule never picks Sonnet at these settings.
+- Headline changed to 9.2% @ 97.1% (91.1% weighted) in the README, case study and video. Idea: make risk depend on predicted length, since loss rate climbs with size.
